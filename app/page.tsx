@@ -326,9 +326,6 @@ function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
             <Tag key={tag} t={t}>{tag}</Tag>
           ))}
         </div>
-        <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 12, fontWeight: 600, color: t.text, letterSpacing: 1 }}>
-          READ →
-        </span>
       </div>
     </article>
   );
