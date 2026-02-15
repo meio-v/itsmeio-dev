@@ -11,7 +11,8 @@ const THEMES = {
     border: "#000",
     borderSoft: "#ddd",
     innerBorder: "rgba(0,0,0,0.05)",
-    boxGrad: "linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.005) 100%)",
+    boxGrad:
+      "linear-gradient(180deg, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0.005) 100%)",
     dividerDot: "black",
     dividerOpacity: 0.12,
     shadowBorder: "rgba(0,0,0,0.1)",
@@ -45,20 +46,21 @@ const THEMES = {
     },
   },
   dark: {
-    bg: "#000",
+    bg: "#1a1a1a",
     text: "#fff",
     muted: "#999",
     faint: "#555",
     border: "#fff",
     borderSoft: "#333",
     innerBorder: "rgba(255,255,255,0.06)",
-    boxGrad: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
+    boxGrad:
+      "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)",
     dividerDot: "white",
     dividerOpacity: 0.25,
     shadowBorder: "rgba(255,255,255,0.15)",
     shadowDot: "rgba(255,255,255,0.1)",
     ditherBgDot: "white",
-    ditherBgOpacity: 0.03,
+    ditherBgOpacity: 0.08,
     avatarA: "#333",
     avatarB: "#111",
     navActive: "#fff",
@@ -94,7 +96,18 @@ const POSTS = [
     date: "2026.02.15",
     title: "Hey!",
     body: "I've just deployed my website. I'll be using this space to add dev notes and just dump everything on my head. Maybe we will teach each other something.",
-    tags: ["GODOT", "GAMEDEV", "PSX", "BLENDER", "3D", "TECH", "AI", "DX", "GDScript", "MUSIC"],
+    tags: [
+      "GODOT",
+      "GAMEDEV",
+      "PSX",
+      "BLENDER",
+      "3D",
+      "TECH",
+      "AI",
+      "DX",
+      "GDScript",
+      "MUSIC",
+    ],
   },
 ];
 
@@ -130,7 +143,15 @@ function DitherDivider({ t }: { t: Theme }) {
   );
 }
 
-function MGSHeader({ children, t, tall }: { children: React.ReactNode; t: Theme; tall?: boolean }) {
+function MGSHeader({
+  children,
+  t,
+  tall,
+}: {
+  children: React.ReactNode;
+  t: Theme;
+  tall?: boolean;
+}) {
   const h = tall ? 120 : "auto";
   let topOffset = 0;
 
@@ -161,7 +182,9 @@ function MGSHeader({ children, t, tall }: { children: React.ReactNode; t: Theme;
       <div
         style={{
           position: "absolute",
-          top: 0, left: 0, right: 0,
+          top: 0,
+          left: 0,
+          right: 0,
           height: 1,
           background: `${t.mgsBorderAccent}88`,
           zIndex: 2,
@@ -175,7 +198,15 @@ function MGSHeader({ children, t, tall }: { children: React.ReactNode; t: Theme;
   );
 }
 
-function PsxBox({ title, t, children }: { title?: string; t: Theme; children: React.ReactNode }) {
+function PsxBox({
+  title,
+  t,
+  children,
+}: {
+  title?: string;
+  t: Theme;
+  children: React.ReactNode;
+}) {
   return (
     <div
       style={{
@@ -189,7 +220,10 @@ function PsxBox({ title, t, children }: { title?: string; t: Theme; children: Re
       <div
         style={{
           position: "absolute",
-          top: 4, left: 4, right: 4, bottom: 4,
+          top: 4,
+          left: 4,
+          right: 4,
+          bottom: 4,
           border: `1px solid ${t.innerBorder}`,
           pointerEvents: "none",
         }}
@@ -219,7 +253,10 @@ function PsxBox({ title, t, children }: { title?: string; t: Theme; children: Re
 }
 
 function Tag({ children, t }: { children: string; t: Theme }) {
-  const colors = t.tags[children as keyof typeof t.tags] || { bg: "#eee", color: "#555" };
+  const colors = t.tags[children as keyof typeof t.tags] || {
+    bg: "#eee",
+    color: "#555",
+  };
   return (
     <span
       style={{
@@ -239,7 +276,7 @@ function Tag({ children, t }: { children: string; t: Theme }) {
   );
 }
 
-function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
+function PostCard({ post, t }: { post: (typeof POSTS)[number]; t: Theme }) {
   const [hovered, setHovered] = useState(false);
   return (
     <article
@@ -259,7 +296,10 @@ function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
       <div
         style={{
           position: "absolute",
-          top: 4, left: 4, right: -4, bottom: -4,
+          top: 4,
+          left: 4,
+          right: -4,
+          bottom: -4,
           border: `2px solid ${t.shadowBorder}`,
           zIndex: -1,
           opacity: hovered ? 1 : 0,
@@ -300,7 +340,14 @@ function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
         </div>
       </MGSHeader>
       <div style={{ padding: "16px 20px" }}>
-        <p style={{ color: t.muted, fontSize: 14, lineHeight: 1.7, fontFamily: "'IBM Plex Mono', monospace" }}>
+        <p
+          style={{
+            color: t.muted,
+            fontSize: 14,
+            lineHeight: 1.7,
+            fontFamily: "'IBM Plex Mono', monospace",
+          }}
+        >
           {post.body}
         </p>
       </div>
@@ -317,7 +364,9 @@ function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
       >
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {post.tags.map((tag) => (
-            <Tag key={tag} t={t}>{tag}</Tag>
+            <Tag key={tag} t={t}>
+              {tag}
+            </Tag>
           ))}
         </div>
       </div>
@@ -338,7 +387,14 @@ function Devlog({ t }: { t: Theme }) {
 function About({ t }: { t: Theme }) {
   return (
     <PsxBox title="ABOUT" t={t}>
-      <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 20,
+          alignItems: "flex-start",
+          flexWrap: "wrap",
+        }}
+      >
         <img
           src="/me.png"
           alt="Meio"
@@ -351,14 +407,34 @@ function About({ t }: { t: Theme }) {
             imageRendering: "pixelated",
           }}
         />
-        <div style={{ color: t.muted, fontFamily: "'IBM Plex Mono', monospace", fontSize: 14, lineHeight: 1.7, flex: 1, minWidth: 200 }}>
-          <p><strong style={{ color: t.text }}>Meio</strong> — developer, creative, maker of things.</p>
-          <br />
-          <p>~10 years building for the web. Currently exploring PSX aesthetics, creative tooling, and gamedev with Godot + Blender.</p>
+        <div
+          style={{
+            color: t.muted,
+            fontFamily: "'IBM Plex Mono', monospace",
+            fontSize: 14,
+            lineHeight: 1.7,
+            flex: 1,
+            minWidth: 200,
+          }}
+        >
+          <p>
+            <strong style={{ color: t.text }}>Meio</strong> — developer,
+            creative, maker of things.
+          </p>
           <br />
           <p>
-            Also into music production, mechanical keyboards, and figuring out how to make AI tools actually useful
-            <span style={{ animation: "blink 1s step-end infinite", marginLeft: 2 }}>█</span>
+            ~10 years building for the web. Currently exploring PSX aesthetics,
+            creative tooling, and gamedev with Godot + Blender.
+          </p>
+          <br />
+          <p>
+            Also into music production, mechanical keyboards, and figuring out
+            how to make AI tools actually useful
+            <span
+              style={{ animation: "blink 1s step-end infinite", marginLeft: 2 }}
+            >
+              █
+            </span>
           </p>
         </div>
       </div>
@@ -369,7 +445,15 @@ function About({ t }: { t: Theme }) {
 function Portfolio({ t }: { t: Theme }) {
   return (
     <PsxBox title="PORTFOLIO" t={t}>
-      <p style={{ fontSize: 14, color: t.muted, fontFamily: "'IBM Plex Mono', monospace", lineHeight: 1.7, marginBottom: 12 }}>
+      <p
+        style={{
+          fontSize: 14,
+          color: t.muted,
+          fontFamily: "'IBM Plex Mono', monospace",
+          lineHeight: 1.7,
+          marginBottom: 12,
+        }}
+      >
         Currently working on something. More details soon.
       </p>
       <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -381,7 +465,15 @@ function Portfolio({ t }: { t: Theme }) {
   );
 }
 
-function ThemeToggle({ mode, onToggle, t }: { mode: string; onToggle: () => void; t: Theme }) {
+function ThemeToggle({
+  mode,
+  onToggle,
+  t,
+}: {
+  mode: string;
+  onToggle: () => void;
+  t: Theme;
+}) {
   return (
     <button
       onClick={onToggle}
@@ -411,7 +503,7 @@ function ThemeToggle({ mode, onToggle, t }: { mode: string; onToggle: () => void
 }
 
 export default function Home() {
-  const [tab, setTab] = useState<typeof TABS[number]>("DEVLOG");
+  const [tab, setTab] = useState<(typeof TABS)[number]>("DEVLOG");
   const [mode, setMode] = useState<"light" | "dark">("light");
   const t = THEMES[mode];
 
@@ -424,7 +516,11 @@ export default function Home() {
         body { background: ${t.bg}; transition: background 0.3s ease; }
       `}</style>
 
-      <ThemeToggle mode={mode} onToggle={() => setMode(mode === "light" ? "dark" : "light")} t={t} />
+      <ThemeToggle
+        mode={mode}
+        onToggle={() => setMode(mode === "light" ? "dark" : "light")}
+        t={t}
+      />
 
       <div
         style={{
@@ -464,7 +560,8 @@ export default function Home() {
                   color: t.mgsTextBright,
                   textTransform: "uppercase",
                   marginBottom: 8,
-                  textShadow: "0 0 12px rgba(100,200,100,0.4), 0 0 30px rgba(100,200,100,0.2)",
+                  textShadow:
+                    "0 0 12px rgba(100,200,100,0.4), 0 0 30px rgba(100,200,100,0.2)",
                 }}
               >
                 ITSMEIO.DEV
@@ -481,14 +578,30 @@ export default function Home() {
                 }}
               >
                 it&apos;s meio the dev
-                <span style={{ animation: "blink 1s step-end infinite", marginLeft: 2 }}>█</span>
+                <span
+                  style={{
+                    animation: "blink 1s step-end infinite",
+                    marginLeft: 2,
+                  }}
+                >
+                  █
+                </span>
               </div>
             </div>
           </MGSHeader>
           <div style={{ height: 1, background: `${t.mgsBorderAccent}88` }} />
         </header>
 
-        <nav style={{ display: "flex", justifyContent: "center", gap: 8, padding: "16px 0", marginBottom: 32, flexWrap: "wrap" }}>
+        <nav
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 8,
+            padding: "16px 0",
+            marginBottom: 32,
+            flexWrap: "wrap",
+          }}
+        >
           {TABS.map((name) => (
             <button
               key={name}
@@ -507,7 +620,8 @@ export default function Home() {
                 textTransform: "uppercase",
               }}
             >
-              {tab === name ? "▸ " : ""}{name}
+              {tab === name ? "▸ " : ""}
+              {name}
             </button>
           ))}
         </nav>
@@ -533,8 +647,25 @@ export default function Home() {
             position: "relative",
           }}
         >
-          <div style={{ position: "absolute", top: -6, left: 0, right: 0, height: 1, background: `${t.border}22` }} />
-          <p style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 10, color: t.borderSoft, letterSpacing: 2, textTransform: "uppercase" }}>
+          <div
+            style={{
+              position: "absolute",
+              top: -6,
+              left: 0,
+              right: 0,
+              height: 1,
+              background: `${t.border}22`,
+            }}
+          />
+          <p
+            style={{
+              fontFamily: "'IBM Plex Mono', monospace",
+              fontSize: 10,
+              color: t.borderSoft,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+            }}
+          >
             © 2026 ITSMEIO.DEV
           </p>
         </footer>
