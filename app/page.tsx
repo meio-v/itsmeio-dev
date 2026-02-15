@@ -91,16 +91,10 @@ type Theme = typeof THEMES.light;
 
 const POSTS = [
   {
-    date: "2026.02.10",
-    title: "Blender Low-Poly Workflow Notes",
-    body: "Documenting my process for creating low-poly character models. Keeping things under 300 polys per character with 64x64 textures. The constraint is the creativity.",
-    tags: ["BLENDER", "3D"],
-  },
-  {
-    date: "2026.02.05",
-    title: "Agentic Coding with Cursor: My Workflow",
-    body: "I've been refining how I use AI-assisted coding for frontend work. The key insight: treat it as architectural review, not code generation. Here's the process I've landed on.",
-    tags: ["TECH", "AI", "DX"],
+    date: "2026.02.15",
+    title: "Hey!",
+    body: "I've just deployed my website. I'll be using this space to add dev notes and just dump everything on my head. Maybe we will teach each other something.",
+    tags: ["GODOT", "GAMEDEV", "PSX", "BLENDER", "3D", "TECH", "AI", "DX", "GDScript", "MUSIC"],
   },
 ];
 
@@ -258,7 +252,7 @@ function PostCard({ post, t }: { post: typeof POSTS[number]; t: Theme }) {
         background: t.bg,
         transform: hovered ? "translate(-2px, -2px)" : "none",
         transition: "transform 0.1s ease",
-        cursor: "pointer",
+        cursor: "default",
         overflow: "hidden",
       }}
     >
@@ -487,17 +481,6 @@ export default function Home() {
               >
                 it&apos;s meio the dev
                 <span style={{ animation: "blink 1s step-end infinite", marginLeft: 2 }}>█</span>
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: t.mgsDate,
-                  letterSpacing: 4,
-                  textTransform: "uppercase",
-                  fontFamily: "'IBM Plex Mono', monospace",
-                }}
-              >
-                gamedev · creative · tech
               </div>
             </div>
           </MGSHeader>
