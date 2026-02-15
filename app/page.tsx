@@ -421,6 +421,7 @@ export default function Home() {
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap');
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
         ::selection { background: ${t.selectionBg}; color: ${t.selectionText}; }
+        body { background: ${t.bg}; transition: background 0.3s ease; }
       `}</style>
 
       <ThemeToggle mode={mode} onToggle={() => setMode(mode === "light" ? "dark" : "light")} t={t} />
