@@ -32,6 +32,7 @@ const THEMES = {
     mgsTextBright: "#aaeaaa",
     mgsDate: "rgba(136,204,136,0.5)",
     mgsBorderAccent: "#2a5a3a",
+    bannerDither: "#000",
     tags: {
       GODOT: { bg: "#d4edda", color: "#1e5a2d" },
       GAMEDEV: { bg: "#f0d4e8", color: "#5a1e4a" },
@@ -74,6 +75,7 @@ const THEMES = {
     mgsTextBright: "#bbffbb",
     mgsDate: "rgba(136,204,136,0.45)",
     mgsBorderAccent: "#3a7a4a",
+    bannerDither: "#666",
     tags: {
       GODOT: { bg: "#2d5a1e", color: "#7ec850" },
       GAMEDEV: { bg: "#5a1e4a", color: "#d06eb0" },
@@ -118,15 +120,11 @@ function makeDither(opacity: number) {
 }
 
 const BANDS = [
-  { density: 0.22, pct: 11 },
-  { density: 0.18, pct: 5 },
-  { density: 0.15, pct: 11 },
-  { density: 0.12, pct: 5 },
-  { density: 0.09, pct: 11 },
-  { density: 0.06, pct: 5 },
-  { density: 0.04, pct: 11 },
-  { density: 0.02, pct: 5 },
-  { density: 0, pct: 36 },
+  { density: 0.22, pct: 20 },
+  { density: 0.16, pct: 20 },
+  { density: 0.10, pct: 20 },
+  { density: 0.06, pct: 20 },
+  { density: 0.03, pct: 20 },
 ];
 
 function DitherDivider({ t }: { t: Theme }) {
@@ -147,10 +145,12 @@ function MGSHeader({
   children,
   t,
   tall,
+  bgImage,
 }: {
   children: React.ReactNode;
   t: Theme;
   tall?: boolean;
+  bgImage?: string;
 }) {
   const h = tall ? 120 : "auto";
   let topOffset = 0;
@@ -158,6 +158,22 @@ function MGSHeader({
   return (
     <div style={{ position: "relative", height: h, overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, background: t.mgsBg }} />
+
+      {bgImage && (
+        <img
+          src={bgImage}
+          alt=""
+          style={{
+            position: "absolute",
+            bottom: 0,
+            right: 0,
+            width: 220,
+            height: "auto",
+            imageRendering: "pixelated",
+            zIndex: 1,
+          }}
+        />
+      )}
 
       {BANDS.map((band, i) => {
         const top = topOffset;
@@ -171,25 +187,15 @@ function MGSHeader({
               top: `${top}%`,
               left: 0,
               right: 0,
-              height: `${band.pct}%`,
+              height: `calc(${band.pct}% + 0.5px)`,
+              backgroundColor: `${t.mgsBg}99`,
               backgroundImage: makeDither(band.density),
               backgroundRepeat: "repeat",
+              zIndex: 2,
             }}
           />
         );
       })}
-
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 1,
-          background: `${t.mgsBorderAccent}88`,
-          zIndex: 2,
-        }}
-      />
 
       <div style={{ position: "relative", zIndex: 3, height: "100%" }}>
         {children}
@@ -548,8 +554,15 @@ export default function Home() {
           transition: "background 0.3s ease, color 0.3s ease",
         }}
       >
-        <header style={{ marginBottom: 32 }}>
-          <MGSHeader t={t}>
+        <header
+          style={{
+            marginBottom: 32,
+            padding: 3,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='4' height='4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='2' height='2' fill='${encodeURIComponent(t.bannerDither)}'/%3E%3Crect x='2' y='2' width='2' height='2' fill='${encodeURIComponent(t.bannerDither)}'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "repeat",
+          }}
+        >
+          <MGSHeader t={t} bgImage="/goggles.png">
             <div style={{ padding: "48px 20px 36px", textAlign: "center" }}>
               <div
                 style={{
@@ -589,7 +602,6 @@ export default function Home() {
               </div>
             </div>
           </MGSHeader>
-          <div style={{ height: 1, background: `${t.mgsBorderAccent}88` }} />
         </header>
 
         <nav
