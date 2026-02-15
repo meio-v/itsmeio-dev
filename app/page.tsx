@@ -91,12 +91,6 @@ type Theme = typeof THEMES.light;
 
 const POSTS = [
   {
-    date: "2026.02.15",
-    title: "PSX Aesthetic for Leaf Blower Combat",
-    body: "Experimenting with vertex snapping and affine texture warping in Godot. The jitter adds so much character to the combat animations. Here's what I've learned about faking PS1 limitations in a modern engine.",
-    tags: ["GODOT", "GAMEDEV", "PSX"],
-  },
-  {
     date: "2026.02.10",
     title: "Blender Low-Poly Workflow Notes",
     body: "Documenting my process for creating low-poly character models. Keeping things under 300 polys per character with 64x64 textures. The constraint is the creativity.",
@@ -369,7 +363,7 @@ function About({ t }: { t: Theme }) {
         <div style={{ color: t.muted, fontFamily: "'IBM Plex Mono', monospace", fontSize: 14, lineHeight: 1.7, flex: 1, minWidth: 200 }}>
           <p><strong style={{ color: t.text }}>Meio</strong> — developer, creative, maker of things.</p>
           <br />
-          <p>~10 years building for the web. Currently making <strong style={{ color: t.text }}>Leaf Blower Combat</strong>, a character action game with PSX aesthetics in Godot + Blender.</p>
+          <p>~10 years building for the web. Currently exploring PSX aesthetics, creative tooling, and gamedev with Godot + Blender.</p>
           <br />
           <p>
             Also into music production, mechanical keyboards, and figuring out how to make AI tools actually useful
@@ -384,44 +378,13 @@ function About({ t }: { t: Theme }) {
 function Portfolio({ t }: { t: Theme }) {
   return (
     <PsxBox title="PORTFOLIO" t={t}>
-      <div style={{ border: `2px solid ${t.border}`, marginBottom: 16, overflow: "hidden" }}>
-        <MGSHeader t={t} tall>
-          <div
-            style={{
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderBottom: `2px solid ${t.border}`,
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 20,
-                fontWeight: 600,
-                color: t.mgsTextBright,
-                letterSpacing: 4,
-                textTransform: "uppercase",
-              }}
-            >
-              Leaf Blower Combat
-            </span>
-          </div>
-        </MGSHeader>
-        <div style={{ padding: "16px 20px" }}>
-          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: 13, fontWeight: 600, marginBottom: 8, color: t.text, textTransform: "uppercase", letterSpacing: 1 }}>
-            Character Action Game
-          </div>
-          <p style={{ fontSize: 14, color: t.muted, marginBottom: 12, fontFamily: "'IBM Plex Mono', monospace", lineHeight: 1.7 }}>
-            A PSX-styled character action game. Low-poly models, vertex jitter, and fast combat. Currently in development.
-          </p>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            <Tag t={t}>GODOT</Tag>
-            <Tag t={t}>BLENDER</Tag>
-            <Tag t={t}>GDScript</Tag>
-          </div>
-        </div>
+      <p style={{ fontSize: 14, color: t.muted, fontFamily: "'IBM Plex Mono', monospace", lineHeight: 1.7, marginBottom: 12 }}>
+        Currently working on something. More details soon.
+      </p>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <Tag t={t}>GODOT</Tag>
+        <Tag t={t}>BLENDER</Tag>
+        <Tag t={t}>GDScript</Tag>
       </div>
     </PsxBox>
   );
