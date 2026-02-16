@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "./_components/ThemeProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "its meio the dev",
+  title: "it's meio the dev",
   description: "it's meio the dev — gamedev · creative · tech",
 };
 
@@ -13,7 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

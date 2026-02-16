@@ -2,3 +2,31 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { -webkit-font-smoothing: antialiased; }
+
+/* rehype-pretty-code */
+[data-rehype-pretty-code-figure] pre {
+  overflow-x: auto;
+}
+
+[data-rehype-pretty-code-figure] code {
+  counter-reset: line;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+[data-rehype-pretty-code-figure] code > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: rgba(136,204,136,0.3);
+}
+
+[data-rehype-pretty-code-figure] code [data-highlighted-line] {
+  background: rgba(136,204,136,0.1);
+}
+
+[data-rehype-pretty-code-figure] [data-line] {
+  padding: 0 0.5rem;
+}
