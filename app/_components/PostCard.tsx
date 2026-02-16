@@ -48,7 +48,7 @@ export function PostCard({ post }: { post: PostMeta }) {
             inset: 0,
             zIndex: 2,
             pointerEvents: "none",
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='6' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='${encodeURIComponent(t.fg)}' opacity='0.4'/%3E%3Crect x='3' y='2' width='1' height='1' fill='${encodeURIComponent(t.fg)}' opacity='0.3'/%3E%3Crect x='1' y='4' width='1' height='1' fill='${encodeURIComponent(t.fg)}' opacity='0.5'/%3E%3Crect x='5' y='1' width='1' height='1' fill='${encodeURIComponent(t.fg)}' opacity='0.3'/%3E%3Crect x='4' y='5' width='1' height='1' fill='${encodeURIComponent(t.fg)}' opacity='0.4'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='6' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='${encodeURIComponent(t.text)}' opacity='0.4'/%3E%3Crect x='3' y='2' width='1' height='1' fill='${encodeURIComponent(t.text)}' opacity='0.3'/%3E%3Crect x='1' y='4' width='1' height='1' fill='${encodeURIComponent(t.text)}' opacity='0.5'/%3E%3Crect x='5' y='1' width='1' height='1' fill='${encodeURIComponent(t.text)}' opacity='0.3'/%3E%3Crect x='4' y='5' width='1' height='1' fill='${encodeURIComponent(t.text)}' opacity='0.4'/%3E%3C/svg%3E")`,
             backgroundRepeat: "repeat",
             animation: hovered
               ? "staticNoise 0.25s steps(5) forwards"
