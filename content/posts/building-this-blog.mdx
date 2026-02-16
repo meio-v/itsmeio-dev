@@ -1,0 +1,48 @@
+---
+title: "Hey!"
+date: "2026.02.15"
+excerpt: "I've just deployed my website. I'll be using this space to add dev notes and just dump everything on my head. Maybe we will teach each other something."
+tags:
+  - GODOT
+  - GAMEDEV
+  - PSX
+  - BLENDER
+  - "3D"
+  - TECH
+  - AI
+  - DX
+  - GDScript
+  - MUSIC
+---
+
+I've just deployed my website. I'll be using this space to add dev notes and just dump everything on my head. Maybe we will teach each other something.
+
+## What this is
+
+This is a dev blog — a place to document the things I'm building, breaking, and figuring out. Expect posts about:
+
+- **PSX-style game development** with Godot and Blender
+- **Creative tooling** and developer experience
+- **Web tech** — the stack behind this site and other projects
+- **Music production** and sound design
+- **AI tools** — making them actually useful
+
+## The stack
+
+This site is built with **Next.js 16**, styled with inline CSS (yes, really), and uses an MDX pipeline for blog posts. The aesthetic is inspired by PlayStation 1 era UIs and Metal Gear Solid codec screens.
+
+```typescript
+// the theme system is just two big objects
+const THEMES = {
+  light: { bg: "#fff", text: "#000", mgsText: "#88cc88" },
+  dark: { bg: "#1a1a1a", text: "#fff", mgsText: "#88cc88" },
+};
+```
+
+The dither patterns are generated as inline SVGs — no image files needed. Everything renders server-side where possible, with client components only for interactivity.
+
+## What's next
+
+More posts. More projects. More chaos.
+
+Stay tuned.
