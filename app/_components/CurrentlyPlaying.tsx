@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 
 const GAME = {
@@ -33,6 +33,15 @@ export function CurrentlyPlaying() {
   const [expanded, setExpanded] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [hoverLabel, setHoverLabel] = useState(false);
+  const [canHover, setCanHover] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover)");
+    setCanHover(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setCanHover(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
 
   return (
     <div style={{ border: `2px solid ${t.border}`, overflow: "hidden" }}>
@@ -136,8 +145,8 @@ export function CurrentlyPlaying() {
             <span style={{ display: "flex", alignItems: "center", gap: 4, position: "relative" }}>
               <button
                 onClick={() => setExpanded(!expanded)}
-                onMouseEnter={() => { setHoverLabel(true); setShowTooltip(true); }}
-                onMouseLeave={() => { setHoverLabel(false); setShowTooltip(false); }}
+                onMouseEnter={canHover ? () => { setHoverLabel(true); setShowTooltip(true); } : undefined}
+                onMouseLeave={canHover ? () => { setHoverLabel(false); setShowTooltip(false); } : undefined}
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
                   fontSize: 9,
@@ -173,7 +182,8 @@ export function CurrentlyPlaying() {
                 </span>
                 {":"}
               </button>
-              <span
+              {canHover && (
+                <span
                   style={{
                     position: "absolute",
                     bottom: "calc(100% + 8px)",
@@ -228,6 +238,7 @@ export function CurrentlyPlaying() {
                     }}
                   />
                 </span>
+              )}
             </span>
             {!expanded && (
               <span
