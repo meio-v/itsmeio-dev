@@ -1,98 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
 import { useTheme } from "./ThemeProvider";
 import { MGSHeader } from "./MGSHeader";
 import { PsxBox } from "./PsxBox";
-import { Tag } from "./Tag";
 import { DitherDivider } from "./DitherDivider";
 import { PostCard } from "./PostCard";
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
 import { PageShell } from "./PageShell";
 import type { PostMeta } from "@/lib/posts";
 
-const TABS = ["DEVLOG", "ABOUT", "PORTFOLIO"] as const;
-
-function About() {
-  const { t } = useTheme();
-  return (
-    <PsxBox title="ABOUT">
-      <div
-        style={{
-          display: "flex",
-          gap: 20,
-          alignItems: "flex-start",
-          flexWrap: "wrap",
-        }}
-      >
-        <img
-          src="/me.png"
-          alt="Meio"
-          style={{
-            width: 80,
-            height: 80,
-            border: `2px solid ${t.border}`,
-            objectFit: "cover",
-            flexShrink: 0,
-            imageRendering: "pixelated",
-          }}
-        />
-        <div
-          style={{
-            color: t.muted,
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 14,
-            lineHeight: 1.7,
-            flex: 1,
-            minWidth: 200,
-          }}
-        >
-          <p>
-            <strong style={{ color: t.text }}>Meio</strong> — Developer,
-            husband, cat dad of 5.
-          </p>
-          <br />
-          <p>
-            ~10 years building software as a service, as a service ;)
-          </p>
-          <br />
-          <p>
-            Currently exploring Godot and Blender. Also into weightlifting,
-            mechanical keyboards, and actually figuring out how to make AI
-            tools useful. This blog explores both the technical and emotional
-            side of working in tech.😉
-          </p>
-        </div>
-      </div>
-    </PsxBox>
-  );
-}
-
-function Portfolio() {
-  return (
-    <PsxBox title="PORTFOLIO">
-      <p
-        style={{
-          fontSize: 14,
-          color: "var(--psx-muted)",
-          fontFamily: "'IBM Plex Mono', monospace",
-          lineHeight: 1.7,
-          marginBottom: 12,
-        }}
-      >
-        Currently working on something. More details soon.
-      </p>
-      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-        <Tag>GODOT</Tag>
-        <Tag>BLENDER</Tag>
-        <Tag>GDScript</Tag>
-      </div>
-    </PsxBox>
-  );
-}
+const NAV_LINKS = [
+  { label: "DEVLOG", href: "/" },
+  { label: "ABOUT", href: "/about" },
+  { label: "PORTFOLIO", href: "/portfolio" },
+] as const;
 
 export function HomeClient({ posts }: { posts: PostMeta[] }) {
-  const [tab, setTab] = useState<(typeof TABS)[number]>("DEVLOG");
   const { t } = useTheme();
 
   return (
@@ -157,47 +81,41 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
           flexWrap: "wrap",
         }}
       >
-        {TABS.map((name) => (
-          <button
-            key={name}
-            onClick={() => setTab(name)}
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 11,
-              fontWeight: 600,
-              letterSpacing: 2,
-              color: tab === name ? t.navActiveText : t.faint,
-              background: tab === name ? t.navActive : "transparent",
-              border: `1px solid ${tab === name ? t.border : t.borderSoft}`,
-              padding: "8px 16px",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-              textTransform: "uppercase",
-            }}
-          >
-            {tab === name ? "\u25B8 " : ""}
-            {name}
-          </button>
-        ))}
+        {NAV_LINKS.map((link) => {
+          const isActive = link.href === "/";
+          return (
+            <Link
+              key={link.label}
+              href={link.href}
+              style={{
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: 2,
+                color: isActive ? t.navActiveText : t.faint,
+                background: isActive ? t.navActive : "transparent",
+                border: `1px solid ${isActive ? t.border : t.borderSoft}`,
+                padding: "8px 16px",
+                cursor: "pointer",
+                transition: "all 0.15s ease",
+                textTransform: "uppercase",
+                textDecoration: "none",
+              }}
+            >
+              {isActive ? "\u25B8 " : ""}
+              {link.label}
+            </Link>
+          );
+        })}
       </nav>
 
-      {tab === "DEVLOG" && (
-        <>
-          <PsxBox title="LATEST POSTS">
-            {posts.map((p) => (
-              <PostCard key={p.slug} post={p} />
-            ))}
-          </PsxBox>
-          <DitherDivider />
-          <About />
-          <DitherDivider />
-          <CurrentlyPlaying />
-          <DitherDivider />
-          <Portfolio />
-        </>
-      )}
-      {tab === "ABOUT" && <About />}
-      {tab === "PORTFOLIO" && <Portfolio />}
+      <PsxBox title="LATEST POSTS">
+        {posts.map((p) => (
+          <PostCard key={p.slug} post={p} />
+        ))}
+      </PsxBox>
+      <DitherDivider />
+      <CurrentlyPlaying />
     </PageShell>
   );
 }
