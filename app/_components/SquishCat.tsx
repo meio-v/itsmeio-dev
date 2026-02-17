@@ -112,6 +112,16 @@ interface RippleItem {
   y: number;
 }
 
+interface ConfettiItem {
+  id: number;
+  x: number;
+  delay: number;
+  duration: number;
+  rotation: number;
+  size: number;
+  color: string;
+}
+
 function getLevel(e: EngineState) {
   if (e.feverMode) return LEVELS[4];
   for (let i = LEVELS.length - 1; i >= 0; i--) {
@@ -182,13 +192,17 @@ export function SquishCat() {
     globalVisitors: 0,
   });
 
+  const cardRef = useRef<HTMLDivElement>(null);
   const [flashKey, setFlashKey] = useState(0);
   const [impactKey, setImpactKey] = useState(0);
   const [isHit, setIsHit] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
   const [floats, setFloats] = useState<FloatItem[]>([]);
   const [ripples, setRipples] = useState<RippleItem[]>([]);
+  const [confetti, setConfetti] = useState<ConfettiItem[]>([]);
   const floatIdRef = useRef(0);
   const rippleIdRef = useRef(0);
+  const confettiIdRef = useRef(0);
   const hitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const updateDisplay = useCallback(() => {
@@ -288,6 +302,29 @@ export function SquishCat() {
         }, i * 50);
       }
 
+      // Continuous rainbow confetti rain throughout fever
+      const rainbowColors = ["#e06060", "#e0a060", "#f0c040", "#60c060", "#40a0e0", "#8060d0", "#d060a0"];
+      const spawnWave = () => {
+        const wave: ConfettiItem[] = Array.from({ length: 30 }, () => ({
+          id: ++confettiIdRef.current,
+          x: Math.random() * 100,
+          delay: Math.random() * 0.2,
+          duration: 0.4 + Math.random() * 0.5,
+          rotation: 180 + Math.random() * 540,
+          size: 2 + Math.random() * 6,
+          color: rainbowColors[Math.floor(Math.random() * rainbowColors.length)],
+        }));
+        setConfetti((prev) => [...prev, ...wave]);
+        const ids = wave.map((w) => w.id);
+        setTimeout(() => setConfetti((prev) => prev.filter((c) => !ids.includes(c.id))), 1500);
+      };
+      spawnWave();
+      const confettiInterval = setInterval(spawnWave, 200);
+      setTimeout(() => {
+        clearInterval(confettiInterval);
+        setTimeout(() => setConfetti([]), 2000);
+      }, FEVER_DURATION);
+
       if (e.feverTimer) clearTimeout(e.feverTimer);
       e.feverTimer = setTimeout(() => {
         e.feverMode = false;
@@ -348,6 +385,7 @@ export function SquishCat() {
 
       setFlashKey((k) => k + 1);
       setImpactKey((k) => k + 1);
+      setShakeKey((k) => k + 1);
 
       // Get click position
       let clientX: number | undefined, clientY: number | undefined;
@@ -441,13 +479,13 @@ export function SquishCat() {
 
   const catBg =
     tier === "fever"
-      ? "#1a0e04"
+      ? "#f0c040"
       : tier === "fire"
-        ? "#140c04"
+        ? "#e0a060"
         : tier === "hot"
-          ? "#100e06"
+          ? "#c4a46c"
           : tier === "active"
-            ? "#060f08"
+            ? greenAccent
             : t.mgsBg;
 
   const barFillBg =
@@ -500,6 +538,12 @@ export function SquishCat() {
   return (
     <>
       <DitherDivider />
+      <div
+        key={`shake-${shakeKey}`}
+        style={{
+          animation: shakeKey > 0 ? "feverShake 0.15s ease-in-out" : "none",
+        }}
+      >
       <WidgetCard
         title="SQUISH THE CAT"
         right={
@@ -528,6 +572,10 @@ export function SquishCat() {
           boxShadow: isFever
             ? "0 0 20px rgba(240,192,64,0.15), 0 0 40px rgba(224,96,96,0.08)"
             : "none",
+          overflow: "hidden",
+          ...(isFever
+            ? { animation: "rainbowBg 0.15s linear infinite" }
+            : {}),
         }}
       >
         {/* CRT flash overlay */}
@@ -542,6 +590,29 @@ export function SquishCat() {
               flashKey > 0 ? "crtFlash 0.2s steps(4) forwards" : "none",
           }}
         />
+
+        {/* Rainbow confetti rain */}
+        <div ref={cardRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 25, overflow: "hidden" }}>
+          {confetti.map((c) => (
+            <div
+              key={c.id}
+              style={{
+                position: "absolute",
+                left: `${c.x}%`,
+                top: 0,
+                width: c.size,
+                height: c.size * 1.4,
+                background: c.color,
+                borderRadius: 1,
+                pointerEvents: "none",
+                opacity: 0,
+                animation: `confettiFall ${c.duration}s ${c.delay}s ease-in forwards`,
+                ["--confetti-rot" as string]: `${c.rotation}deg`,
+                ["--confetti-dist" as string]: `${cardRef.current?.offsetHeight ?? 400}px`,
+              }}
+            />
+          ))}
+        </div>
 
         {/* Main area */}
         <div
@@ -643,7 +714,7 @@ export function SquishCat() {
                   : {}),
               }}
             >
-              {formatCount(display.totalSquishes)}
+              {formatCount(Math.max(display.globalTotal, display.totalSquishes))}
             </div>
             <div
               style={{
@@ -661,7 +732,17 @@ export function SquishCat() {
               >
                 {"\u25B8"}
               </span>{" "}
-              tap to squish
+              {display.globalVisitors > 0 ? (
+                <>
+                  across{" "}
+                  <span style={{ color: greenAccent, fontWeight: 600 }}>
+                    {display.globalVisitors.toLocaleString("en-US")}
+                  </span>{" "}
+                  visitors — tap to squish
+                </>
+              ) : (
+                "tap to squish"
+              )}
             </div>
           </div>
 
@@ -831,35 +912,8 @@ export function SquishCat() {
           </div>
         </div>
 
-        {/* Global retro hit counter */}
-        {display.globalTotal > 0 && (
-          <div
-            style={{
-              padding: "8px 16px 10px",
-              borderTop: `1px dashed ${t.borderSoft}`,
-              textAlign: "center",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                letterSpacing: 1,
-                color: t.faint,
-              }}
-            >
-              <span style={{ color: greenAccent, fontWeight: 600 }}>
-                {formatCount(display.globalTotal)}
-              </span>{" "}
-              squishes across{" "}
-              <span style={{ color: greenAccent, fontWeight: 600 }}>
-                {display.globalVisitors.toLocaleString("en-US")}
-              </span>{" "}
-              visitors
-            </span>
-          </div>
-        )}
       </WidgetCard>
+      </div>
 
       {/* Ripple elements (fixed position, outside card) */}
       {ripples.map((r) => (

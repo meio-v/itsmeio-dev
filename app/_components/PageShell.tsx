@@ -77,6 +77,29 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           0% { background-position: 0% 0; }
           100% { background-position: 200% 0; }
         }
+        @keyframes feverShake {
+          0%, 100% { transform: translateX(0); }
+          10% { transform: translateX(-2px) rotate(-0.5deg); }
+          30% { transform: translateX(2px) rotate(0.5deg); }
+          50% { transform: translateX(-1px) rotate(-0.3deg); }
+          70% { transform: translateX(1px) rotate(0.3deg); }
+          90% { transform: translateX(-1px); }
+        }
+        @keyframes rainbowBg {
+          0%   { background-color: rgba(224,96,96,0.15); }
+          14%  { background-color: rgba(224,160,96,0.15); }
+          28%  { background-color: rgba(240,192,64,0.15); }
+          42%  { background-color: rgba(96,192,96,0.15); }
+          57%  { background-color: rgba(64,160,224,0.15); }
+          71%  { background-color: rgba(128,96,208,0.15); }
+          85%  { background-color: rgba(208,96,160,0.15); }
+          100% { background-color: rgba(224,96,96,0.15); }
+        }
+        @keyframes confettiFall {
+          0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+          90% { opacity: 1; }
+          100% { transform: translateY(var(--confetti-dist, 400px)) rotate(var(--confetti-rot, 360deg)); opacity: 0; }
+        }
         ::selection { background: ${t.selectionBg}; color: ${t.selectionText}; }
         body { background: ${t.bg}; transition: background 0.3s ease; }
       `}</style>
