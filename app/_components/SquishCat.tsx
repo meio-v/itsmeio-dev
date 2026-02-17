@@ -441,13 +441,13 @@ export function SquishCat() {
 
   const catBg =
     tier === "fever"
-      ? "#1a0e04"
+      ? "#f0c040"
       : tier === "fire"
-        ? "#140c04"
+        ? "#e0a060"
         : tier === "hot"
-          ? "#100e06"
+          ? "#c4a46c"
           : tier === "active"
-            ? "#060f08"
+            ? greenAccent
             : t.mgsBg;
 
   const barFillBg =
