@@ -220,6 +220,48 @@ function MdxAnchor({
   );
 }
 
+function MdxImage({
+  src,
+  alt,
+}: React.ImgHTMLAttributes<HTMLImageElement>) {
+  return (
+    <span
+      style={{
+        display: "block",
+        margin: "24px 0",
+        border: "2px solid var(--psx-border)",
+        padding: 3,
+        backgroundImage:
+          'url("data:image/svg+xml,%3Csvg width=\'4\' height=\'4\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Crect x=\'0\' y=\'0\' width=\'2\' height=\'2\' fill=\'rgba(100,190,100,0.15)\'/%3E%3Crect x=\'2\' y=\'2\' width=\'2\' height=\'2\' fill=\'rgba(100,190,100,0.15)\'/%3E%3C/svg%3E")',
+        backgroundRepeat: "repeat",
+      }}
+    >
+      <img
+        src={src}
+        alt={alt ?? ""}
+        style={{
+          display: "block",
+          width: "100%",
+          height: "auto",
+        }}
+      />
+    </span>
+  );
+}
+
+function MdxEm({ children }: { children?: React.ReactNode }) {
+  return (
+    <em
+      style={{
+        fontStyle: "italic",
+        color: "var(--psx-muted)",
+      }}
+    >
+      {children}
+    </em>
+  );
+}
+
 export const mdxComponents: MDXComponents = {
   h1: heading(1),
   h2: heading(2),
@@ -236,4 +278,6 @@ export const mdxComponents: MDXComponents = {
   pre: MdxPre,
   hr: MdxHr,
   a: MdxAnchor,
+  img: MdxImage,
+  em: MdxEm,
 };
