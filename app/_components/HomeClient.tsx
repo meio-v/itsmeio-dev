@@ -48,18 +48,19 @@ function About() {
           }}
         >
           <p>
-            <strong style={{ color: t.text }}>Meio</strong> — developer,
-            creative, maker of things.
+            <strong style={{ color: t.text }}>Meio</strong> — Developer,
+            husband, cat dad of 5.
           </p>
           <br />
           <p>
-            ~10 years building for the web. Currently exploring PSX aesthetics,
-            creative tooling, and gamedev with Godot + Blender.
+            ~10 years building software as a service, as a service ;)
           </p>
           <br />
           <p>
-            Also into music production, mechanical keyboards, and figuring out
-            how to make AI tools actually useful
+            Currently exploring Godot and Blender. Also into weightlifting,
+            mechanical keyboards, and actually figuring out how to make AI
+            tools useful. This blog explores both the technical and emotional
+            side of working in tech.😉
           </p>
         </div>
       </div>
