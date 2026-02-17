@@ -643,7 +643,7 @@ export function SquishCat() {
                   : {}),
               }}
             >
-              {formatCount(display.totalSquishes)}
+              {formatCount(Math.max(display.globalTotal, display.totalSquishes))}
             </div>
             <div
               style={{
@@ -661,7 +661,17 @@ export function SquishCat() {
               >
                 {"\u25B8"}
               </span>{" "}
-              tap to squish
+              {display.globalVisitors > 0 ? (
+                <>
+                  across{" "}
+                  <span style={{ color: greenAccent, fontWeight: 600 }}>
+                    {display.globalVisitors.toLocaleString("en-US")}
+                  </span>{" "}
+                  visitors — tap to squish
+                </>
+              ) : (
+                "tap to squish"
+              )}
             </div>
           </div>
 
@@ -831,34 +841,6 @@ export function SquishCat() {
           </div>
         </div>
 
-        {/* Global retro hit counter */}
-        {display.globalTotal > 0 && (
-          <div
-            style={{
-              padding: "8px 16px 10px",
-              borderTop: `1px dashed ${t.borderSoft}`,
-              textAlign: "center",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                letterSpacing: 1,
-                color: t.faint,
-              }}
-            >
-              <span style={{ color: greenAccent, fontWeight: 600 }}>
-                {formatCount(display.globalTotal)}
-              </span>{" "}
-              squishes across{" "}
-              <span style={{ color: greenAccent, fontWeight: 600 }}>
-                {display.globalVisitors.toLocaleString("en-US")}
-              </span>{" "}
-              visitors
-            </span>
-          </div>
-        )}
       </WidgetCard>
 
       {/* Ripple elements (fixed position, outside card) */}
