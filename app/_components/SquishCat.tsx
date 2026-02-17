@@ -693,7 +693,7 @@ export function SquishCat() {
                 marginBottom: 4,
               }}
             >
-              {"\u25B8"} ALL-TIME SQUISHES
+              {"\u25B8"} YOUR SQUISHES
             </div>
             <div
               style={{
@@ -714,7 +714,7 @@ export function SquishCat() {
                   : {}),
               }}
             >
-              {formatCount(Math.max(display.globalTotal, display.totalSquishes))}
+              {formatCount(display.totalSquishes)}
             </div>
             <div
               style={{
@@ -732,17 +732,7 @@ export function SquishCat() {
               >
                 {"\u25B8"}
               </span>{" "}
-              {display.globalVisitors > 0 ? (
-                <>
-                  across{" "}
-                  <span style={{ color: greenAccent, fontWeight: 600 }}>
-                    {display.globalVisitors.toLocaleString("en-US")}
-                  </span>{" "}
-                  visitors — tap to squish
-                </>
-              ) : (
-                "tap to squish"
-              )}
+              tap to squish
             </div>
           </div>
 
@@ -768,101 +758,69 @@ export function SquishCat() {
             borderTop: `1px dashed ${t.borderSoft}`,
           }}
         >
-          <div style={{ flex: 1, padding: "10px 16px" }}>
+          {[
+            {
+              label: "ALL-TIME",
+              value: formatCount(Math.max(display.globalTotal, display.totalSquishes)),
+              color: t.text,
+            },
+            {
+              label: "VISITORS",
+              value: display.globalVisitors > 0 ? display.globalVisitors.toLocaleString("en-US") : "—",
+              color: t.text,
+            },
+            {
+              label: "MULTIPLIER",
+              value: `x${display.multiplier}`,
+              color: multiColor,
+              style: isFever
+                ? {
+                    textShadow: "0 0 8px rgba(240,192,64,0.4)",
+                    animation: "feverPulse 0.3s ease-in-out infinite alternate",
+                  }
+                : {},
+            },
+            {
+              label: "SQUISH/SEC",
+              value: display.tapsPerSec.toFixed(1),
+              color: t.text,
+            },
+          ].map((stat, i) => (
             <div
+              key={stat.label}
               style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 8,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                color: labelColor,
-                marginBottom: 4,
+                flex: 1,
+                padding: "10px 12px",
+                ...(i > 0 ? { borderLeft: `1px dashed ${t.borderSoft}` } : {}),
               }}
             >
-              YOUR SQUISHES
+              <div
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 7,
+                  letterSpacing: 1.5,
+                  textTransform: "uppercase",
+                  color: labelColor,
+                  marginBottom: 4,
+                }}
+              >
+                {stat.label}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: stat.color,
+                  fontVariantNumeric: "tabular-nums",
+                  transition: "color 0.2s",
+                  ...((stat as { style?: React.CSSProperties }).style ?? {}),
+                }}
+              >
+                {stat.value}
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 14,
-                fontWeight: 600,
-                color: t.text,
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {formatCount(display.sessionSquishes)}
-            </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              padding: "10px 16px",
-              borderLeft: `1px dashed ${t.borderSoft}`,
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 8,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                color: labelColor,
-                marginBottom: 4,
-              }}
-            >
-              MULTIPLIER
-            </div>
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 14,
-                fontWeight: 600,
-                color: multiColor,
-                fontVariantNumeric: "tabular-nums",
-                transition: "color 0.2s",
-                ...(isFever
-                  ? {
-                      textShadow: "0 0 8px rgba(240,192,64,0.4)",
-                      animation:
-                        "feverPulse 0.3s ease-in-out infinite alternate",
-                    }
-                  : {}),
-              }}
-            >
-              x{display.multiplier}
-            </div>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              padding: "10px 16px",
-              borderLeft: `1px dashed ${t.borderSoft}`,
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 8,
-                letterSpacing: 2,
-                textTransform: "uppercase",
-                color: labelColor,
-                marginBottom: 4,
-              }}
-            >
-              SQUISHES/SEC
-            </div>
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 14,
-                fontWeight: 600,
-                color: t.text,
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {display.tapsPerSec.toFixed(1)}
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Intensity bar */}
