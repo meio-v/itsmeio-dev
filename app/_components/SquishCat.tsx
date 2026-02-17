@@ -196,7 +196,7 @@ export function SquishCat() {
   const [flashKey, setFlashKey] = useState(0);
   const [impactKey, setImpactKey] = useState(0);
   const [isHit, setIsHit] = useState(false);
-  const [shakeKey, setShakeKey] = useState(0);
+  const shakeRef = useRef<HTMLDivElement>(null);
   const [floats, setFloats] = useState<FloatItem[]>([]);
   const [ripples, setRipples] = useState<RippleItem[]>([]);
   const [confetti, setConfetti] = useState<ConfettiItem[]>([]);
@@ -385,7 +385,12 @@ export function SquishCat() {
 
       setFlashKey((k) => k + 1);
       setImpactKey((k) => k + 1);
-      setShakeKey((k) => k + 1);
+      if (eng.feverMode && shakeRef.current) {
+        const el = shakeRef.current;
+        el.style.animation = "none";
+        el.offsetHeight; // force reflow
+        el.style.animation = "feverShake 0.15s ease-in-out";
+      }
 
       // Get click position
       let clientX: number | undefined, clientY: number | undefined;
@@ -538,12 +543,7 @@ export function SquishCat() {
   return (
     <>
       <DitherDivider />
-      <div
-        key={`shake-${shakeKey}`}
-        style={{
-          animation: shakeKey > 0 && isFever ? "feverShake 0.15s ease-in-out" : "none",
-        }}
-      >
+      <div ref={shakeRef}>
       <WidgetCard
         title="SQUISH THE CAT"
         right={
