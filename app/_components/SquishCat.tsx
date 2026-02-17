@@ -541,7 +541,7 @@ export function SquishCat() {
       <div
         key={`shake-${shakeKey}`}
         style={{
-          animation: shakeKey > 0 ? "feverShake 0.15s ease-in-out" : "none",
+          animation: shakeKey > 0 && isFever ? "feverShake 0.15s ease-in-out" : "none",
         }}
       >
       <WidgetCard
