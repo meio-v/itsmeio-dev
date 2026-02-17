@@ -215,7 +215,7 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
           backgroundRepeat: "repeat",
         }}
       >
-        <MGSHeader bgImage="/goggles.png">
+        <MGSHeader bgImage="/goggles.png" tall>
           <div style={{ padding: "48px 20px 36px", textAlign: "center" }}>
             <div
               style={{

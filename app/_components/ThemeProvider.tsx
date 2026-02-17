@@ -20,6 +20,7 @@ export function useTheme() {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const t = THEMES[mode];
+  const tc = t.tagCategories;
   const toggleMode = useCallback(
     () => setMode((m) => (m === "light" ? "dark" : "light")),
     []
@@ -54,6 +55,20 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             "--psx-nav-active": t.navActive,
             "--psx-nav-active-text": t.navActiveText,
             "--psx-banner-dither": t.bannerDither,
+
+            // Tag categories (semantic ghost tags)
+            "--tag-engine": tc.engine.color,
+            "--tag-engine-bg": tc.engine.bg,
+            "--tag-engine-hover": tc.engine.hoverBg,
+            "--tag-creative": tc.creative.color,
+            "--tag-creative-bg": tc.creative.bg,
+            "--tag-creative-hover": tc.creative.hoverBg,
+            "--tag-meta": tc.meta.color,
+            "--tag-meta-bg": tc.meta.bg,
+            "--tag-meta-hover": tc.meta.hoverBg,
+            "--tag-personal": tc.personal.color,
+            "--tag-personal-bg": tc.personal.bg,
+            "--tag-personal-hover": tc.personal.hoverBg,
           } as React.CSSProperties
         }
       >

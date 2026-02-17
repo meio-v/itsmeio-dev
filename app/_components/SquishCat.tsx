@@ -373,7 +373,7 @@ export function SquishCat() {
       // Persist
       try {
         localStorage.setItem(STORAGE_KEY, eng.totalSquishes.toString());
-      } catch {}
+      } catch { }
 
       // Sync to server
       addSquishes(added);
@@ -544,333 +544,333 @@ export function SquishCat() {
     <>
       <DitherDivider />
       <div ref={shakeRef}>
-      <WidgetCard
-        title="SQUISH THE CAT"
-        right={
-          <span
-            style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 8,
-              letterSpacing: 1.5,
-              padding: "2px 8px",
-              textTransform: "uppercase",
-              border: `1px solid ${t.borderSoft}`,
-              color: rankColor,
-              fontWeight: 500,
-              transition: "color 0.2s",
-            }}
-          >
-            {display.levelName}
-          </span>
-        }
-        containerStyle={{
-          position: "relative",
-          userSelect: "none",
-          WebkitTapHighlightColor: "transparent",
-          transition: "box-shadow 0.3s, border-color 0.3s",
-          borderColor: isFever ? "rgba(224,160,96,0.3)" : t.border,
-          boxShadow: isFever
-            ? "0 0 20px rgba(240,192,64,0.15), 0 0 40px rgba(224,96,96,0.08)"
-            : "none",
-          overflow: "hidden",
-          ...(isFever
-            ? { animation: "rainbowBg 0.15s linear infinite" }
-            : {}),
-        }}
-      >
-        {/* CRT flash overlay */}
-        <div
-          key={`flash-${flashKey}`}
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 20,
-            pointerEvents: "none",
-            animation:
-              flashKey > 0 ? "crtFlash 0.2s steps(4) forwards" : "none",
-          }}
-        />
-
-        {/* Rainbow confetti rain */}
-        <div ref={cardRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 25, overflow: "hidden" }}>
-          {confetti.map((c) => (
-            <div
-              key={c.id}
-              style={{
-                position: "absolute",
-                left: `${c.x}%`,
-                top: 0,
-                width: c.size,
-                height: c.size * 1.4,
-                background: c.color,
-                borderRadius: 1,
-                pointerEvents: "none",
-                opacity: 0,
-                animation: `confettiFall ${c.duration}s ${c.delay}s ease-in forwards`,
-                ["--confetti-rot" as string]: `${c.rotation}deg`,
-                ["--confetti-dist" as string]: `${cardRef.current?.offsetHeight ?? 400}px`,
-              }}
-            />
-          ))}
-        </div>
-
-        {/* Main area */}
-        <div
-          style={{
-            padding: "20px 16px",
-            display: "flex",
-            gap: 16,
-            alignItems: "center",
-            position: "relative",
-          }}
-        >
-          {/* Cat image container */}
-          <div
-            onClick={handleTap}
-            onTouchEnd={handleTap}
-            style={{
-              width: 64,
-              height: 64,
-              flexShrink: 0,
-              border: `1px solid ${t.borderSoft}`,
-              background: catBg,
-              position: "relative",
-              overflow: "hidden",
-              cursor: "pointer",
-              touchAction: "manipulation",
-              transition: "background 0.3s",
-            }}
-          >
-            <img
-              src={isHit ? "/cat_hit.png" : "/cat_idle.png"}
-              alt="cat"
-              draggable={false}
-              style={{
-                width: "100%",
-                height: "100%",
-                imageRendering: "pixelated",
-                display: "block",
-                userSelect: "none",
-              }}
-            />
-            {/* Scanline overlay */}
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)",
-                pointerEvents: "none",
-              }}
-            />
-            {/* Impact ring */}
-            <div
-              key={`impact-${impactKey}`}
-              style={{
-                position: "absolute",
-                inset: 0,
-                border: `2px solid ${greenBright}`,
-                pointerEvents: "none",
-                zIndex: 5,
-                animation:
-                  impactKey > 0
-                    ? "impactPop 0.25s ease-out forwards"
-                    : "none",
-                opacity: impactKey > 0 ? undefined : 0,
-              }}
-            />
-          </div>
-
-          {/* Counter area */}
-          <div style={{ flex: 1 }}>
-            <div
+        <WidgetCard
+          title="SQUISH THE CAT"
+          right={
+            <span
               style={{
                 fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 9,
-                letterSpacing: 2,
-                color: t.faint,
+                fontSize: 8,
+                letterSpacing: 1.5,
+                padding: "2px 8px",
                 textTransform: "uppercase",
-                marginBottom: 4,
+                border: `1px solid ${t.borderSoft}`,
+                color: rankColor,
+                fontWeight: 500,
+                transition: "color 0.2s",
               }}
             >
-              {"\u25B8"} YOUR SQUISHES
-            </div>
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: "clamp(28px, 7vw, 40px)",
-                fontWeight: 700,
-                color: countColor,
-                letterSpacing: 2,
-                fontVariantNumeric: "tabular-nums",
-                lineHeight: 1,
-                textShadow: countShadow,
-                transition: "color 0.2s, text-shadow 0.2s",
-                ...(isFever
-                  ? {
-                      animation:
-                        "feverPulse 0.3s ease-in-out infinite alternate",
-                    }
-                  : {}),
-              }}
-            >
-              {formatCount(display.totalSquishes)}
-            </div>
-            <div
-              style={{
-                fontFamily: "'IBM Plex Mono', monospace",
-                fontSize: 10,
-                color: t.faint,
-                marginTop: 6,
-                letterSpacing: 1,
-              }}
-            >
-              <span
-                style={{
-                  color: tier === "idle" ? t.faint : greenAccent,
-                }}
-              >
-                {"\u25B8"}
-              </span>{" "}
-              tap to squish
-            </div>
-          </div>
-
-          {/* Floating +N elements */}
-          {floats.map((f) => (
-            <div
-              key={f.id}
-              style={{
-                ...floatStyle(f.tier),
-                left: `${f.x}%`,
-                top: `${f.y}%`,
-              }}
-            >
-              +{formatCount(f.amount)}
-            </div>
-          ))}
-        </div>
-
-        {/* Stats bar */}
-        <div
-          style={{
-            display: "flex",
-            borderTop: `1px dashed ${t.borderSoft}`,
+              {display.levelName}
+            </span>
+          }
+          containerStyle={{
+            position: "relative",
+            userSelect: "none",
+            WebkitTapHighlightColor: "transparent",
+            transition: "box-shadow 0.3s, border-color 0.3s",
+            borderColor: isFever ? "rgba(224,160,96,0.3)" : t.border,
+            boxShadow: isFever
+              ? "0 0 20px rgba(240,192,64,0.15), 0 0 40px rgba(224,96,96,0.08)"
+              : "none",
+            overflow: "hidden",
+            ...(isFever
+              ? { animation: "rainbowBg 0.15s linear infinite" }
+              : {}),
           }}
         >
-          {[
-            {
-              label: "ALL-TIME",
-              value: formatCount(Math.max(display.globalTotal, display.totalSquishes)),
-              color: t.text,
-            },
-            {
-              label: "VISITORS",
-              value: display.globalVisitors > 0 ? display.globalVisitors.toLocaleString("en-US") : "—",
-              color: t.text,
-            },
-            {
-              label: "MULTIPLIER",
-              value: `x${display.multiplier}`,
-              color: multiColor,
-              style: isFever
-                ? {
-                    textShadow: "0 0 8px rgba(240,192,64,0.4)",
-                    animation: "feverPulse 0.3s ease-in-out infinite alternate",
-                  }
-                : {},
-            },
-            {
-              label: "SQUISH/SEC",
-              value: display.tapsPerSec.toFixed(1),
-              color: t.text,
-            },
-          ].map((stat, i) => (
+          {/* CRT flash overlay */}
+          <div
+            key={`flash-${flashKey}`}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 20,
+              pointerEvents: "none",
+              animation:
+                flashKey > 0 ? "crtFlash 0.2s steps(4) forwards" : "none",
+            }}
+          />
+
+          {/* Rainbow confetti rain */}
+          <div ref={cardRef} style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 25, overflow: "hidden" }}>
+            {confetti.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  position: "absolute",
+                  left: `${c.x}%`,
+                  top: 0,
+                  width: c.size,
+                  height: c.size * 1.4,
+                  background: c.color,
+                  borderRadius: 1,
+                  pointerEvents: "none",
+                  opacity: 0,
+                  animation: `confettiFall ${c.duration}s ${c.delay}s ease-in forwards`,
+                  ["--confetti-rot" as string]: `${c.rotation}deg`,
+                  ["--confetti-dist" as string]: `${cardRef.current?.offsetHeight ?? 400}px`,
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Main area */}
+          <div
+            style={{
+              padding: "20px 16px",
+              display: "flex",
+              gap: 16,
+              alignItems: "center",
+              position: "relative",
+            }}
+          >
+            {/* Cat image container */}
             <div
-              key={stat.label}
+              onClick={handleTap}
+              onTouchEnd={handleTap}
               style={{
-                flex: 1,
-                padding: "10px 12px",
-                ...(i > 0 ? { borderLeft: `1px dashed ${t.borderSoft}` } : {}),
+                width: 64,
+                height: 64,
+                flexShrink: 0,
+                border: `1px solid ${t.borderSoft}`,
+                background: catBg,
+                position: "relative",
+                overflow: "hidden",
+                cursor: "pointer",
+                touchAction: "manipulation",
+                transition: "background 0.3s",
               }}
             >
+              <img
+                src={isHit ? "/cat_hit.png" : "/cat_idle.png"}
+                alt="cat"
+                draggable={false}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  imageRendering: "pixelated",
+                  display: "block",
+                  userSelect: "none",
+                }}
+              />
+              {/* Scanline overlay */}
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  background:
+                    "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px)",
+                  pointerEvents: "none",
+                }}
+              />
+              {/* Impact ring */}
+              <div
+                key={`impact-${impactKey}`}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  border: `2px solid ${greenBright}`,
+                  pointerEvents: "none",
+                  zIndex: 5,
+                  animation:
+                    impactKey > 0
+                      ? "impactPop 0.25s ease-out forwards"
+                      : "none",
+                  opacity: impactKey > 0 ? undefined : 0,
+                }}
+              />
+            </div>
+
+            {/* Counter area */}
+            <div style={{ flex: 1 }}>
               <div
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 7,
-                  letterSpacing: 1.5,
+                  fontSize: 9,
+                  letterSpacing: 2,
+                  color: t.faint,
                   textTransform: "uppercase",
-                  color: labelColor,
                   marginBottom: 4,
                 }}
               >
-                {stat.label}
+                {"\u25B8"} YOUR SQUISHES
               </div>
               <div
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: stat.color,
+                  fontSize: "clamp(28px, 7vw, 40px)",
+                  fontWeight: 700,
+                  color: countColor,
+                  letterSpacing: 2,
                   fontVariantNumeric: "tabular-nums",
-                  transition: "color 0.2s",
-                  ...((stat as { style?: React.CSSProperties }).style ?? {}),
+                  lineHeight: 1,
+                  textShadow: countShadow,
+                  transition: "color 0.2s, text-shadow 0.2s",
+                  ...(isFever
+                    ? {
+                      animation:
+                        "feverPulse 0.3s ease-in-out infinite alternate",
+                    }
+                    : {}),
                 }}
               >
-                {stat.value}
+                {formatCount(display.totalSquishes)}
+              </div>
+              <div
+                style={{
+                  fontFamily: "'IBM Plex Mono', monospace",
+                  fontSize: 10,
+                  color: t.faint,
+                  marginTop: 6,
+                  letterSpacing: 1,
+                }}
+              >
+                <span
+                  style={{
+                    color: tier === "idle" ? t.faint : greenAccent,
+                  }}
+                >
+                  {"\u25B8"}
+                </span>{" "}
+                tap to squish
               </div>
             </div>
-          ))}
-        </div>
 
-        {/* Intensity bar */}
-        <div
-          style={{
-            padding: "8px 16px 10px",
-            borderTop: `1px dashed ${t.borderSoft}`,
-            background: "rgba(0,0,0,0.1)",
-          }}
-        >
+            {/* Floating +N elements */}
+            {floats.map((f) => (
+              <div
+                key={f.id}
+                style={{
+                  ...floatStyle(f.tier),
+                  left: `${f.x}%`,
+                  top: `${f.y}%`,
+                }}
+              >
+                +{formatCount(f.amount)}
+              </div>
+            ))}
+          </div>
+
+          {/* Stats bar */}
           <div
             style={{
-              fontFamily: "'IBM Plex Mono', monospace",
-              fontSize: 8,
-              letterSpacing: 2,
-              color: labelColor,
-              textTransform: "uppercase",
-              marginBottom: 5,
               display: "flex",
-              justifyContent: "space-between",
+              borderTop: `1px dashed ${t.borderSoft}`,
             }}
           >
-            <span>INTENSITY</span>
+            {[
+              {
+                label: "ALL-TIME",
+                value: formatCount(Math.max(display.globalTotal, display.totalSquishes)),
+                color: t.text,
+              },
+              {
+                label: "VISITORS",
+                value: display.globalVisitors > 0 ? display.globalVisitors.toLocaleString("en-US") : "—",
+                color: t.text,
+              },
+              {
+                label: "MULTIPLIER",
+                value: `x${display.multiplier}`,
+                color: multiColor,
+                style: isFever
+                  ? {
+                    textShadow: "0 0 8px rgba(240,192,64,0.4)",
+                    animation: "feverPulse 0.3s ease-in-out infinite alternate",
+                  }
+                  : {},
+              },
+              {
+                label: "SQUISH/SEC",
+                value: display.tapsPerSec.toFixed(1),
+                color: t.text,
+              },
+            ].map((stat, i) => (
+              <div
+                key={stat.label}
+                style={{
+                  flex: 1,
+                  padding: "10px 12px",
+                  ...(i > 0 ? { borderLeft: `1px dashed ${t.borderSoft}` } : {}),
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: 7,
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    color: labelColor,
+                    marginBottom: 4,
+                  }}
+                >
+                  {stat.label}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'IBM Plex Mono', monospace",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: stat.color,
+                    fontVariantNumeric: "tabular-nums",
+                    transition: "color 0.2s",
+                    ...((stat as { style?: React.CSSProperties }).style ?? {}),
+                  }}
+                >
+                  {stat.value}
+                </div>
+              </div>
+            ))}
           </div>
+
+          {/* Intensity bar */}
           <div
             style={{
-              height: 4,
-              background: t.borderSoft,
-              position: "relative",
-              overflow: "hidden",
+              padding: "8px 16px 10px",
+              borderTop: `1px dashed ${t.borderSoft}`,
+              background: "rgba(0,0,0,0.1)",
             }}
           >
             <div
               style={{
-                height: "100%",
-                width: `${display.barPct}%`,
-                background: barFillBg,
-                transition: "width 0.15s ease-out, background 0.3s",
-                ...(isFever
-                  ? {
+                fontFamily: "'IBM Plex Mono', monospace",
+                fontSize: 8,
+                letterSpacing: 2,
+                color: labelColor,
+                textTransform: "uppercase",
+                marginBottom: 5,
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>INTENSITY</span>
+            </div>
+            <div
+              style={{
+                height: 4,
+                background: t.borderSoft,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  height: "100%",
+                  width: `${display.barPct}%`,
+                  background: barFillBg,
+                  transition: "width 0.15s ease-out, background 0.3s",
+                  ...(isFever
+                    ? {
                       backgroundSize: "200% 100%",
                       animation: "feverShimmer 0.4s linear infinite",
                     }
-                  : {}),
-              }}
-            />
+                    : {}),
+                }}
+              />
+            </div>
           </div>
-        </div>
 
-      </WidgetCard>
+        </WidgetCard>
       </div>
 
       {/* Ripple elements (fixed position, outside card) */}

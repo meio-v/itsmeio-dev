@@ -76,7 +76,11 @@ export function WidgetCard({
         <span style={{ ...HEADER_LABEL, color: titleColor ?? t.mgsTextBright, position: "relative", zIndex: 1 }}>
           {"\u25B8"} {title}
         </span>
-        {right && <span style={{ position: "relative", zIndex: 1 }}>{right}</span>}
+        {right && <span style={{
+          position: "relative", zIndex: 1, display: "flex",
+          alignItems: "center",
+          height: "100%"
+        }}>{right}</span>}
 
         {/* Dither fade-in overlay */}
         <span

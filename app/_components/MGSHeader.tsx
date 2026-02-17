@@ -13,8 +13,22 @@ export function MGSHeader({
   bgImage?: string;
 }) {
   const { t } = useTheme();
-  const h = tall ? 120 : "auto";
+  const h = tall ? 225 : "auto";
   let topOffset = 0;
+
+  const childrenStyle: React.CSSProperties = {
+    position: "relative",
+    zIndex: 3,
+    height: "100%",
+    ...(tall && {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      userSelect: "none",
+      WebkitUserSelect: "none",
+    }),
+  }
 
   return (
     <div style={{ position: "relative", height: h, overflow: "hidden" }}>
@@ -48,7 +62,7 @@ export function MGSHeader({
               top: `${top}%`,
               left: 0,
               right: 0,
-              height: `calc(${band.pct}% + 0.5px)`,
+              height: `calc(${band.pct}%)`,
               backgroundColor: `${t.mgsBg}99`,
               backgroundImage: makeDither(band.density),
               backgroundRepeat: "repeat",
@@ -58,9 +72,8 @@ export function MGSHeader({
         );
       })}
 
-      <div style={{ position: "relative", zIndex: 3, height: "100%" }}>
+      <div style={childrenStyle}>
         {children}
       </div>
-    </div>
-  );
+    </div>);
 }
