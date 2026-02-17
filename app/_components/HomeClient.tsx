@@ -8,6 +8,7 @@ import { Tag } from "./Tag";
 import { DitherDivider } from "./DitherDivider";
 import { PostCard } from "./PostCard";
 import { CurrentlyPlaying } from "./CurrentlyPlaying";
+import { SquishCat } from "./SquishCat";
 import { PageShell } from "./PageShell";
 import type { PostMeta } from "@/lib/posts";
 
@@ -303,6 +304,8 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
       )}
       {tab === "ABOUT" && <About />}
       {tab === "PORTFOLIO" && <Portfolio />}
+
+      {tab !== "ABOUT" && <SquishCat />}
     </PageShell>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
+import { WidgetCard } from "./WidgetCard";
 
 const GAME = {
   title: "Uncharted 4: A Thief's End",
@@ -44,32 +45,7 @@ export function CurrentlyPlaying() {
   }, []);
 
   return (
-    <div style={{ border: `2px solid ${t.border}`, overflow: "hidden" }}>
-      {/* Header */}
-      <div
-        style={{
-          background: t.mgsBg,
-          padding: "10px 16px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          borderBottom: `1px solid ${t.mgsBorderAccent}`,
-        }}
-      >
-        <span
-          style={{
-            fontFamily: "'IBM Plex Mono', monospace",
-            fontSize: 10,
-            fontWeight: 600,
-            color: t.mgsTextBright,
-            letterSpacing: 2,
-            textShadow: "0 0 8px rgba(100,200,100,0.3)",
-          }}
-        >
-          {"\u25B8"} NOW PLAYING
-        </span>
-      </div>
-
+    <WidgetCard title="NOW PLAYING">
       {/* Body */}
       <div style={{ padding: "16px 16px 20px" }}>
         <div>
@@ -284,6 +260,6 @@ export function CurrentlyPlaying() {
           )}
         </div>
       </div>
-    </div>
+    </WidgetCard>
   );
 }

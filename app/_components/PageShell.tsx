@@ -40,6 +40,43 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           0% { transform: translateY(-400%); }
           100% { transform: translateY(2500%); }
         }
+        @keyframes rippleOut {
+          0% { transform: scale(1); opacity: 0.7; }
+          100% { transform: scale(16); opacity: 0; }
+        }
+        @keyframes crtFlash {
+          0%   { opacity: 1; background: rgba(125,184,125,0.5); }
+          12%  { opacity: 1; background: rgba(255,255,255,0.6); }
+          25%  { opacity: 0.7; background: rgba(125,184,125,0.1); }
+          40%  { opacity: 0.4; background: transparent;
+                 box-shadow: -3px 0 0 rgba(255,50,50,0.3) inset, 3px 0 0 rgba(50,100,255,0.3) inset; }
+          65%  { opacity: 0.2; box-shadow: 1px 0 0 rgba(50,100,255,0.1) inset; }
+          100% { opacity: 0; box-shadow: none; }
+        }
+        @keyframes floatUp {
+          0% { opacity: 1; transform: translateY(0) scale(1); }
+          60% { opacity: 0.8; }
+          100% { opacity: 0; transform: translateY(-50px) scale(0.6); }
+        }
+        @keyframes impactPop {
+          0% { opacity: 0.8; transform: scale(0.5); }
+          50% { opacity: 0.4; transform: scale(1.2); }
+          100% { opacity: 0; transform: scale(1.5); }
+        }
+        @keyframes ledPulse {
+          0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+        @keyframes ledFast {
+          0%, 100% { opacity: 1; } 50% { opacity: 0.5; }
+        }
+        @keyframes feverPulse {
+          0% { transform: scale(1); }
+          100% { transform: scale(1.03); }
+        }
+        @keyframes feverShimmer {
+          0% { background-position: 0% 0; }
+          100% { background-position: 200% 0; }
+        }
         ::selection { background: ${t.selectionBg}; color: ${t.selectionText}; }
         body { background: ${t.bg}; transition: background 0.3s ease; }
       `}</style>
