@@ -300,12 +300,12 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
           </PsxBox>
           <DitherDivider />
           <CurrentlyPlaying />
+          <SquishCat />
         </>
       )}
       {tab === "ABOUT" && <About />}
       {tab === "PORTFOLIO" && <Portfolio />}
 
-      {tab === "DEVLOG" && <SquishCat />}
     </PageShell>
   );
 }
