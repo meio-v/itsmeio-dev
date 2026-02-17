@@ -305,7 +305,7 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
       {tab === "ABOUT" && <About />}
       {tab === "PORTFOLIO" && <Portfolio />}
 
-      {tab !== "ABOUT" && <SquishCat />}
+      {tab === "DEVLOG" && <SquishCat />}
     </PageShell>
   );
 }
