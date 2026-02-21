@@ -7,7 +7,7 @@ import { WidgetCard } from "./WidgetCard";
 const GAME = {
   title: "Uncharted 4: A Thief's End",
   platform: "STEAM",
-  status: "IN PROGRESS",
+  status: "COMPLETED",
 };
 
 const RECENT_PREVIEW = ["God of War Ragnarok", "Control", "Borderlands 4"];
