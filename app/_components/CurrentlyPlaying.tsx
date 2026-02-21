@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 import { WidgetCard } from "./WidgetCard";
+import { makeDither } from "@/lib/theme";
 
 const GAME = {
   title: "Uncharted 4: A Thief's End",
@@ -88,8 +89,8 @@ export function CurrentlyPlaying() {
               </span>
               <span
                 style={{
-                  background: t.mgsBg,
-                  color: t.mgsText,
+                  position: "relative",
+                  overflow: "hidden",
                   padding: "2px 8px",
                   fontSize: 10,
                   fontWeight: 600,
@@ -97,7 +98,61 @@ export function CurrentlyPlaying() {
                   borderRadius: 2,
                 }}
               >
-                {GAME.status}
+                <span
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    overflow: "hidden",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "block",
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      height: "200%",
+                      animation: "pillScroll 2s steps(12) infinite",
+                    }}
+                  >
+                    {[0, 1].map((copy) =>
+                      ["#bb55ee","#4490dd","#22cc80","#eedd33","#ee7f3a","#dd4480"].map((c, i, a) => (
+                        <span
+                          key={`${copy}-${i}`}
+                          style={{
+                            position: "absolute",
+                            left: 0,
+                            right: 0,
+                            top: `${((copy * a.length + i) / (a.length * 2)) * 100}%`,
+                            height: `${100 / (a.length * 2)}%`,
+                            backgroundColor: c,
+                            backgroundImage: makeDither(0.15),
+                            backgroundRepeat: "repeat",
+                            imageRendering: "pixelated",
+                          }}
+                        />
+                      ))
+                    )}
+                  </span>
+                </span>
+                <span style={{ position: "relative" }}>
+                  <span
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: "25%",
+                      bottom: "25%",
+                      backdropFilter: "blur(4px)",
+                      WebkitBackdropFilter: "blur(4px)",
+                    }}
+                  />
+                  <span style={{ position: "relative", color: "#fff" }}>
+                    {GAME.status}
+                  </span>
+                </span>
               </span>
             </div>
         </div>

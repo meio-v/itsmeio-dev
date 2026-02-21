@@ -85,6 +85,10 @@ export function PageShell({ children }: { children: React.ReactNode }) {
           70% { transform: translateX(1px) rotate(0.3deg); }
           90% { transform: translateX(-1px); }
         }
+        @keyframes pillScroll {
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
+        }
         @keyframes rainbowBg {
           0%   { background-color: rgba(224,96,96,0.15); }
           14%  { background-color: rgba(224,160,96,0.15); }
