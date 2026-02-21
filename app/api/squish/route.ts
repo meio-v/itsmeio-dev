@@ -5,7 +5,8 @@ import { createHash } from "crypto";
 const redis = Redis.fromEnv();
 
 const TOTAL_KEY = "squish:total";
-const VISITORS_KEY = "squish:visitors";
+const VISITORS_TOTAL_KEY = "squish:visitors_total";
+const VISITORS_LEGACY_KEY = "squish:visitors";
 const MAX_INCREMENT = 10_000_000;
 
 function hashIp(ip: string): string {
@@ -20,21 +21,56 @@ function getIp(req: NextRequest): string {
   );
 }
 
+function getDailySetKey(): string {
+  const d = new Date();
+  const year = d.getUTCFullYear();
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  return `squish:daily_ips:${year}-${month}-${day}`;
+}
+
+async function recordVisitor(hashedIp: string): Promise<number> {
+  // 1. Get current total. Either permanent total or legacy HyperLogLog value
+  let totalVisitors = (await redis.get(VISITORS_TOTAL_KEY)) as number | null;
+
+  if (totalVisitors === null) {
+    // Migrate legacy count if permanent total doesn't exist
+    const legacyCount = await redis.pfcount(VISITORS_LEGACY_KEY);
+    totalVisitors = legacyCount || 0;
+    // Save to permanent key exactly once
+    await redis.set(VISITORS_TOTAL_KEY, totalVisitors);
+  }
+
+  // 2. Daily unique logic
+  const dailySetKey = getDailySetKey();
+
+  const pipe = redis.pipeline();
+  pipe.sadd(dailySetKey, hashedIp);
+  pipe.expire(dailySetKey, 48 * 60 * 60); // 48h expiration to save space
+
+  const results = await pipe.exec();
+  const saddResult = results[0] as number; // 1 if new to the set, 0 if already exists
+
+  // If this is a new IP for today, increment the permanent total
+  if (saddResult === 1) {
+    totalVisitors = await redis.incr(VISITORS_TOTAL_KEY);
+  }
+
+  return totalVisitors;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const ip = getIp(req);
     const hashed = hashIp(ip);
 
-    const pipe = redis.pipeline();
-    pipe.get(TOTAL_KEY);
-    pipe.pfadd(VISITORS_KEY, hashed);
-    pipe.pfcount(VISITORS_KEY);
+    // Run squish total fetch and visitor recording concurrently
+    const [totalSquishes, totalVisitors] = await Promise.all([
+      redis.get(TOTAL_KEY).then((v) => (v as number) || 0),
+      recordVisitor(hashed),
+    ]);
 
-    const results = await pipe.exec();
-    const total = (results[0] as number) || 0;
-    const visitors = (results[2] as number) || 0;
-
-    return NextResponse.json({ total, visitors });
+    return NextResponse.json({ total: totalSquishes, visitors: totalVisitors });
   } catch {
     return NextResponse.json({ total: 0, visitors: 0 }, { status: 500 });
   }
@@ -55,16 +91,13 @@ export async function POST(req: NextRequest) {
     const ip = getIp(req);
     const hashed = hashIp(ip);
 
-    const pipe = redis.pipeline();
-    pipe.incrby(TOTAL_KEY, increment);
-    pipe.pfadd(VISITORS_KEY, hashed);
-    pipe.pfcount(VISITORS_KEY);
+    // Increment squishes and record visitor concurrently
+    const [totalSquishes, totalVisitors] = await Promise.all([
+      redis.incrby(TOTAL_KEY, increment),
+      recordVisitor(hashed),
+    ]);
 
-    const results = await pipe.exec();
-    const total = results[0] as number;
-    const visitors = results[2] as number;
-
-    return NextResponse.json({ total, visitors });
+    return NextResponse.json({ total: totalSquishes, visitors: totalVisitors });
   } catch {
     return NextResponse.json({ total: 0, visitors: 0 }, { status: 500 });
   }
