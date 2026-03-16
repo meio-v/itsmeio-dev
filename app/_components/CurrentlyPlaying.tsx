@@ -6,14 +6,15 @@ import { WidgetCard } from "./WidgetCard";
 import { makeDither } from "@/lib/theme";
 
 const GAME = {
-  title: "Uncharted 4: A Thief's End",
+  title: "Resident Evil Requiem",
   platform: "STEAM",
   status: "COMPLETED",
 };
 
-const RECENT_PREVIEW = ["God of War Ragnarok", "Control", "Borderlands 4"];
+const RECENT_PREVIEW = ["Uncharted 4: A Thief's End", "God of War Ragnarok", "Control"];
 
 const GAME_LOG = [
+  { title: "Uncharted 4: A Thief's End", date: "Mar 2026" },
   { title: "God of War Ragnarok", date: "Feb 2026" },
   { title: "Control", date: "Jan 2026" },
   { title: "Borderlands 4", date: "Jan 2026" },
