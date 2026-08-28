@@ -1,0 +1,140 @@
+lib/ride-lab-feature.test.ts
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 1-10
+app/mall/_ride-lab/rideLabModel.ts
+  s_fc8a0c8160e8ba::t_d387eee8ed078a 3,48-54
+  s_fc8a0c8160e8ba::t_0b79910e4f71ea 27-30
+  s_fc8a0c8160e8ba::t_a4308846620b98 1-2,4-26,41-47
+  s_fc8a0c8160e8ba::t_4b180e978e0070 31-40
+app/mall/_ride-lab/RideLabRuntime.ts
+  s_fc8a0c8160e8ba::t_1ec8c8ee61c493 130-135,153,157-163,175-176
+  s_fc8a0c8160e8ba::t_68e832eec4f753 55,248-249,278,283
+  s_fc8a0c8160e8ba::t_277744d2ce2983 8,145-149
+  s_fc8a0c8160e8ba::t_d2c36c1870a3b6 213
+  s_fc8a0c8160e8ba::t_d387eee8ed078a 6,235,238,243,276
+  s_fc8a0c8160e8ba::t_0c596aed8018bb 41,59-61,152,154-156,164-174,209-210,230-232,236-237,239,277,279-282,285-287
+  s_fc8a0c8160e8ba::t_2edd733cc4928f 220-221
+  s_fc8a0c8160e8ba::t_53ffa1f9edd1c4 1-5,7,9-40,42-54,56-58,62-129,136-144,150-151,177-208,211-212,214-219,222-229,233-234,240-242,244-247,250-275,284,288-357
+package-lock.json
+  s_fc8a0c8160e8ba::t_0efcf07a3bce63 15,5263-5268
+docs/design/ride-feedback-points.md
+  s_fc8a0c8160e8ba::t_5896a0392c531b 1-18,23-24,29-57,64-66,70,74-80
+  s_fc8a0c8160e8ba::t_c68a038174715c 19-21,25-28,67-69,71-73
+  s_fc8a0c8160e8ba::t_acfc1902ad9dc9 22,58-63
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_8062f93abfdb7c 118
+  s_fc8a0c8160e8ba::t_49c6e134122bff 20-21,38-40
+  s_fc8a0c8160e8ba::t_73939922b58d49 61-63,162-163
+  s_fc8a0c8160e8ba::t_0d3ea701fe3179 3,5,8,10,17,23-37,41-42,46,218
+  s_fc8a0c8160e8ba::t_277744d2ce2983 12,119-121
+  s_fc8a0c8160e8ba::t_aafd7906a7d6b3 71-72
+  s_fc8a0c8160e8ba::t_eafa7da2fd8b04 82
+  s_fc8a0c8160e8ba::t_ac1228951d61e1 123
+  s_fc8a0c8160e8ba::t_dee7d0acac895c 155
+  s_fc8a0c8160e8ba::t_d12eac73f10ec8 103,114,124,130,132,136,144,146
+  s_fc8a0c8160e8ba::t_ddcd81003c3970 141-143,145,147
+  s_fc8a0c8160e8ba::t_0c596aed8018bb 102,110
+  s_fc8a0c8160e8ba::t_133306142f6198 97-101
+  s_fc8a0c8160e8ba::t_89b65728f22569 104
+  s_fc8a0c8160e8ba::t_0ab6260f6643fd 169-170,174
+  s_fc8a0c8160e8ba::t_c68a038174715c 77-81,83
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 1-2,4,6-7,9,11,13-16,18-19,22,43-45,47-60,64-70,73-76,84,96,111-113,115-117,122,125-129,131,133-135,137-140,148-154,156-161,164-168,171-173,175-217,219
+  s_fc8a0c8160e8ba::t_106e36c735ee36 85-95
+  s_fc8a0c8160e8ba::t_68e832eec4f753 105-109
+app/mall/ride-lab/rideLab.module.css
+  s_fc8a0c8160e8ba::t_c68a038174715c 16-19
+  s_fc8a0c8160e8ba::t_c35dded3aea89c 1-15,20-52
+app/mall/_ride-lab/rideLabTypes.ts
+  s_fc8a0c8160e8ba::t_0bed15ed3be87b 26-27,33-45
+  s_fc8a0c8160e8ba::t_a4308846620b98 1-25,28-32
+app/mall/ride-lab/_components/RideLabExperience.tsx
+  s_fc8a0c8160e8ba::t_c96b0636297571 37
+  s_fc8a0c8160e8ba::t_e2c45d4ef3c14a 22,58-65,177
+  s_fc8a0c8160e8ba::t_dee7d0acac895c 4,9,15,194-195,199-200
+  s_fc8a0c8160e8ba::t_0877be243bfcb9 29-31
+  s_fc8a0c8160e8ba::t_0b79910e4f71ea 7,21,114-118,148-149
+  s_fc8a0c8160e8ba::t_c35dded3aea89c 1-3,5-6,8,10-14,16-20,23-28,32-36,38-57,66-113,119-147,150-176,178-193,196-198,201-237
+app/mall/_ride-lab/JoltRidePhysics.ts
+  s_fc8a0c8160e8ba::t_9a1901b9109a06 1-2,4-13,15,24-42,49,51-52,55-56,58,61-90,95-119,121-128,131-136,145-148,150-151,153-166,218-225,228-232,234-248,254,256-263,265-318,322-330,333-334,337-340
+  s_fc8a0c8160e8ba::t_23c3e1e8d28523 50,59
+  s_fc8a0c8160e8ba::t_1a5399743ac68a 264
+  s_fc8a0c8160e8ba::t_205790287750f0 14,16-23,48,57,60,137-144,255
+  s_fc8a0c8160e8ba::t_e2c45d4ef3c14a 120,319-321,335-336
+  s_fc8a0c8160e8ba::t_d387eee8ed078a 152
+  s_fc8a0c8160e8ba::t_1485df9dcbcd98 181-182,192,194-201,203-209,211-216
+  s_fc8a0c8160e8ba::t_611a8197d576e0 54,149
+  s_fc8a0c8160e8ba::t_0d3ea701fe3179 43,129-130,226-227,253
+  s_fc8a0c8160e8ba::t_4b180e978e0070 3,177-180
+  s_fc8a0c8160e8ba::t_68e832eec4f753 44-47,91-94,167-172,202,217,249-252
+  s_fc8a0c8160e8ba::t_c68a038174715c 173-176,183-191,193,210
+  s_fc8a0c8160e8ba::t_0bed15ed3be87b 53,233
+  s_fc8a0c8160e8ba::t_d7c173d8c14ed9 331-332
+lib/ride-lab-feature.ts
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 1-6
+app/mall/_ride-lab/rideLabTuning.ts
+  s_fc8a0c8160e8ba::t_a4308846620b98 1-2,13-147
+  s_fc8a0c8160e8ba::t_277744d2ce2983 3-12,148-150
+docs/testing/ride-lab-phase-1.md
+  s_fc8a0c8160e8ba::t_efaea02344ee7d 47-48,50-59
+  s_fc8a0c8160e8ba::t_acfc1902ad9dc9 1-46,49,60-77
+app/mall/_ride-lab/rideLabTuning.test.ts
+  s_fc8a0c8160e8ba::t_277744d2ce2983 3,22-31
+  s_fc8a0c8160e8ba::t_a4308846620b98 1-2,4-21
+scripts/verify-ride-lab-production-gate.mjs
+  s_fc8a0c8160e8ba::t_0d3ea701fe3179 3-4,6,8,14,20-34,38-39,44,56
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 1-2,5,7,9,11-13,15-16,19,40-43,45-55,57
+  s_fc8a0c8160e8ba::t_49c6e134122bff 17-18,35-37
+  s_fc8a0c8160e8ba::t_277744d2ce2983 10
+proxy.ts
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 1,4,6-11,20
+package.json
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 14
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 12
+  s_fc8a0c8160e8ba::t_a4308846620b98 13,22
+  s_fc8a0c8160e8ba::t_35c35fb73482d5 10
+app/mall/_ride-lab/JoltRidePhysics.test.ts
+  s_fc8a0c8160e8ba::t_d387eee8ed078a 35
+  s_fc8a0c8160e8ba::t_e2c45d4ef3c14a 39-41,57-67
+  s_fc8a0c8160e8ba::t_205790287750f0 42-56
+  s_fc8a0c8160e8ba::t_d0d1420e2a3c90 69-82
+  s_fc8a0c8160e8ba::t_55f3efc99ac051 18
+  s_fc8a0c8160e8ba::t_81761f7457251d 14
+  s_fc8a0c8160e8ba::t_9a1901b9109a06 1-13,15-17,19-34,36-38,68
+app/mall/_ride-lab/rideLabControls.ts
+  s_fc8a0c8160e8ba::t_0bed15ed3be87b 1-49
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_75b659a64b1608 1-13
+GATES.md
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 3
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 12,27-29,32,37,42,44-46
+  s_fc8a0c8160e8ba::t_5896a0392c531b 1-2,4-11,13-23,25-26,30-31,33-36,38-41,43
+  s_fc8a0c8160e8ba::t_35c35fb73482d5 24
+scripts/verify-ride-lab-evidence.mjs
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 1-15
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_d387eee8ed078a 35-38,52
+  s_fc8a0c8160e8ba::t_a4308846620b98 1-2,4-34
+  s_fc8a0c8160e8ba::t_4b180e978e0070 3,45-51
+  s_fc8a0c8160e8ba::t_0b79910e4f71ea 39-44
+app/mall/ride-lab/page.tsx
+  s_fc8a0c8160e8ba::t_c35dded3aea89c 1-2,4,7-15,17-18
+  s_fc8a0c8160e8ba::t_f1734a7742e0f7 5
+  s_fc8a0c8160e8ba::t_6fb8f245a3283a 6
+  s_fc8a0c8160e8ba::t_579342f47fc02b 16
+  s_fc8a0c8160e8ba::t_25f0229ffedf0d 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "36ba064004ff994b7df2546b189ab84dbefe07a8",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
