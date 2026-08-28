@@ -1,0 +1,37 @@
+lib/mall-feature.test.ts
+  s_918a32a48b13b9::t_9f7f06d7fdd36e 1-37
+app/mall/page.tsx
+  s_918a32a48b13b9::t_0dc7485da0a649 3
+  s_918a32a48b13b9::t_96905029889f33 10-11
+  s_918a32a48b13b9::t_9f7f06d7fdd36e 2,6,19-20
+proxy.ts
+  s_918a32a48b13b9::t_eb19704457a0ff 1,5
+  s_918a32a48b13b9::t_7f05cd0d65adec 2-4,6-15
+lib/mall-feature.ts
+  s_918a32a48b13b9::t_9f7f06d7fdd36e 1-17
+docs/assets/mall-asset-provenance.md
+  s_918a32a48b13b9::t_0dc7485da0a649 27
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_0dc7485da0a649 64,66-68
+package.json
+  s_918a32a48b13b9::t_9f7f06d7fdd36e 10
+  s_918a32a48b13b9::t_39dc5ce08c3dd5 15
+package-lock.json
+  s_918a32a48b13b9::t_9955da441cf0c2 12,469-477
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "6115f42844831e4583dd3dbda0fc4ddd105d158e",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
