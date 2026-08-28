@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:mall": "node --experimental-strip-types --test lib/currently-playing.test.ts app/mall/_lib/experience-state.test.ts",
+    "test:mall": "node --experimental-strip-types --test lib/currently-playing.test.ts lib/mall-feature.test.ts app/mall/_lib/experience-state.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.20.0",
+    "@fontsource/redaction-20": "^5.3.0",
     "@upstash/redis": "^1.36.2",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",

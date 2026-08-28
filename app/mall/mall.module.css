@@ -61,11 +61,12 @@
 
 .wordmark {
   color: inherit;
-  font-family: Impact, "Arial Black", sans-serif;
+  font-family: "Redaction 20", Georgia, serif;
   font-size: clamp(1.25rem, 3vw, 2.15rem);
-  letter-spacing: 0.04em;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   text-decoration: none;
-  transform: skew(-5deg);
 }
 
 .header nav {

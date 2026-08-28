@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import "@fontsource/redaction-20/400-italic.css";
 
 import { currentlyPlayingContent } from "@/content/currently-playing";
+import { isMallEnabled } from "@/lib/mall-feature";
 
 import { MallExperience } from "./_components/MallExperience";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Mall ride — itsmeio.dev",
@@ -11,5 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default function MallPage() {
+  if (!isMallEnabled()) notFound();
+
   return <MallExperience content={currentlyPlayingContent} />;
 }

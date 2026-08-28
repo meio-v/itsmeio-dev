@@ -24,6 +24,7 @@ geometry; `mallPhysics.ts` remains the collider source of truth.
 | [Simple Scooter](https://styloo.itch.io/scooter) | Styloo | `10b41fbe6d7ee337806272a10d42c3c013213d892006f237fce55bc624b88ef4` | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Approved source; not vendored or shipped |
 | [Building Kit 1.0](https://kenney.nl/assets/building-kit) | Kenney | `2740ef5772fb5fb3d7aab881db22d129f6b68afe711b1a79e6d5e9e19cf3eec6` | CC0 1.0, bundled `License.txt` | Approved source; replaced by authored procedural shell for this slice |
 | [Mini Arcade 1.2](https://kenney.nl/assets/mini-arcade) | Kenney; additional contributors Fleur Keijsers and Guus Vermeulen | `2acfe5cb44d392e834f77cf5488528c7cd45427cdf5fb941ce99856276158c19` | CC0 1.0, bundled `License.txt` | Approved source; replaced by authored procedural cabinets for this slice |
+| [Redaction 20 Italic](https://usemodify.com/fonts/redaction/) | Forest Young and Jeremy Mickel | Fontsource package `@fontsource/redaction-20@5.3.0` | SIL Open Font License 1.1 | Self-hosted through the application bundle; used only for the mall header wordmark |
 
 Attribution is not required by CC0. The project retains these credits
 voluntarily. Checksums identify the exact archives inspected in issue #13; they
