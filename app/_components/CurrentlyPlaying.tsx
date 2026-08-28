@@ -1,50 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTheme } from "./ThemeProvider";
 import { WidgetCard } from "./WidgetCard";
 import { makeDither } from "@/lib/theme";
+import {
+  formatCompletionDate,
+  formatCurrentStatus,
+  getRecentPreview,
+  type CurrentlyPlayingContent,
+} from "@/lib/currently-playing";
 
-const GAME = {
-  title: "Resident Evil Requiem",
-  platform: "STEAM",
-  status: "COMPLETED",
-};
-
-const RECENT_PREVIEW = ["Uncharted 4: A Thief's End", "God of War Ragnarok", "Control"];
-
-const GAME_LOG = [
-  { title: "Uncharted 4: A Thief's End", date: "Mar 2026" },
-  { title: "God of War Ragnarok", date: "Feb 2026" },
-  { title: "Control", date: "Jan 2026" },
-  { title: "Borderlands 4", date: "Jan 2026" },
-  { title: "Lost Judgement", date: "Sep 2025" },
-  { title: "Split Fiction", date: "Sep 2025" },
-  { title: "Borderlands 3", date: "Apr 2025" },
-  { title: "Metaphor Refantazio", date: "Apr 2025" },
-  { title: "Spiderman 2", date: "Mar 2025" },
-  { title: "AC Odyssey", date: "Feb 2025" },
-  { title: "Ghost of Tsushima", date: "Aug 2024" },
-  { title: "Cyberpunk 2077 Phantom Liberty", date: "Jul 2024" },
-  { title: "RGG Infinite Wealth", date: "Jun 2024" },
-  { title: "Persona 3 Reload", date: "2024" },
-  { title: "Resi 4 Remake", date: "Jan 2024" },
-];
-
-export function CurrentlyPlaying() {
+export function CurrentlyPlaying({
+  content,
+}: {
+  content: CurrentlyPlayingContent;
+}) {
   const { t, mode } = useTheme();
   const [expanded, setExpanded] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [hoverLabel, setHoverLabel] = useState(false);
-  const [canHover, setCanHover] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(hover: hover)");
-    setCanHover(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setCanHover(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  const recentPreview = getRecentPreview(content);
 
   return (
     <WidgetCard title="NOW PLAYING">
@@ -61,8 +37,9 @@ export function CurrentlyPlaying() {
               lineHeight: 1.3,
             }}
           >
-            {GAME.title}
+            {content.current?.title ?? content.emptyMessage}
           </div>
+          {content.current && (
             <div
               style={{
                 fontFamily: "'IBM Plex Mono', monospace",
@@ -86,7 +63,7 @@ export function CurrentlyPlaying() {
                   borderRadius: 2,
                 }}
               >
-                {GAME.platform}
+                {content.current.platform}
               </span>
               <span
                 style={{
@@ -151,11 +128,12 @@ export function CurrentlyPlaying() {
                     }}
                   />
                   <span style={{ position: "relative", color: "#fff" }}>
-                    {GAME.status}
+                    {formatCurrentStatus(content.current.status).toUpperCase()}
                   </span>
                 </span>
               </span>
             </div>
+          )}
         </div>
 
         {/* Recently played */}
@@ -177,8 +155,10 @@ export function CurrentlyPlaying() {
             <span style={{ display: "flex", alignItems: "center", gap: 4, position: "relative" }}>
               <button
                 onClick={() => setExpanded(!expanded)}
-                onMouseEnter={canHover ? () => { setHoverLabel(true); setShowTooltip(true); } : undefined}
-                onMouseLeave={canHover ? () => { setHoverLabel(false); setShowTooltip(false); } : undefined}
+                aria-expanded={expanded}
+                aria-controls="recently-completed-games"
+                onMouseEnter={() => { setHoverLabel(true); setShowTooltip(true); }}
+                onMouseLeave={() => { setHoverLabel(false); setShowTooltip(false); }}
                 style={{
                   fontFamily: "'IBM Plex Mono', monospace",
                   fontSize: 9,
@@ -214,8 +194,7 @@ export function CurrentlyPlaying() {
                 </span>
                 {":"}
               </button>
-              {canHover && (
-                <span
+              <span
                   style={{
                     position: "absolute",
                     bottom: "calc(100% + 8px)",
@@ -269,8 +248,7 @@ export function CurrentlyPlaying() {
                       pointerEvents: "none",
                     }}
                   />
-                </span>
-              )}
+              </span>
             </span>
             {!expanded && (
               <span
@@ -280,16 +258,16 @@ export function CurrentlyPlaying() {
                   color: t.muted,
                 }}
               >
-                {RECENT_PREVIEW.join(" · ")}
+                {recentPreview.map((game) => game.title).join(" · ")}
               </span>
             )}
           </div>
 
           {expanded && (
-            <div style={{ marginTop: 10 }}>
-              {GAME_LOG.map((g) => (
+            <div id="recently-completed-games" style={{ marginTop: 10 }}>
+              {content.recentlyCompleted.map((game) => (
                 <div
-                  key={g.title}
+                  key={`${game.title}-${game.completed}`}
                   style={{
                     fontFamily: "'IBM Plex Mono', monospace",
                     fontSize: 11,
@@ -299,7 +277,7 @@ export function CurrentlyPlaying() {
                     borderBottom: `1px solid ${t.innerBorder}`,
                   }}
                 >
-                  <span style={{ color: t.text }}>{g.title}</span>
+                  <span style={{ color: t.text }}>{game.title}</span>
                   <span
                     style={{
                       color: t.faint,
@@ -308,7 +286,7 @@ export function CurrentlyPlaying() {
                       marginLeft: 12,
                     }}
                   >
-                    {g.date}
+                    {formatCompletionDate(game.completed)}
                   </span>
                 </div>
               ))}

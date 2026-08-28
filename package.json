@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:mall": "node --experimental-strip-types --test lib/currently-playing.test.ts app/mall/_lib/experience-state.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.20.0",
     "@upstash/redis": "^1.36.2",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
@@ -16,13 +19,15 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "rehype-pretty-code": "^0.14.1",
-    "shiki": "^3.22.0"
+    "shiki": "^3.22.0",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.183.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
