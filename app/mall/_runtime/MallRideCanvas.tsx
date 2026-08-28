@@ -10,6 +10,10 @@ import {
 import type { MallRideCanvasProps, SceneCommandPort } from "../_lib/scene-contract";
 import { MallRideRuntime, type RideDebugSnapshot } from "./MallRideRuntime";
 
+type MallDebugWindow = Window & {
+  __mallRideRuntime?: MallRideRuntime;
+};
+
 export function MallRideCanvas({
   featuredTitle,
   onEvent,
@@ -39,8 +43,7 @@ export function MallRideCanvas({
         runtime = createdRuntime;
         runtimeRef.current = createdRuntime;
         if (debugEnabled) {
-          (window as Window & { __mallRideRuntime?: MallRideRuntime }).__mallRideRuntime =
-            createdRuntime;
+          (window as MallDebugWindow).__mallRideRuntime = createdRuntime;
         }
         const port: SceneCommandPort = {
           dispatch(command) {
@@ -51,6 +54,7 @@ export function MallRideCanvas({
         createdRuntime.start();
       })
       .catch((error: unknown) => {
+        if (cancelled) return;
         const reason = error instanceof Error ? error.message : "The 3D ride could not start.";
         onEvent({ type: "runtime-unavailable", reason });
       });
@@ -58,11 +62,12 @@ export function MallRideCanvas({
     return () => {
       cancelled = true;
       onPortReady(null);
-      runtime?.dispose();
+      if (runtime) {
+        runtime.dispose();
+      }
       runtimeRef.current = null;
       if (debugEnabled) {
-        delete (window as Window & { __mallRideRuntime?: MallRideRuntime })
-          .__mallRideRuntime;
+        delete (window as MallDebugWindow).__mallRideRuntime;
       }
     };
   }, [debugEnabled, onEvent, onPortReady]);

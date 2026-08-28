@@ -96,6 +96,9 @@ export function MallExperience({
         case "runtime-ready":
           dispatch({ type: "runtime-ready" });
           return;
+        case "runtime-interrupted":
+          dispatch({ type: "runtime-interrupted", reason: event.reason });
+          return;
         case "runtime-unavailable":
           dispatch({ type: "runtime-unavailable", reason: event.reason });
           return;
@@ -179,6 +182,8 @@ export function MallExperience({
           : "Attract mode"
       : state.runtimeStatus === "unavailable"
         ? (state.runtimeMessage ?? "Ride unavailable")
+        : state.runtimeStatus === "recovering"
+          ? (state.runtimeMessage ?? "Restoring ride")
         : "Ride loading";
 
   return (

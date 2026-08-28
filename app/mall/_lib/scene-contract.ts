@@ -4,6 +4,7 @@ export type RideControlMode = "attract" | "driving" | "paused";
 
 export type SceneEvent =
   | { type: "runtime-ready" }
+  | { type: "runtime-interrupted"; reason: string }
   | { type: "runtime-unavailable"; reason: string }
   | { type: "entered-poi"; id: PoiId }
   | {
