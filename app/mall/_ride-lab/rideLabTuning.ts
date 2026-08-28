@@ -37,6 +37,15 @@ export type RideLabTuning = {
   suspensionMax: number;
   frontSuspensionFrequency: number;
   rearSuspensionFrequency: number;
+  preloadChargeSeconds: number;
+  preloadCompression: number;
+  ollieMinImpulse: number;
+  ollieMaxImpulse: number;
+  hoverForce: number;
+  hoverDurationSeconds: number;
+  hoverRechargeSeconds: number;
+  grindCaptureDistance: number;
+  grindFallSpeed: number;
   cameraDistance: number;
   cameraHeight: number;
   cameraLag: number;
@@ -73,6 +82,15 @@ export const DEFAULT_RIDE_LAB_TUNING: Readonly<RideLabTuning> = Object.freeze({
   suspensionMax: 0.42,
   frontSuspensionFrequency: 2,
   rearSuspensionFrequency: 2.35,
+  preloadChargeSeconds: 0.7,
+  preloadCompression: 0.18,
+  ollieMinImpulse: 450,
+  ollieMaxImpulse: 1100,
+  hoverForce: 2200,
+  hoverDurationSeconds: 3,
+  hoverRechargeSeconds: 1.5,
+  grindCaptureDistance: 1,
+  grindFallSpeed: 1.5,
   cameraDistance: 5.6,
   cameraHeight: 2.15,
   cameraLag: 5.5,
@@ -110,6 +128,8 @@ const limits: Record<keyof RideLabTuning, readonly [number, number]> = {
   leanSpring: [20, 1500], leanDamping: [1, 150], rideAssist: [0, 1], massKg: [70, 420], centerOfMassDrop: [0.05, 0.8],
   wheelRadius: [0.15, 0.7], suspensionMin: [0.02, 0.6], suspensionMax: [0.08, 1],
   frontSuspensionFrequency: [0.25, 8], rearSuspensionFrequency: [0.25, 8], cameraDistance: [2.5, 12], cameraHeight: [0.5, 6],
+  preloadChargeSeconds: [0.2, 2.5], preloadCompression: [0.04, 0.3], ollieMinImpulse: [150, 1600], ollieMaxImpulse: [300, 2400],
+  hoverForce: [500, 5000], hoverDurationSeconds: [0.5, 8], hoverRechargeSeconds: [0.5, 8], grindCaptureDistance: [0.2, 2.5], grindFallSpeed: [0.2, 5],
   cameraLag: [0.5, 20], speedFovGain: [0, 30], speedLineThreshold: [0, 30], speedLineIntensity: [0, 2], feedbackIntensity: [0, 2],
 };
 
@@ -124,6 +144,7 @@ export function sanitizeRideLabTuning(value: unknown): RideLabTuning {
   }
   result.maxCatchUpSteps = Math.round(result.maxCatchUpSteps);
   result.suspensionMax = Math.max(result.suspensionMax, result.suspensionMin + 0.04);
+  result.ollieMaxImpulse = Math.max(result.ollieMaxImpulse, result.ollieMinImpulse);
   return result;
 }
 

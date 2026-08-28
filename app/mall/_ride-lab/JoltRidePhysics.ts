@@ -1,6 +1,6 @@
 import initJolt from "jolt-physics/wasm-compat";
 
-import { advanceRideIntent, longitudinalSpeed } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
 import type { RideLabInput, RideLabSnapshot, ResolvedRideIntent } from "./rideLabTypes.ts";
 import type { RideLabTuning } from "./rideLabTuning.ts";
 
@@ -9,6 +9,10 @@ type JoltModule = Awaited<ReturnType<typeof initJolt>>;
 const NON_MOVING = 0;
 const MOVING = 1;
 const ZERO_INTENT: ResolvedRideIntent = { throttle: 0, brake: 0, steer: 0 };
+const ARENA_HALF_SIZE = 24;
+const MIN_GRIND_TANGENTIAL_SPEED = 2;
+
+type GrindWall = { axis: "x" | "z"; sign: -1 | 1 };
 
 let joltModulePromise: Promise<JoltModule> | null = null;
 let interfaceLease: Promise<void> = Promise.resolve();
@@ -51,7 +55,14 @@ export class JoltRidePhysics {
   private intent = ZERO_INTENT;
   private previousSpeed = 0;
   private wasGrounded = false;
-  private lastInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false };
+  private aerialState: AerialMechanicState = createAerialMechanicState();
+  private aerialEvent: AerialMechanicEvent = "idle";
+  private grinding = false;
+  private activeGrindWall: GrindWall | null = null;
+  private grindTangentialVelocity = 0;
+  private lastGrindTangentialVelocity = 0;
+  private grindReleaseSpeedMps = 0;
+  private lastInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false };
   private disposed = false;
 
   private constructor(Jolt: JoltModule, tuning: RideLabTuning, releaseInterfaceLease: () => void) {
@@ -149,6 +160,29 @@ export class JoltRidePhysics {
     this.lastInput = { ...input };
     if (input.reset) this.reset();
     this.intent = advanceRideIntent(this.intent, input, this.tuning, this.tuning.fixedStep);
+    const releasedGrindWall = this.activeGrindWall && this.aerialState.actionWasHeld && !this.wasGrounded && !input.aerialAction
+      ? this.activeGrindWall
+      : null;
+    const releasedGrindTangentialVelocity = this.lastGrindTangentialVelocity;
+    const grindWall = this.findGrindWall(input.aerialAction);
+    const aerialStep = advanceAerialMechanic(
+      this.aerialState,
+      { actionHeld: !input.reset && input.aerialAction, grounded: this.wasGrounded, wallEligible: grindWall !== null },
+      this.tuning,
+      this.tuning.fixedStep,
+    );
+    this.aerialState = aerialStep.state;
+    this.aerialEvent = aerialStep.eventPulse;
+    this.grinding = aerialStep.grinding;
+    if (aerialStep.grinding && grindWall && this.grindTangentialVelocity === 0) {
+      this.grindTangentialVelocity = grindWall.axis === "x" ? this.linearVelocityOut.GetZ() : this.linearVelocityOut.GetX();
+    }
+    this.activeGrindWall = aerialStep.grinding ? grindWall : null;
+    if (!input.aerialAction || this.wasGrounded) this.grindTangentialVelocity = 0;
+    if (!input.aerialAction || this.wasGrounded) this.lastGrindTangentialVelocity = 0;
+    if (this.wasGrounded && input.aerialAction) this.applyPreloadForce();
+    if (aerialStep.ollieImpulse > 0) this.applyVerticalImpulse(aerialStep.ollieImpulse);
+    if (aerialStep.upwardForce > 0) this.applyVerticalForce(aerialStep.upwardForce);
     const topSpeedFactor = clamp(1 - Math.max(0, this.previousSpeed - this.tuning.topSpeedMps) / 2, 0, 1);
     this.controller.SetDriverInput(
       this.intent.throttle * topSpeedFactor,
@@ -160,6 +194,13 @@ export class JoltRidePhysics {
       this.bodyInterface.ActivateBody(this.motorcycleBody.GetID());
     }
     this.jolt.Step(this.tuning.fixedStep, 1);
+    if (aerialStep.grinding && grindWall) {
+      this.bodyInterface.GetLinearAndAngularVelocity(this.motorcycleBody.GetID(), this.linearVelocityOut, this.angularVelocityOut);
+      this.applyWallGrind(grindWall);
+    } else if (releasedGrindWall) {
+      this.bodyInterface.GetLinearAndAngularVelocity(this.motorcycleBody.GetID(), this.linearVelocityOut, this.angularVelocityOut);
+      this.grindReleaseSpeedMps = this.preserveReleasedGrindMomentum(releasedGrindWall, releasedGrindTangentialVelocity);
+    }
     return this.snapshot();
   }
 
@@ -190,10 +231,13 @@ export class JoltRidePhysics {
     const z = rotationZ;
     const w = rotationW;
     const leanRadians = Math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
-    const grounded = frontWheel.HasContact() || rearWheelBase.HasContact();
+    const grounded = this.isGroundContact(frontWheel) || this.isGroundContact(rearWheelBase);
+    const movementTransition = this.wasGrounded && !grounded ? "takeoff"
+      : !this.wasGrounded && grounded ? "landing"
+        : "idle";
     const eventPulse = this.lastInput.reset ? "reset"
-      : this.wasGrounded && !grounded ? "takeoff"
-        : !this.wasGrounded && grounded ? "landing"
+      : this.aerialEvent !== "idle" ? this.aerialEvent
+        : movementTransition !== "idle" ? movementTransition
           : this.lastInput.brake > 0 ? "brake"
             : this.lastInput.throttle > 0 ? "throttle"
               : Math.abs(this.lastInput.steer) > 0 ? "steer"
@@ -203,6 +247,7 @@ export class JoltRidePhysics {
       position: { x: position.GetX(), y: position.GetY(), z: position.GetZ() },
       rotation: { x, y, z, w },
       speedMps,
+      horizontalSpeedMps: Math.hypot(velocity.GetX(), velocity.GetZ()),
       accelerationMps2,
       verticalSpeedMps: velocity.GetY(),
       leanRadians,
@@ -211,8 +256,15 @@ export class JoltRidePhysics {
       frontSuspensionLoad: frontLoad,
       rearSuspensionLoad: rearLoad,
       rearSlip: Math.abs(rearWheel.mLongitudinalSlip),
+      preload: this.aerialState.preload,
+      hoverEnergy: this.aerialState.hoverEnergy,
+      airtimeSeconds: this.aerialState.airtimeSeconds,
+      aerialPhase: this.aerialState.phase,
+      grinding: this.grinding,
+      grindReleaseSpeedMps: this.grindReleaseSpeedMps,
       acceptedInput: { ...this.lastInput },
       eventPulse,
+      movementTransition,
       intent: { ...this.intent },
     };
   }
@@ -229,8 +281,32 @@ export class JoltRidePhysics {
     this.Jolt.destroy(rotation);
     this.Jolt.destroy(zero);
     this.intent = ZERO_INTENT;
+    this.aerialState = createAerialMechanicState();
+    this.aerialEvent = "idle";
+    this.grinding = false;
+    this.activeGrindWall = null;
+    this.grindTangentialVelocity = 0;
+    this.lastGrindTangentialVelocity = 0;
+    this.grindReleaseSpeedMps = 0;
     this.previousSpeed = 0;
     this.wasGrounded = false;
+  }
+
+  cancelAerialAction() {
+    if (this.disposed) return;
+    this.aerialState = {
+      ...this.aerialState,
+      preload: 0,
+      phase: this.wasGrounded ? "grounded" : "airborne",
+      actionWasHeld: false,
+      airborneBlockedUntilRelease: false,
+    };
+    this.aerialEvent = "idle";
+    this.grinding = false;
+    this.activeGrindWall = null;
+    this.grindTangentialVelocity = 0;
+    this.lastGrindTangentialVelocity = 0;
+    this.lastInput = { ...this.lastInput, aerialAction: false };
   }
 
   dispose() {
@@ -257,10 +333,10 @@ export class JoltRidePhysics {
 
   private createArena() {
     this.createStaticBox(0, -0.5, 0, 24, 0.5, 24, 0);
-    this.createStaticBox(0, 2.4, 24, 24, 3, 0.35, 0);
-    this.createStaticBox(0, 2.4, -24, 24, 3, 0.35, 0);
-    this.createStaticBox(24, 2.4, 0, 0.35, 3, 24, 0);
-    this.createStaticBox(-24, 2.4, 0, 0.35, 3, 24, 0);
+    this.createStaticBox(0, 5.5, 24, 24, 6, 0.35, 0);
+    this.createStaticBox(0, 5.5, -24, 24, 6, 0.35, 0);
+    this.createStaticBox(24, 5.5, 0, 0.35, 6, 24, 0);
+    this.createStaticBox(-24, 5.5, 0, 0.35, 6, 24, 0);
     this.createStaticBox(7, 0.35, 9, 3.5, 0.22, 5, -0.2);
     this.createStaticBox(-9, 0.7, -6, 4, 0.22, 6, 0.3);
   }
@@ -336,5 +412,122 @@ export class JoltRidePhysics {
       this.Jolt.destroy(axis);
     }
     return wheel;
+  }
+
+  setScenario(scenario: "start" | "wall-grind") {
+    if (scenario === "start") {
+      this.reset();
+      return;
+    }
+    this.reset();
+    const position = new this.Jolt.RVec3(ARENA_HALF_SIZE - 0.8, 3, 0);
+    const rotation = new this.Jolt.Quat(0, 0, 0, 1);
+    const velocity = new this.Jolt.Vec3(0, 0, 8);
+    const zero = new this.Jolt.Vec3(0, 0, 0);
+    this.bodyInterface.SetPositionRotationAndVelocity(this.motorcycleBody.GetID(), position, rotation, velocity, zero);
+    this.Jolt.destroy(position);
+    this.Jolt.destroy(rotation);
+    this.Jolt.destroy(velocity);
+    this.Jolt.destroy(zero);
+    this.intent = ZERO_INTENT;
+    this.aerialState = createAerialMechanicState();
+    this.aerialState = { ...this.aerialState, phase: "airborne" };
+    this.aerialEvent = "idle";
+    this.grinding = false;
+    this.activeGrindWall = null;
+    this.grindTangentialVelocity = 0;
+    this.lastGrindTangentialVelocity = 0;
+    this.grindReleaseSpeedMps = 0;
+    this.wasGrounded = false;
+    this.previousSpeed = 8;
+    this.snapshot();
+  }
+
+  private applyPreloadForce() {
+    const force = new this.Jolt.Vec3(0, -this.tuning.massKg * 9.81 * (0.5 + this.aerialState.preload), 0);
+    this.bodyInterface.AddForce(this.motorcycleBody.GetID(), force, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(force);
+  }
+
+  private applyVerticalImpulse(amount: number) {
+    const impulse = new this.Jolt.Vec3(0, amount, 0);
+    this.bodyInterface.AddImpulse(this.motorcycleBody.GetID(), impulse);
+    this.Jolt.destroy(impulse);
+  }
+
+  private applyVerticalForce(amount: number) {
+    const force = new this.Jolt.Vec3(0, amount, 0);
+    this.bodyInterface.AddForce(this.motorcycleBody.GetID(), force, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(force);
+  }
+
+  private findGrindWall(actionHeld: boolean): GrindWall | null {
+    if (actionHeld && this.activeGrindWall && this.isWithinGrindReleaseZone(this.activeGrindWall)) return this.activeGrindWall;
+    return this.findEligibleGrindWall();
+  }
+
+  private findEligibleGrindWall(): GrindWall | null {
+    if (this.wasGrounded || this.positionOut.GetY() < 0.8 || this.positionOut.GetY() > 11.5) return null;
+    const xDistance = Math.abs(ARENA_HALF_SIZE - Math.abs(this.positionOut.GetX()));
+    const zDistance = Math.abs(ARENA_HALF_SIZE - Math.abs(this.positionOut.GetZ()));
+    const xEligible = xDistance <= this.tuning.grindCaptureDistance && Math.abs(this.positionOut.GetZ()) < ARENA_HALF_SIZE - 0.5 && Math.abs(this.linearVelocityOut.GetZ()) >= MIN_GRIND_TANGENTIAL_SPEED;
+    const zEligible = zDistance <= this.tuning.grindCaptureDistance && Math.abs(this.positionOut.GetX()) < ARENA_HALF_SIZE - 0.5 && Math.abs(this.linearVelocityOut.GetX()) >= MIN_GRIND_TANGENTIAL_SPEED;
+    if (!xEligible && !zEligible) return null;
+    if (xEligible && (!zEligible || xDistance <= zDistance)) return { axis: "x", sign: this.positionOut.GetX() < 0 ? -1 : 1 };
+    return { axis: "z", sign: this.positionOut.GetZ() < 0 ? -1 : 1 };
+  }
+
+  private isWithinGrindReleaseZone(wall: GrindWall) {
+    if (this.wasGrounded || this.positionOut.GetY() < 0.5 || this.positionOut.GetY() > 11.5) return false;
+    const normalPosition = wall.axis === "x" ? this.positionOut.GetX() : this.positionOut.GetZ();
+    const tangentPosition = wall.axis === "x" ? this.positionOut.GetZ() : this.positionOut.GetX();
+    const tangentSpeed = wall.axis === "x" ? this.linearVelocityOut.GetZ() : this.linearVelocityOut.GetX();
+    return Math.abs(ARENA_HALF_SIZE - Math.abs(normalPosition)) <= this.tuning.grindCaptureDistance * 1.75
+      && Math.abs(tangentPosition) < ARENA_HALF_SIZE - 0.5
+      && Math.abs(tangentSpeed) >= MIN_GRIND_TANGENTIAL_SPEED * 0.5;
+  }
+
+  private isGroundContact(wheel: InstanceType<JoltModule["Wheel"]>) {
+    return wheel.HasContact() && wheel.GetContactNormal().GetY() > 0.5;
+  }
+
+  private applyWallGrind(wall: GrindWall) {
+    let x = this.linearVelocityOut.GetX();
+    const gravityCompensation = 9.81 * this.tuning.fixedStep;
+    const y = Math.max(this.linearVelocityOut.GetY(), -this.tuning.grindFallSpeed + gravityCompensation);
+    let z = this.linearVelocityOut.GetZ();
+    const minimumTangentialSpeed = Math.abs(this.grindTangentialVelocity) * 0.91;
+    if (wall.axis === "x" && Math.abs(z) < minimumTangentialSpeed) z = Math.sign(this.grindTangentialVelocity) * minimumTangentialSpeed;
+    if (wall.axis === "z" && Math.abs(x) < minimumTangentialSpeed) x = Math.sign(this.grindTangentialVelocity) * minimumTangentialSpeed;
+    this.lastGrindTangentialVelocity = wall.axis === "x" ? z : x;
+    const normalPosition = wall.axis === "x" ? this.positionOut.GetX() : this.positionOut.GetZ();
+    const normalOffset = normalPosition - wall.sign * ARENA_HALF_SIZE;
+    if (wall.axis === "x" && x * normalOffset > 0) x = 0;
+    if (wall.axis === "z" && z * normalOffset > 0) z = 0;
+    const velocity = new this.Jolt.Vec3(x, y, z);
+    this.bodyInterface.SetLinearVelocity(this.motorcycleBody.GetID(), velocity);
+    const latchForce = this.tuning.massKg * 8;
+    const towardWall = normalOffset === 0 ? 0 : -Math.sign(normalOffset);
+    const force = new this.Jolt.Vec3(
+      wall.axis === "x" ? towardWall * latchForce : 0,
+      0,
+      wall.axis === "z" ? towardWall * latchForce : 0,
+    );
+    this.bodyInterface.AddForce(this.motorcycleBody.GetID(), force, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(velocity);
+    this.Jolt.destroy(force);
+  }
+
+  private preserveReleasedGrindMomentum(wall: GrindWall, entryTangentialVelocity: number) {
+    let x = this.linearVelocityOut.GetX();
+    const y = this.linearVelocityOut.GetY();
+    let z = this.linearVelocityOut.GetZ();
+    const minimumSpeed = Math.abs(entryTangentialVelocity) * 0.95;
+    if (wall.axis === "x" && Math.abs(z) < minimumSpeed) z = Math.sign(entryTangentialVelocity) * minimumSpeed;
+    if (wall.axis === "z" && Math.abs(x) < minimumSpeed) x = Math.sign(entryTangentialVelocity) * minimumSpeed;
+    const velocity = new this.Jolt.Vec3(x, y, z);
+    this.bodyInterface.SetLinearVelocity(this.motorcycleBody.GetID(), velocity);
+    this.Jolt.destroy(velocity);
+    return Math.hypot(x, z);
   }
 }

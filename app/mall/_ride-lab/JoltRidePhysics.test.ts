@@ -4,7 +4,7 @@ import test from "node:test";
 import { JoltRidePhysics, loadJolt } from "./JoltRidePhysics.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
-const idle = { throttle: 0, brake: 0, steer: 0, reset: false };
+const idle = { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false };
 
 test("native Jolt motorcycle accelerates, coasts, and brakes deterministically", async () => {
   const run = async () => {
@@ -73,10 +73,73 @@ test("the authored test ramp produces a grounded-airborne-grounded journey", asy
   let sawLandingAfterTakeoff = false;
   for (let step = 0; step < 220; step += 1) {
     const snapshot = physics.step({ ...idle, throttle: 1, steer: step < 80 ? -0.35 : 0 });
-    sawTakeoff ||= snapshot.eventPulse === "takeoff";
-    sawLandingAfterTakeoff ||= sawTakeoff && snapshot.eventPulse === "landing";
+    sawTakeoff ||= snapshot.movementTransition === "takeoff";
+    sawLandingAfterTakeoff ||= sawTakeoff && snapshot.movementTransition === "landing";
   }
   physics.dispose();
   assert.equal(sawTakeoff, true);
   assert.equal(sawLandingAfterTakeoff, true);
+});
+
+test("a held physical preload stays grounded until release produces upward ollie velocity", async () => {
+  const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+  let snapshot = physics.snapshot();
+  for (let step = 0; step < 90; step += 1) snapshot = physics.step(idle);
+  assert.equal(snapshot.grounded, true);
+  const groundedHeight = snapshot.position.y;
+  for (let step = 0; step < 42; step += 1) snapshot = physics.step({ ...idle, aerialAction: true });
+  assert.ok(snapshot.preload > 0.98);
+  assert.equal(snapshot.grounded, true);
+  assert.ok(snapshot.position.y <= groundedHeight + 0.02);
+  snapshot = physics.step(idle);
+  physics.dispose();
+  assert.equal(snapshot.eventPulse, "ollie");
+  assert.equal(snapshot.preload, 0);
+  assert.ok(snapshot.verticalSpeedMps > 4);
+});
+
+test("the complete ollie and hover profile repeats exactly", async () => {
+  const run = async () => {
+    const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+    let snapshot = physics.snapshot();
+    for (let step = 0; step < 90; step += 1) snapshot = physics.step(idle);
+    for (let step = 0; step < 42; step += 1) snapshot = physics.step({ ...idle, aerialAction: true });
+    snapshot = physics.step(idle);
+    for (let step = 0; step < 180; step += 1) snapshot = physics.step({ ...idle, aerialAction: true });
+    physics.dispose();
+    return {
+      position: snapshot.position,
+      verticalSpeedMps: snapshot.verticalSpeedMps,
+      hoverEnergy: snapshot.hoverEnergy,
+      aerialPhase: snapshot.aerialPhase,
+    };
+  };
+  assert.deepEqual(await run(), await run());
+});
+
+test("lifecycle cancellation clears preload without producing an ollie", async () => {
+  const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+  let snapshot = physics.snapshot();
+  for (let step = 0; step < 90; step += 1) snapshot = physics.step(idle);
+  for (let step = 0; step < 30; step += 1) snapshot = physics.step({ ...idle, aerialAction: true });
+  assert.ok(snapshot.preload > 0);
+  physics.cancelAerialAction();
+  snapshot = physics.step(idle);
+  physics.dispose();
+  assert.equal(snapshot.preload, 0);
+  assert.notEqual(snapshot.eventPulse, "ollie");
+  assert.equal(snapshot.acceptedInput.aerialAction, false);
+});
+
+test("wall setup enters a resource-bound grind while preserving tangential momentum", async () => {
+  const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+  physics.setScenario("wall-grind");
+  const before = physics.snapshot();
+  const grinding = physics.step({ ...idle, aerialAction: true });
+  physics.dispose();
+  assert.equal(grinding.eventPulse, "grind");
+  assert.equal(grinding.grinding, true);
+  assert.ok(grinding.hoverEnergy < before.hoverEnergy);
+  assert.ok(grinding.horizontalSpeedMps > before.horizontalSpeedMps * 0.95);
+  assert.ok(grinding.verticalSpeedMps >= -DEFAULT_RIDE_LAB_TUNING.grindFallSpeed - 0.1);
 });

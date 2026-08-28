@@ -1,6 +1,6 @@
 import type { RideLabTuning } from "./rideLabTuning.ts";
 
-export type RideLabTuningGroup = "Drivetrain" | "Braking" | "Steering & assist" | "Chassis & suspension" | "Camera & feedback" | "Jolt advanced";
+export type RideLabTuningGroup = "Drivetrain" | "Braking" | "Steering & assist" | "Chassis & suspension" | "Aerial & grind" | "Camera & feedback" | "Jolt advanced";
 
 export type RideLabControl = {
   key: keyof RideLabTuning;
@@ -35,6 +35,15 @@ export const RIDE_LAB_CONTROLS: readonly RideLabControl[] = [
   control("suspensionMax", "Maximum suspension", "Chassis & suspension", 0.01, "Longest allowed suspension length."),
   control("frontSuspensionFrequency", "Front suspension", "Chassis & suspension", 0.05, "Front spring frequency; higher values feel firmer."),
   control("rearSuspensionFrequency", "Rear suspension", "Chassis & suspension", 0.05, "Rear spring frequency; higher values feel firmer."),
+  control("preloadChargeSeconds", "Preload time", "Aerial & grind", 0.05, "Seconds of grounded Space hold needed to fully load the ollie."),
+  control("preloadCompression", "Visible compression", "Aerial & grind", 0.01, "Maximum visible chassis compression while preload is held."),
+  control("ollieMinImpulse", "Minimum ollie impulse", "Aerial & grind", 25, "Upward impulse produced by a short valid preload release."),
+  control("ollieMaxImpulse", "Maximum ollie impulse", "Aerial & grind", 25, "Upward impulse produced by a fully charged preload release."),
+  control("hoverForce", "Hover force", "Aerial & grind", 50, "Upward Jolt force applied while Space is held in open air."),
+  control("hoverDurationSeconds", "Hover duration", "Aerial & grind", 0.1, "Seconds a full resource meter can sustain hover or grind."),
+  control("hoverRechargeSeconds", "Ground recharge", "Aerial & grind", 0.1, "Grounded seconds needed to recharge an empty hover meter."),
+  control("grindCaptureDistance", "Grind capture distance", "Aerial & grind", 0.05, "Maximum distance from an arena wall where airborne Space can latch a grind."),
+  control("grindFallSpeed", "Grind fall speed", "Aerial & grind", 0.1, "Maximum downward speed while a valid wall grind is held."),
   control("cameraDistance", "Follow distance", "Camera & feedback", 0.1, "Base chase-camera distance."),
   control("cameraHeight", "Camera height", "Camera & feedback", 0.1, "Base chase-camera height."),
   control("cameraLag", "Camera lag", "Camera & feedback", 0.1, "Follow response; lower values communicate more acceleration lag."),

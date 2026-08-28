@@ -38,6 +38,86 @@ export function longitudinalSpeed(
   return velocity.x * forwardX + velocity.y * forwardY + velocity.z * forwardZ;
 }
 
+export type AerialMechanicPhase = "grounded" | "preload" | "airborne" | "hover" | "grind" | "depleted";
+
+export type AerialMechanicState = {
+  preload: number;
+  hoverEnergy: number;
+  airtimeSeconds: number;
+  phase: AerialMechanicPhase;
+  actionWasHeld: boolean;
+  airborneBlockedUntilRelease: boolean;
+};
+
+export type AerialMechanicEvent = "idle" | "preload" | "ollie" | "hover" | "grind" | "depleted";
+
+export function createAerialMechanicState(): AerialMechanicState {
+  return { preload: 0, hoverEnergy: 1, airtimeSeconds: 0, phase: "grounded", actionWasHeld: false, airborneBlockedUntilRelease: false };
+}
+
+export function advanceAerialMechanic(
+  current: AerialMechanicState,
+  input: { actionHeld: boolean; grounded: boolean; wallEligible: boolean },
+  tuning: RideLabTuning,
+  delta: number,
+) {
+  if (input.grounded) {
+    const hoverEnergy = Math.min(1, current.hoverEnergy + delta / tuning.hoverRechargeSeconds);
+    if (input.actionHeld) {
+      return {
+        state: {
+          preload: Math.min(1, current.preload + delta / tuning.preloadChargeSeconds),
+          hoverEnergy,
+          airtimeSeconds: 0,
+          phase: "preload" as const,
+          actionWasHeld: true,
+          airborneBlockedUntilRelease: true,
+        },
+        eventPulse: "preload" as const,
+        ollieImpulse: 0,
+        upwardForce: 0,
+        grinding: false,
+      };
+    }
+    const releasedPreload = current.actionWasHeld ? current.preload : 0;
+    return {
+      state: { preload: 0, hoverEnergy, airtimeSeconds: 0, phase: "grounded" as const, actionWasHeld: false, airborneBlockedUntilRelease: false },
+      eventPulse: releasedPreload > 0 ? "ollie" as const : "idle" as const,
+      ollieImpulse: releasedPreload > 0
+        ? tuning.ollieMinImpulse + (tuning.ollieMaxImpulse - tuning.ollieMinImpulse) * releasedPreload
+        : 0,
+      upwardForce: 0,
+      grinding: false,
+    };
+  }
+
+  const airborneBlockedUntilRelease = input.actionHeld ? current.airborneBlockedUntilRelease : false;
+  const canSpend = input.actionHeld && !airborneBlockedUntilRelease && current.hoverEnergy > 0;
+  const hoverEnergy = canSpend
+    ? Math.max(0, current.hoverEnergy - delta / tuning.hoverDurationSeconds)
+    : current.hoverEnergy;
+  const grinding = canSpend && input.wallEligible;
+  const eventPulse: AerialMechanicEvent = !input.actionHeld || airborneBlockedUntilRelease ? "idle"
+    : !canSpend ? "depleted"
+      : grinding ? "grind"
+        : "hover";
+  const phase: AerialMechanicPhase = eventPulse === "idle" ? "airborne" : eventPulse;
+  return {
+    state: {
+      preload: 0,
+      hoverEnergy,
+      airtimeSeconds: current.airtimeSeconds + delta,
+      phase,
+      actionWasHeld: input.actionHeld,
+      airborneBlockedUntilRelease,
+    },
+    eventPulse,
+    ollieImpulse: 0,
+    upwardForce: canSpend && !grinding ? tuning.hoverForce : 0,
+    grinding,
+  };
+}
+
 export function speedLineStrength(speedMps: number, accelerationMps2: number, tuning: RideLabTuning) {
   if (speedMps < tuning.speedLineThreshold) return 0;
   const speed = (speedMps - tuning.speedLineThreshold) / Math.max(1, tuning.topSpeedMps - tuning.speedLineThreshold);
@@ -49,6 +129,6 @@ export function retainTransitionPulse(
   retained: RideLabSnapshot["eventPulse"] | null,
   next: RideLabSnapshot["eventPulse"],
 ) {
-  if (retained === "reset" || retained === "takeoff" || retained === "landing") return retained;
-  return next === "reset" || next === "takeoff" || next === "landing" ? next : null;
+  if (retained === "reset" || retained === "ollie" || retained === "takeoff" || retained === "landing") return retained;
+  return next === "reset" || next === "ollie" || next === "takeoff" || next === "landing" ? next : null;
 }

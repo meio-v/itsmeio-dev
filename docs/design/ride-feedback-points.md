@@ -53,14 +53,15 @@ Every editable value has a bounded range, default, reset, and explanation.
 - The lab publishes ground/air, suspension, lean, slip, acceleration, and
   lifecycle diagnostics so tuning changes can be measured rather than guessed.
 
-Ollie preload, hover, wall grinding, and authored mall expansion are deliberately
-outside Phase 1. Their design notes remain future inputs, not inactive knobs.
+Phase 2 implements ollie preload, hover, and wall grinding inside `rideLab` only.
+Authored mall expansion remains outside the lab and these mechanics still require
+human approval before any promotion.
 
-The future Space sequence remains: hold on the ground for visible suspension
-preload, release for an ollie, then hold again while airborne for resource-bound
-hover or to latch a valid wall grind. Hover recharges on the ground. A grind
+The Space sequence is: hold on the ground for visible suspension preload,
+release for an ollie, then hold again while airborne for resource-bound hover or
+to latch a valid wall grind. Hover recharges on the ground. A grind
 preserves entry momentum and releases back into flight. Those mechanics require
-their own acceptance gates after the foundational motorcycle feel is approved.
+their own acceptance gates and human judgment before leaving `rideLab`.
 
 ## Tuning complexity budget
 

@@ -21,6 +21,7 @@ function mesh(
 export type VehicleVisual = {
   root: THREE.Group;
   lean: THREE.Group;
+  body: THREE.Group;
   frontWheel: THREE.Group;
   rearWheel: THREE.Group;
   dispose(): void;
@@ -32,6 +33,9 @@ export function createVehicleVisual(): VehicleVisual {
   const lean = new THREE.Group();
   lean.name = "moped-visual-lean";
   root.add(lean);
+  const body = new THREE.Group();
+  body.name = "moped-sprung-body";
+  lean.add(body);
 
   const ink = toon(0x19132d);
   const hotPink = toon(0xff3d81);
@@ -50,7 +54,7 @@ export function createVehicleVisual(): VehicleVisual {
   rearWheel.add(mesh(wheelGeometry, ink, [0, 0, 0], [Math.PI / 2, 0, 0]));
   lean.add(frontWheel, rearWheel);
 
-  lean.add(
+  body.add(
     mesh(new THREE.CapsuleGeometry(0.25, 0.85, 3, 8), hotPink, [-0.05, -0.04, 0], [0, 0, Math.PI / 2]),
     mesh(new THREE.BoxGeometry(0.5, 0.12, 0.34), ink, [-0.3, 0.18, 0]),
     mesh(new THREE.BoxGeometry(0.08, 0.62, 0.08), ink, [0.5, 0.25, 0], [0, 0, -0.18]),
@@ -77,11 +81,12 @@ export function createVehicleVisual(): VehicleVisual {
     mesh(legGeometry, ink, [-0.06, 0.02, 0.16], [0, 0, 0.65]),
     mesh(legGeometry, ink, [-0.06, 0.02, -0.16], [0, 0, 0.65]),
   );
-  lean.add(rider);
+  body.add(rider);
 
   return {
     root,
     lean,
+    body,
     frontWheel,
     rearWheel,
     dispose() {

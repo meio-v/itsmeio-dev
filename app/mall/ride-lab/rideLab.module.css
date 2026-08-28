@@ -17,6 +17,9 @@
 .rideSurface[data-feedback="brake"] .feedback { color: #ff88aa; border-color: #ff88aa; }
 .rideSurface[data-feedback="steer"] .feedback { color: #8ff5ee; border-color: #8ff5ee; }
 .rideSurface[data-feedback="reset"] .feedback { color: #fff; border-color: #fff; }
+.rideSurface[data-feedback="preload"] .feedback { color: #ffd65a; border-color: #ffd65a; }
+.rideSurface[data-feedback="hover"] .feedback { color: #83ddff; border-color: #83ddff; }
+.rideSurface[data-feedback="grind"] .feedback { color: #ff87ef; border-color: #ff87ef; }
 .touchControls { position: absolute; inset: auto 1rem 1rem; display: flex; justify-content: space-between; pointer-events: none; }
 .touchControls > div { display: flex; gap: .5rem; }
 .touchControls button { pointer-events: auto; min-width: 3.2rem; min-height: 3.2rem; border: 1px solid #f8e9d8; color: #f8e9d8; background: rgba(32,28,53,.85); font: inherit; touch-action: none; }

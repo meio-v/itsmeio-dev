@@ -11,7 +11,7 @@ import { DEFAULT_RIDE_LAB_TUNING, getRideLabTuningLimits, parseRideLabTuning, RI
 import styles from "../rideLab.module.css";
 
 const STORAGE_KEY = "itsmeio.rideLab.config.v1";
-const GROUPS: readonly RideLabTuningGroup[] = ["Drivetrain", "Braking", "Steering & assist", "Chassis & suspension", "Camera & feedback", "Jolt advanced"];
+const GROUPS: readonly RideLabTuningGroup[] = ["Drivetrain", "Braking", "Steering & assist", "Chassis & suspension", "Aerial & grind", "Camera & feedback", "Jolt advanced"];
 const TUNING_LIMITS = getRideLabTuningLimits();
 
 export function RideLabExperience() {
@@ -120,7 +120,7 @@ export function RideLabExperience() {
     <main className={styles.shell}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>Development only · Phase 1</p>
+          <p className={styles.eyebrow}>Development only · Phases 1–2</p>
           <h1>rideLab</h1>
           <p>Jolt motorcycle feel lab. Nothing here changes the authored Rapier mall ride.</p>
         </div>
@@ -139,7 +139,7 @@ export function RideLabExperience() {
         >
           <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
           <div className={styles.speedLines} aria-hidden="true" />
-          <p id="ride-lab-help" className={styles.help}>WASD or arrows ride · R resets · use the on-screen controls on touch</p>
+          <p id="ride-lab-help" className={styles.help}>WASD or arrows ride · hold Space to preload, release to ollie, hold airborne to hover or grind · R resets</p>
           <output className={styles.feedback} aria-live="polite">
             {error ? error : `${lifecycle} · ${snapshot?.eventPulse ?? "idle"}`}
           </output>
@@ -151,6 +151,7 @@ export function RideLabExperience() {
             <div>
               <HoldButton label="Accelerate" onChange={(pressed) => runtimeRef.current?.setVirtualInput({ throttle: pressed ? 1 : 0 })}>GO</HoldButton>
               <HoldButton label="Brake" onChange={(pressed) => runtimeRef.current?.setVirtualInput({ brake: pressed ? 1 : 0 })}>BRAKE</HoldButton>
+              <HoldButton label="Preload or hover" onChange={(pressed) => runtimeRef.current?.setVirtualInput({ aerialAction: pressed })}>SPACE</HoldButton>
               <button type="button" aria-label="Reset moped" onClick={() => runtimeRef.current?.setVirtualInput({ reset: true })}>R</button>
             </div>
           </div>
@@ -166,12 +167,15 @@ export function RideLabExperience() {
               <Metric label="Lean" value={`${((snapshot?.leanRadians ?? 0) * 180 / Math.PI).toFixed(1)}°`} />
               <Metric label="Suspension F/R" value={`${(snapshot?.frontSuspensionLoad ?? 0).toFixed(1)} / ${(snapshot?.rearSuspensionLoad ?? 0).toFixed(1)}`} />
               <Metric label="Rear slip" value={(snapshot?.rearSlip ?? 0).toFixed(3)} />
+              <Metric label="Aerial state" value={`${snapshot?.aerialPhase ?? "grounded"} · ${(snapshot?.airtimeSeconds ?? 0).toFixed(2)}s`} />
               <Metric label="Runtime" value={`${snapshot?.liveRuntimes ?? 0} world · ${snapshot?.animationLoops ?? 0} loop`} />
             </dl>
             <div className={styles.meters}>
               <Meter label="Throttle" value={snapshot?.intent.throttle ?? 0} />
               <Meter label="Brake" value={snapshot?.intent.brake ?? 0} />
               <Meter label="Lean" value={Math.abs(snapshot?.leanRadians ?? 0) / tuning.maxLeanRadians} />
+              <Meter label="Preload" value={snapshot?.preload ?? 0} />
+              <Meter label="Hover energy" value={snapshot?.hoverEnergy ?? 1} />
             </div>
             <label className={styles.motionToggle}>
               <input type="checkbox" checked={snapshot?.reducedMotion ?? false} onChange={(event) => runtimeRef.current?.setReducedMotion(event.target.checked)} />
@@ -183,6 +187,8 @@ export function RideLabExperience() {
             <h2>Presets</h2>
             <div>{(Object.keys(RIDE_LAB_PRESETS) as RideLabPresetName[]).map((name) => <button type="button" key={name} onClick={() => selectPreset(name)}>{name}</button>)}</div>
             <button type="button" onClick={() => setTuning({ ...DEFAULT_RIDE_LAB_TUNING })}>Reset all</button>
+            <button type="button" onClick={() => runtimeRef.current?.setScenario("start")}>Start setup</button>
+            <button type="button" onClick={() => runtimeRef.current?.setScenario("wall-grind")}>Wall grind setup</button>
           </section>
 
           <section className={styles.tuning} aria-label="Categorized physics tuning">

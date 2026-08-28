@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { InputController } from "../_runtime/inputController";
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
+import { RideLabActionController } from "./RideLabActionController";
 import { normalizedSpeed, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
@@ -31,6 +32,7 @@ export class RideLabRuntime {
   private readonly camera = new THREE.PerspectiveCamera(52, 1, 0.08, 120);
   private readonly renderer: THREE.WebGLRenderer;
   private readonly input: InputController;
+  private readonly actionInput: RideLabActionController;
   private readonly vehicle: VehicleVisual;
   private readonly vehiclePose = new THREE.Group();
   private readonly resizeObserver: ResizeObserver;
@@ -38,6 +40,8 @@ export class RideLabRuntime {
   private readonly cameraTarget = new THREE.Vector3();
   private readonly cameraDesired = new THREE.Vector3();
   private readonly cameraForward = new THREE.Vector3();
+  private readonly preloadOffset = new THREE.Vector3();
+  private readonly inverseVehicleRootRotation = new THREE.Quaternion();
   private physics: JoltRidePhysics | null;
   private tuning: RideLabTuning;
   private snapshot: RideLabSnapshot;
@@ -58,7 +62,7 @@ export class RideLabRuntime {
   private reconfigureGeneration = 0;
   private reconfigureQueue: Promise<void> = Promise.resolve();
   private resetPending = false;
-  private presentationInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false };
+  private presentationInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false };
 
   private constructor(options: RideLabRuntimeOptions, physics: JoltRidePhysics, context: WebGL2RenderingContext) {
     this.options = options;
@@ -79,11 +83,14 @@ export class RideLabRuntime {
     this.vehiclePose.add(this.vehicle.root);
     this.scene.add(this.vehiclePose);
     this.input = new InputController(options.surface);
+    this.actionInput = new RideLabActionController(options.surface);
     this.input.setEnabled(true);
+    this.actionInput.setEnabled(true);
     this.resizeObserver = new ResizeObserver(this.resize);
     this.resizeObserver.observe(options.canvas);
     options.canvas.addEventListener("webglcontextlost", this.onContextLost);
     options.canvas.addEventListener("webglcontextrestored", this.onContextRestored);
+    document.addEventListener("visibilitychange", this.onVisibilityChange);
     this.motionQuery.addEventListener("change", this.onMotionChange);
     this.reducedMotion = this.motionQuery.matches;
     counters.liveRuntimes += 1;
@@ -117,11 +124,13 @@ export class RideLabRuntime {
     if (this.disposed || this.lifecycle !== "active") return;
     this.setLifecycle("paused");
     this.input.setEnabled(false);
+    this.cancelAerialInput(true);
   }
 
   resume() {
     if (this.disposed || this.contextLost) return;
     this.input.setEnabled(true);
+    this.actionInput.setEnabled(true);
     this.lastFrame = performance.now();
     this.setLifecycle("active");
   }
@@ -133,6 +142,14 @@ export class RideLabRuntime {
     if ("steer" in input) mapped.steer = input.steer;
     if ("reset" in input) mapped.reset = input.reset;
     this.input.setVirtual(mapped);
+    if ("aerialAction" in input) this.actionInput.setVirtual(Boolean(input.aerialAction));
+  }
+
+  setScenario(scenario: "start" | "wall-grind") {
+    this.physics?.setScenario(scenario);
+    if (this.physics) this.snapshot = this.physics.snapshot();
+    this.accumulator = 0;
+    this.publishSnapshot(performance.now(), true);
   }
 
   setReducedMotion(reduced: boolean) {
@@ -150,6 +167,7 @@ export class RideLabRuntime {
     const generation = ++this.reconfigureGeneration;
     this.setLifecycle("loading");
     this.input.setEnabled(false);
+    this.actionInput.setEnabled(false);
     const operation = this.reconfigureQueue.catch(() => undefined).then(async () => {
       if (this.disposed || generation !== this.reconfigureGeneration) return;
       this.physics?.dispose();
@@ -190,6 +208,7 @@ export class RideLabRuntime {
       reducedMotion: this.reducedMotion,
       liveRuntimes: counters.liveRuntimes,
       animationLoops: counters.animationLoops,
+      cameraPosition: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z },
     };
   }
 
@@ -203,9 +222,11 @@ export class RideLabRuntime {
     counters.liveRuntimes = Math.max(0, counters.liveRuntimes - 1);
     this.resizeObserver.disconnect();
     this.input.dispose();
+    this.actionInput.dispose();
     this.motionQuery.removeEventListener("change", this.onMotionChange);
     this.options.canvas.removeEventListener("webglcontextlost", this.onContextLost);
     this.options.canvas.removeEventListener("webglcontextrestored", this.onContextRestored);
+    document.removeEventListener("visibilitychange", this.onVisibilityChange);
     this.physics?.dispose();
     this.physics = null;
     this.vehicle.dispose();
@@ -228,19 +249,29 @@ export class RideLabRuntime {
     this.lastFrame = time;
     if (this.lifecycle === "active" && !document.hidden) {
       const sampled = this.input.read();
-      this.presentationInput = { throttle: sampled.throttle, brake: sampled.brakeReverse, steer: sampled.steer, reset: sampled.reset };
+      if (sampled.reset) this.actionInput.releaseHeldAction();
+      this.presentationInput = {
+        throttle: sampled.throttle,
+        brake: sampled.brakeReverse,
+        steer: sampled.steer,
+        reset: sampled.reset,
+        aerialAction: sampled.reset ? false : this.actionInput.read(),
+      };
       this.resetPending ||= sampled.reset;
       this.accumulator += delta;
       let steps = 0;
       let retainedPulse: RideLabSnapshot["eventPulse"] | null = null;
+      let retainedMovementTransition: RideLabSnapshot["movementTransition"] = "idle";
       while (this.physics && this.accumulator >= this.tuning.fixedStep && steps < this.tuning.maxCatchUpSteps) {
         this.snapshot = this.physics.step({ ...this.presentationInput, reset: this.resetPending });
         retainedPulse = retainTransitionPulse(retainedPulse, this.snapshot.eventPulse);
+        if (retainedMovementTransition === "idle" && this.snapshot.movementTransition !== "idle") retainedMovementTransition = this.snapshot.movementTransition;
         this.resetPending = false;
         this.accumulator -= this.tuning.fixedStep;
         steps += 1;
       }
       if (retainedPulse) this.snapshot = { ...this.snapshot, eventPulse: retainedPulse };
+      if (retainedMovementTransition !== "idle") this.snapshot = { ...this.snapshot, movementTransition: retainedMovementTransition };
       if (steps === this.tuning.maxCatchUpSteps) this.accumulator = 0;
     }
     this.updateVisuals(delta);
@@ -262,6 +293,11 @@ export class RideLabRuntime {
     const loadDelta = clampLoad(this.snapshot.rearSuspensionLoad - this.snapshot.frontSuspensionLoad);
     this.vehicle.root.position.y = -Math.min(0.12, (this.snapshot.frontSuspensionLoad + this.snapshot.rearSuspensionLoad) / 500);
     this.vehicle.root.rotation.x = Math.PI / 2 + loadDelta * 0.045;
+    this.inverseVehicleRootRotation.copy(this.vehicle.root.quaternion).invert();
+    this.preloadOffset
+      .set(0, -this.snapshot.preload * this.tuning.preloadCompression, 0)
+      .applyQuaternion(this.inverseVehicleRootRotation);
+    this.vehicle.body.position.copy(this.preloadOffset);
     const speedRatio = normalizedSpeed(this.snapshot.speedMps, this.tuning.topSpeedMps);
     const forward = this.cameraForward.set(0, 0, 1).applyQuaternion(this.vehiclePose.quaternion).normalize();
     this.cameraTarget.set(position.x, position.y + 0.72, position.z).addScaledVector(forward, 1.6 + speedRatio * 1.5);
@@ -273,18 +309,27 @@ export class RideLabRuntime {
     this.camera.updateProjectionMatrix();
     const lines = this.reducedMotion ? 0 : speedLineStrength(this.snapshot.speedMps, this.snapshot.accelerationMps2, this.tuning);
     this.options.surface.style.setProperty("--ride-line-strength", lines.toFixed(3));
-    const transition = this.snapshot.eventPulse === "takeoff" || this.snapshot.eventPulse === "landing" || this.snapshot.eventPulse === "reset";
+    const transition = this.snapshot.movementTransition !== "idle" || this.snapshot.eventPulse === "reset" || this.snapshot.eventPulse === "ollie";
     const feedback = this.presentationInput.reset ? "reset"
+      : this.presentationInput.aerialAction ? this.snapshot.grinding ? "grind" : this.snapshot.grounded ? "preload" : this.snapshot.aerialPhase === "depleted" ? "depleted" : "hover"
       : this.presentationInput.brake > 0 ? "brake"
         : this.presentationInput.throttle > 0 ? "throttle"
           : Math.abs(this.presentationInput.steer) > 0 ? "steer"
             : this.snapshot.eventPulse;
     this.options.surface.dataset.feedback = feedback;
-    this.options.surface.dataset.transition = transition ? this.snapshot.eventPulse : "idle";
+    this.options.surface.dataset.transition = this.snapshot.movementTransition !== "idle"
+      ? this.snapshot.movementTransition
+      : transition ? this.snapshot.eventPulse : "idle";
     this.options.surface.dataset.grounded = String(this.snapshot.grounded);
     this.options.surface.dataset.acceptedThrottle = String(this.presentationInput.throttle);
     this.options.surface.dataset.acceptedBrake = String(this.presentationInput.brake);
     this.options.surface.dataset.acceptedSteer = String(this.presentationInput.steer);
+    this.options.surface.dataset.acceptedAction = String(this.presentationInput.aerialAction);
+    this.options.surface.dataset.preload = this.snapshot.preload.toFixed(3);
+    this.options.surface.dataset.visualCompression = (this.snapshot.preload * this.tuning.preloadCompression).toFixed(3);
+    this.options.surface.dataset.hoverEnergy = this.snapshot.hoverEnergy.toFixed(3);
+    this.options.surface.dataset.aerialPhase = this.snapshot.aerialPhase;
+    this.options.surface.dataset.grinding = String(this.snapshot.grinding);
   }
 
   private publishSnapshot(time: number, force = false) {
@@ -311,6 +356,7 @@ export class RideLabRuntime {
     event.preventDefault();
     this.contextLost = true;
     this.input.setEnabled(false);
+    this.cancelAerialInput(true);
     this.setLifecycle("context-lost");
   };
 
@@ -321,6 +367,19 @@ export class RideLabRuntime {
   };
 
   private readonly onMotionChange = (event: MediaQueryListEvent) => this.setReducedMotion(event.matches);
+
+  private readonly onVisibilityChange = () => {
+    if (document.hidden) this.cancelAerialInput(false);
+  };
+
+  private cancelAerialInput(disableController: boolean) {
+    if (disableController) this.actionInput.setEnabled(false);
+    else this.actionInput.releaseHeldAction();
+    this.physics?.cancelAerialAction();
+    if (this.physics) this.snapshot = this.physics.snapshot();
+    this.presentationInput = { ...this.presentationInput, aerialAction: false };
+    this.options.surface.dataset.acceptedAction = "false";
+  }
 
   private createArenaVisuals() {
     const hemi = new THREE.HemisphereLight(0xe7ddff, 0x342047, 2.2);
@@ -336,7 +395,7 @@ export class RideLabRuntime {
     grid.position.y = 0.01;
     this.scene.add(grid);
     const wallMaterial = new THREE.MeshToonMaterial({ color: 0x3b315b });
-    for (const [x, y, z, sx, sy, sz] of [[0, 2.4, 24, 48, 6, 0.7], [0, 2.4, -24, 48, 6, 0.7], [24, 2.4, 0, 0.7, 6, 48], [-24, 2.4, 0, 0.7, 6, 48]] as const) {
+    for (const [x, y, z, sx, sy, sz] of [[0, 5.5, 24, 48, 12, 0.7], [0, 5.5, -24, 48, 12, 0.7], [24, 5.5, 0, 0.7, 12, 48], [-24, 5.5, 0, 0.7, 12, 48]] as const) {
       const wall = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), wallMaterial.clone());
       wall.position.set(x, y, z);
       this.scene.add(wall);

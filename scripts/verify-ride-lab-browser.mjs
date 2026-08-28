@@ -62,6 +62,8 @@ try {
     localStorage.setItem("itsmeio.rideLab.config.v1", JSON.stringify({ version: 1, tuning: { rideAssist: 0.94 } }));
   });
   const page = await context.newPage();
+  page.setDefaultTimeout(60_000);
+  page.setDefaultNavigationTimeout(60_000);
   const errors = [];
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   page.on("pageerror", (error) => errors.push(error.message));
@@ -138,15 +140,78 @@ try {
   const recovering = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().intent.steer);
   assert.ok(steering > recovering && recovering > 0);
 
-  await page.getByRole("button", { name: "Reset moped" }).click();
-  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-transition") === "reset");
-  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-transition") === "idle");
-  await page.keyboard.down("w");
-  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-throttle") === "1");
-  await page.keyboard.up("w");
+  const resetButton = page.getByRole("button", { name: "Reset moped" });
+  await resetButton.click();
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === true);
+  await resetButton.focus();
+  await page.keyboard.press("Space");
+  assert.equal(await surface.getAttribute("data-accepted-action"), "false");
+  await surface.focus();
+  await page.waitForTimeout(50);
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "true");
+  await page.keyboard.press("r");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "false");
+  await page.keyboard.up("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === true);
+  await surface.focus();
+  await page.keyboard.down("Space");
+  const actionFrame = Number(await surface.getAttribute("data-frame"));
+  await page.waitForFunction((frame) => Number(document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-frame")) > frame, actionFrame);
+  assert.equal(await surface.getAttribute("data-accepted-action"), "true");
+  assert.equal(await surface.getAttribute("data-feedback"), "preload");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().preload >= 0.98);
+  const preloaded = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.equal(preloaded.grounded, true);
+  assert.ok(Number(await surface.getAttribute("data-visual-compression")) > 0.15);
+  await page.keyboard.up("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().verticalSpeedMps > 4);
+  const ollie = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.ok(ollie.position.y >= preloaded.position.y);
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === false);
+  const energyBeforeHover = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().hoverEnergy);
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-feedback") === "hover");
+  await page.waitForTimeout(500);
+  const hovering = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.equal(hovering.aerialPhase, "hover");
+  assert.ok(hovering.hoverEnergy < energyBeforeHover);
+  assert.ok(Number(await page.getByRole("meter", { name: "Hover energy" }).getAttribute("value")) < 1);
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().hoverEnergy === 0, undefined, { timeout: 5_000 });
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-feedback") === "depleted");
+  const depleted = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.ok(depleted.position.y > 12);
+  assert.ok(depleted.cameraPosition.y > 8);
+  assert.ok(Math.abs(depleted.cameraPosition.y - depleted.position.y) < 12);
+  await page.keyboard.up("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "false");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === true, undefined, { timeout: 8_000 });
+  const energyAtLanding = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().hoverEnergy);
+  await page.waitForFunction((energy) => window.__rideLabRuntime.getDebugSnapshot().hoverEnergy > energy + 0.1, energyAtLanding);
+
+  await page.getByRole("button", { name: "Wall grind setup" }).click();
+  await page.waitForFunction(() => {
+    const snapshot = window.__rideLabRuntime.getDebugSnapshot();
+    return snapshot.position.x > 22 && snapshot.grounded === false;
+  });
+  const beforeGrind = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  const grindFallSpeed = await page.evaluate(() => window.__rideLabRuntime.tuning.grindFallSpeed);
+  await surface.focus();
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grinding === true);
+  await page.waitForTimeout(80);
+  const grinding = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.equal(grinding.aerialPhase, "grind");
+  assert.ok(grinding.hoverEnergy < beforeGrind.hoverEnergy);
+  assert.ok(grinding.horizontalSpeedMps > beforeGrind.horizontalSpeedMps * 0.9);
+  assert.ok(grinding.verticalSpeedMps >= -grindFallSpeed - 0.1);
+  await page.keyboard.up("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grinding === false);
+  const releasedGrind = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.ok(releasedGrind.grindReleaseSpeedMps > grinding.horizontalSpeedMps * 0.9);
 
   const controls = page.locator('input[type="range"]');
-  assert.equal(await controls.count(), 33);
+  assert.equal(await controls.count(), 42);
   assert.equal(await page.locator("details").last().getAttribute("open"), null);
   for (let index = 0; index < await controls.count(); index += 1) {
     const control = controls.nth(index);
@@ -164,16 +229,40 @@ try {
   await page.waitForFunction(() => window.__rideLabRuntime?.getDebugSnapshot().reducedMotion === true);
   assert.equal(await surface.evaluate((element) => getComputedStyle(element).getPropertyValue("--ride-line-strength").trim()), "0.000");
 
+  await surface.focus();
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().preload > 0.1);
+  await page.evaluate(() => window.__rideLabRuntime.pause());
+  await page.keyboard.up("Space");
+  const paused = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.equal(paused.preload, 0);
+  assert.equal(paused.acceptedInput.aerialAction, false);
+  await page.evaluate(() => window.__rideLabRuntime.resume());
+  await page.waitForSelector('[data-lifecycle="active"]');
+  await page.waitForTimeout(100);
+  assert.notEqual((await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot())).eventPulse, "ollie");
+
+  await surface.focus();
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "true");
+
   await page.evaluate(() => {
     const canvas = document.querySelector("canvas");
     window.__rideLabLoseExtension = canvas.getContext("webgl2").getExtension("WEBGL_lose_context");
     window.__rideLabLoseExtension.loseContext();
   });
   await page.waitForSelector('[data-lifecycle="context-lost"]');
+  assert.equal(await surface.getAttribute("data-accepted-action"), "false");
+  await page.keyboard.up("Space");
   await page.evaluate(() => {
     window.__rideLabLoseExtension.restoreContext();
   });
   await page.waitForSelector('[data-lifecycle="active"]');
+  await surface.focus();
+  await page.keyboard.down("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "true");
+  await page.keyboard.up("Space");
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "false");
 
   for (let reload = 0; reload < 2; reload += 1) {
     await page.reload({ waitUntil: "networkidle" });
@@ -190,6 +279,12 @@ try {
   await page.reload({ waitUntil: "networkidle" });
   await page.waitForSelector('[data-lifecycle="active"]');
   assert.equal(await page.getByRole("button", { name: "Accelerate" }).isVisible(), true);
+  const mobileAction = page.getByRole("button", { name: "Preload or hover" });
+  assert.equal(await mobileAction.isVisible(), true);
+  await mobileAction.hover();
+  await page.mouse.down();
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "true");
+  await page.mouse.up();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
 
   await page.setViewportSize({ width: 1440, height: 900 });
