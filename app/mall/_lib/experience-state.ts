@@ -1,6 +1,10 @@
 import type { PoiId, RideControlMode } from "./scene-contract";
 
-export type RuntimeStatus = "loading" | "ready" | "unavailable";
+export type RuntimeStatus =
+  | "loading"
+  | "ready"
+  | "recovering"
+  | "unavailable";
 
 export type MallExperienceState = {
   runtimeStatus: RuntimeStatus;
@@ -12,6 +16,7 @@ export type MallExperienceState = {
 
 export type MallExperienceAction =
   | { type: "runtime-ready" }
+  | { type: "runtime-interrupted"; reason: string }
   | { type: "runtime-unavailable"; reason: string }
   | { type: "take-control" }
   | { type: "pause-ride" }
@@ -38,6 +43,13 @@ export function mallExperienceReducer(
   switch (action.type) {
     case "runtime-ready":
       return { ...state, runtimeStatus: "ready", runtimeMessage: null };
+    case "runtime-interrupted":
+      return {
+        ...state,
+        runtimeStatus: "recovering",
+        runtimeMessage: action.reason,
+        controlMode: "paused",
+      };
     case "runtime-unavailable":
       return {
         ...state,

@@ -50,3 +50,23 @@ test("runtime blur pauses React state without forgetting driving resume intent",
   assert.equal(paused.resumeMode, "driving");
   assert.equal(closed.controlMode, "driving");
 });
+
+test("graphics interruption recovers without forgetting driving intent", () => {
+  const driving = mallExperienceReducer(initialMallExperienceState, {
+    type: "take-control",
+  });
+  const interrupted = mallExperienceReducer(driving, {
+    type: "runtime-interrupted",
+    reason: "Restoring graphics",
+  });
+  const restored = mallExperienceReducer(interrupted, {
+    type: "runtime-ready",
+  });
+  const resumed = mallExperienceReducer(restored, { type: "resume-ride" });
+
+  assert.equal(interrupted.runtimeStatus, "recovering");
+  assert.equal(interrupted.controlMode, "paused");
+  assert.equal(interrupted.resumeMode, "driving");
+  assert.equal(restored.runtimeStatus, "ready");
+  assert.equal(resumed.controlMode, "driving");
+});

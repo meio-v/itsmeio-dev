@@ -32,7 +32,7 @@ export const RIDE_TUNING = {
 export const BENCHMARK = {
   width: 35,
   depth: 18,
-  start: { x: -13.5, y: 0.82, z: 4.8 },
+  start: { x: -13.5, y: 0.82, z: 4.8, yaw: 0 },
   arcadeTrigger: { x: 13.1, z: -4.8, radius: 1.45 },
   safeAnchors: [
     { x: -13.5, y: 0.82, z: 4.8, yaw: 0 },

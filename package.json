@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:mall": "node --experimental-strip-types --test lib/currently-playing.test.ts lib/mall-feature.test.ts app/mall/_lib/experience-state.test.ts",
+    "test:mall": "node --experimental-strip-types --test --test-reporter=tap lib/currently-playing.test.ts lib/mall-feature.test.ts app/mall/_lib/experience-state.test.ts app/mall/_runtime/ridePhysics.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -31,6 +31,7 @@
     "@types/three": "^0.183.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "playwright": "^1.62.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

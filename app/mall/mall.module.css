@@ -868,8 +868,15 @@
 }
 
 @media (hover: none) and (pointer: coarse) {
-  :global(.mall-touch-controls) {
+  :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) {
     display: flex;
+  }
+}
+
+@media (max-width: 760px) and (hover: none) and (pointer: coarse) {
+  :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) {
+    top: 5.5rem;
+    bottom: auto;
   }
 }
 

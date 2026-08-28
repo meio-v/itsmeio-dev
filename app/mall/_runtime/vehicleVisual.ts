@@ -85,10 +85,14 @@ export function createVehicleVisual(): VehicleVisual {
     frontWheel,
     rearWheel,
     dispose() {
+      const geometries = new Set<THREE.BufferGeometry>();
       root.traverse((object) => {
-        if (object instanceof THREE.Mesh) object.geometry.dispose();
+        if (object instanceof THREE.Mesh) geometries.add(object.geometry);
       });
+      for (const geometry of geometries) geometry.dispose();
       for (const material of materials) material.dispose();
+      root.removeFromParent();
+      root.clear();
     },
   };
 }
