@@ -12,7 +12,7 @@ WebGL. Production keeps the route closed unless `MALL_ENABLED=true` is set.
 - `MallRideRuntime.ts` owns Three.js rendering, camera composition, input
   coordination, runtime events, resize/visibility handling, and WebGL lifecycle.
 - A lost WebGL context pauses the ride and preserves its resume mode. Restoration
-  resets renderer state and returns the experience to a user-resumable pause.
+  resets renderer state and resumes the interrupted attract or driving mode.
 - Runtime disposal stops the animation loop, disconnects observers/listeners,
   releases Rapier, deduplicates geometry/material disposal, clears the scene,
   and is safe to call more than once.
