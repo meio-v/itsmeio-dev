@@ -1,0 +1,30 @@
+app/mall/_ride-lab/RideLabActionController.ts
+  s_fc8a0c8160e8ba::t_a7255866a040ff 6,10,36,55,59-65
+app/mall/_ride-lab/RideLabRuntime.ts
+  s_fc8a0c8160e8ba::t_a7255866a040ff 87
+app/mall/_ride-lab/rideLabTuning.ts
+  s_fc8a0c8160e8ba::t_a7255866a040ff 11
+app/mall/_ride-lab/rideLabTuning.test.ts
+  s_fc8a0c8160e8ba::t_a7255866a040ff 38-39
+  s_fc8a0c8160e8ba::t_0042c953a81eec 36-37
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_a7255866a040ff 177-186
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_8f39b16f4608fa 2,4-7,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c7348d621b9b80b0b237032e5395f0c5e8666e76",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
