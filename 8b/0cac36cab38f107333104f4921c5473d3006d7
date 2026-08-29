@@ -1,0 +1,23 @@
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_d47978477f8a65 59-65,114,116-119,122-123,126-134,486,488-490,492-497
+scripts/verify-ride-lab-evidence.mjs
+  s_fc8a0c8160e8ba::t_d47978477f8a65 5-11,13-19,21-23
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_d0039b907753b3 2,4-7,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "8b0cac36cab38f107333104f4921c5473d3006d7",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
