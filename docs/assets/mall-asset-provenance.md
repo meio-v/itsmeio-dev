@@ -29,6 +29,8 @@ All third-party sources below are CC0. Attribution is retained voluntarily.
 | Redaction 20 Italic font bundle | [Forest Young and Jeremy Mickel](https://usemodify.com/fonts/redaction/) via `@fontsource/redaction-20@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted and used for the mall wordmark. |
 | Goldman font bundle | [Jaikishan Patel / MagicType](https://github.com/magictype/goldman) via `@fontsource/goldman@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for mall display labels; the slant is an intentional CSS oblique because the family ships Regular and Bold only. |
 | WDXL Lubrifont JP N font bundle | [Google Fonts](https://fonts.google.com/specimen/WDXL+Lubrifont+JP+N) via `@fontsource/wdxl-lubrifont-jp-n@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for Japanese signage, with DotGothic16 retained as the rollback fallback. |
+| `public/mall/textures/control-deck.png` | User-provided original illustration | `ac947d0388e19a132702a32d351512659f6054cc736dbc1dcfc4002cd75150f3` | Cropped to the physical panel bounds and mounted as decorative cabinet hardware; the real ride controls and semantics remain separate HTML. |
+| `public/mall/textures/coin-door.png` | User-provided original illustration | `61da7713a511acd640bfd796cd20c3549fe7dfe79f80c45bdfb5db28abf609e8` | Cropped nondestructively from the supplied transparent source. The `FREE / 1 PLAY` denomination plate and interactive aperture are layered in HTML so state and accessibility remain intact. |
 
 ## Shipped file checksums
 

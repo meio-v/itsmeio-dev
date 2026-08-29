@@ -105,6 +105,7 @@
 .rideFrame[data-texture-marquee="on"] .marqueeTexture,
 .rideFrame[data-texture-control-panel="on"] .controlPanelTexture,
 .rideFrame[data-texture-screen-glass="on"] .screenGlassTexture { display: block; }
+.rideFrame[data-texture-control-panel="on"] .controlDeckArt { display: block; }
 .cabinetBodyTexture { z-index: 0; background-image: url("/mall/textures/cabinet-body.png"); mix-blend-mode: overlay; opacity: 0.25; }
 .cabinetMarquee { position: relative; z-index: 1; display: grid; justify-items: center; min-height: clamp(5.4rem, 8vw, 6.5rem); padding: 0.65rem 1rem 0.6rem; overflow: hidden; color: var(--ink); background: var(--acid); border-bottom: 4px solid var(--ink); box-shadow: inset 0 0 2rem rgb(255 255 180 / 48%); text-align: center; }
 .cabinetMarquee::after { position: absolute; z-index: 2; inset: 0; content: ""; background-image: radial-gradient(circle at 0.6rem 50%, var(--ink) 2.5px, transparent 3px); background-size: 1.75rem 100%; opacity: 0.14; pointer-events: none; }
@@ -130,88 +131,38 @@
 .screenViewport { position: relative; aspect-ratio: 2 / 1; min-width: 0; overflow: hidden; background: #221638; isolation: isolate; }
 :global(.mall-ride-surface) { position: absolute; inset: 0; outline: none; }
 .screenGlassTexture { z-index: 11; background-image: url("/mall/textures/screen-glass.png"); background-position: center; background-size: cover; filter: contrast(1.2); mix-blend-mode: screen; opacity: 0.36; }
-.controlPanel { position: relative; z-index: 2; min-height: clamp(7.5rem, 10vw, 8.4rem); padding: clamp(1rem, 2.2vw, 1.65rem) clamp(0.9rem, 2.2vw, 1.65rem) 2.15rem; overflow: hidden; background: var(--ink); border-top: 4px solid var(--acid); }
+.controlPanel { position: relative; z-index: 2; padding: clamp(0.7rem, 1.4vw, 1rem); overflow: hidden; background: var(--ink); border-top: 4px solid var(--acid); }
 .controlPanelTexture { z-index: 1; background-image: url("/mall/textures/control-panel.png"); mix-blend-mode: multiply; opacity: 0.3; }
-.tokenConsole { position: relative; z-index: 2; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: clamp(0.9rem, 2.4vw, 2rem); }
-.coinUnit { display: grid; justify-items: center; padding: 0; background: transparent; border: 0; cursor: pointer; transition: transform 140ms ease; }
+.tokenConsole { position: relative; z-index: 2; display: grid; gap: 0.65rem; }
+.controlHardware { display: grid; grid-template-columns: minmax(8rem, 24%) minmax(0, 1fr); align-items: center; gap: clamp(0.6rem, 1.2vw, 0.9rem); perspective: 70rem; }
+.coinDoorAssembly { position: relative; align-self: center; justify-self: center; width: 100%; max-width: 18rem; aspect-ratio: 4 / 5; transition: transform 140ms var(--ease-out), filter 140ms ease; }
+.coinDoorArt { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0.28rem 0 rgb(0 0 0 / 72%)); pointer-events: none; user-select: none; }
+.coinFreePlate { position: absolute; z-index: 2; top: 7.3%; left: 59%; display: grid; place-content: center; width: 23.3%; height: 15.8%; color: var(--ink); background: #ef3c88; border: 0.16rem solid var(--ink); border-radius: 0.38rem; box-shadow: inset 0 0.15rem 0 rgb(255 255 255 / 24%), inset 0 -0.18rem 0 rgb(80 8 35 / 25%); font-family: "Goldman", "Arial Narrow", Arial, sans-serif; line-height: 0.9; text-align: center; transform: rotate(0.3deg); pointer-events: none; }
+.coinFreePlate b { font-size: clamp(0.58rem, 1.4vw, 1rem); letter-spacing: -0.04em; }
+.coinFreePlate small { padding-top: 0.16rem; border-top: 0.1rem solid currentColor; font-size: clamp(0.27rem, 0.58vw, 0.44rem); font-weight: 700; }
+.coinInsertDisplayShade { position: absolute; z-index: 3; top: 7.3%; left: 17.5%; width: 38.5%; height: 15.8%; background: rgb(12 13 11 / 0%); border-radius: 0.35rem; transition: background-color 160ms ease; pointer-events: none; }
+.coinUnit { position: absolute; z-index: 4; top: 30%; left: 50%; width: clamp(2.75rem, 21%, 4rem); height: clamp(3.25rem, 28%, 5rem); padding: 0; background: transparent; border: 0; border-radius: 0.35rem; cursor: pointer; translate: -50% 0; transition: box-shadow 140ms ease, transform 140ms var(--ease-out); }
 .coinUnit:disabled { cursor: default; }
+.controlDeckMount { position: relative; align-self: center; min-width: 0; aspect-ratio: 148 / 62; overflow: hidden; background: #0b0b09; border: 2px solid #514f49; border-bottom: 0.45rem solid #090807; box-shadow: inset 0 0 0 0.22rem #171613, inset 0 0.28rem 0 rgb(255 255 255 / 10%), 0 0.34rem 0 #070605; clip-path: polygon(1.4% 0, 98.6% 0, 100% 100%, 0 100%); transform: rotateX(8deg) translateY(0.1rem); transform-origin: top center; }
+.controlDeckArt { position: absolute; inset: 0; display: none; width: 100%; height: 100%; object-fit: contain; opacity: 0.96; filter: contrast(1.04) saturate(1.08); pointer-events: none; user-select: none; }
+.serviceRail { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.65rem 1rem; min-height: 2.1rem; padding: 0.45rem 0.65rem 0.25rem; color: rgb(240 233 216 / 62%); border-top: 1px solid rgb(240 233 216 / 18%); }
 .insertCoin { position: absolute; z-index: 12; top: 50%; left: 50%; padding: 0.38rem 0.65rem; color: var(--acid); background: rgb(20 17 15 / 82%); border: 2px solid currentColor; font: 400 clamp(0.72rem, 1.35vw, 1.1rem) var(--font-system); letter-spacing: 0.12em; text-transform: uppercase; animation: insertCoinBlink 1.1s steps(1) infinite; pointer-events: none; transform: translate(-50%, -50%); }
-.coinDoorBezel {
-  position: relative;
-  width: 5.6rem;
-  height: 7.2rem;
-  background: #211f1d;
-  border: 1px solid #4c4842;
-  border-bottom-color: #050403;
-  box-shadow:
-    inset 0 0.45rem 0.75rem rgb(0 0 0 / 76%),
-    inset 0 1px 0 #625d55,
-    0 0.25rem 0 #080706;
-}
-.coinAperture {
-  position: absolute;
-  top: 0.9rem;
-  left: 0.72rem;
-  width: 1.9rem;
-  height: 3.05rem;
-  background: #050504;
-  border: 0.26rem solid #85827b;
-  border-top-color: #b8b3a8;
-  border-bottom-color: #4a4843;
-  box-shadow: inset 0 0 0.55rem #000, 0 1px 0 rgb(255 255 255 / 18%);
-}
-.coinDenomination {
-  position: absolute;
-  top: 1.15rem;
-  right: 0.4rem;
-  width: 2.1rem;
-  color: rgb(240 233 216 / 48%);
-  font: 400 0.48rem/1.25 var(--font-system);
-  letter-spacing: 0.04em;
-  text-align: center;
-}
-.coinReturnButton {
-  position: absolute;
-  bottom: 0.78rem;
-  left: 0.8rem;
-  display: grid;
-  place-items: center;
-  width: 1.65rem;
-  height: 1.65rem;
-  background: var(--ink);
-  border-radius: 50%;
-  box-shadow: 0.18rem 0.2rem 0 #050403;
-}
-.coinReturnButton i {
-  width: 1.18rem;
-  height: 1.18rem;
-  background: #77746d;
-  border: 1px solid #aaa59a;
-  border-bottom-color: #3f3d39;
-  border-radius: 50%;
-  box-shadow: inset 0 0.18rem 0.28rem rgb(0 0 0 / 48%);
-}
-.rideFrame[data-control-mode="attract"] .coinAperture {
-  border-color: var(--acid);
-  box-shadow: inset 0 0 0.55rem #000, 0 0 0.7rem rgb(198 255 46 / 35%);
-  animation: statusBlink 1.1s steps(1) infinite;
-}
+.rideFrame[data-control-mode="attract"] .coinUnit { animation: coinSlotBlink 1.1s steps(1) infinite; }
 .rideFrame[data-control-mode="driving"] .insertCoin {
-  animation: coinAccepted 120ms steps(1) 6 forwards;
+  animation: coinAccepted 240ms steps(1) 1 forwards;
 }
-.rideFrame[data-control-mode="driving"] .coinAperture {
-  animation: coinAccepted 120ms steps(1) 6;
-  opacity: 0.38;
-}
-.rideFrame[data-control-mode="paused"] :is(.insertCoin, .coinAperture) {
+.rideFrame[data-control-mode="driving"] .coinDoorAssembly { animation: coinHardwareAccepted 240ms steps(1) 1; }
+.rideFrame[data-control-mode="driving"] .coinInsertDisplayShade { background: rgb(12 13 11 / 76%); }
+.rideFrame[data-control-mode="paused"] :is(.insertCoin, .coinUnit) {
   animation: none;
   opacity: 0.62;
 }
 .pauseButton:disabled { cursor: not-allowed; opacity: 0.58; }
-.controlPlate { display: flex; flex-wrap: wrap; gap: 0.5rem 0.7rem; margin: 0; color: var(--paper); font: 400 clamp(0.68rem, 1vw, 0.8rem) var(--font-system); letter-spacing: 0.04em; }
-.controlPlate span { display: inline-flex; align-items: center; gap: 0.4rem; }
-.controlPlate b { padding: 0.12rem 0.45rem; color: var(--ink); background: var(--paper); font-weight: 400; }
-.hardwareLabels { position: absolute; z-index: 2; right: 1rem; bottom: 0.5rem; left: 1rem; display: flex; align-items: end; justify-content: space-between; gap: 1rem; color: rgb(240 233 216 / 44%); font: 400 clamp(0.48rem, 0.75vw, 0.62rem) var(--font-system); letter-spacing: 0.06em; }
+.controlPlate { display: flex; flex-wrap: wrap; align-items: center; gap: 0.28rem 0.5rem; margin: 0; font: 400 clamp(0.52rem, 0.78vw, 0.66rem) var(--font-system); letter-spacing: 0.035em; }
+.controlPlate span { display: inline-flex; align-items: center; gap: 0.28rem; }
+.controlPlate b { padding: 0.06rem 0.24rem; color: rgb(240 233 216 / 78%); background: transparent; border: 1px solid rgb(240 233 216 / 34%); font-weight: 400; }
+.controlPlate i { color: rgb(240 233 216 / 28%); font-style: normal; }
+.hardwareLabels { color: rgb(240 233 216 / 36%); font: 400 clamp(0.42rem, 0.65vw, 0.54rem) var(--font-system); letter-spacing: 0.055em; white-space: nowrap; }
 
 .sceneFallback { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; overflow: hidden; }
 .sceneStatus { position: relative; z-index: 10; display: grid; justify-items: center; gap: 0.7rem; max-width: 28rem; padding: 1rem; color: var(--paper); background: rgb(20 17 15 / 88%); border: 2px solid var(--acid); font: 400 0.8rem var(--font-system); text-align: center; }
@@ -344,18 +295,21 @@
 .loadingShell > .poster { position: relative; min-height: 32rem; border: 6px solid var(--ink); }
 .routeError { place-content: center; max-width: 54rem; }
 .routeError p:not(.kicker) { max-width: 42rem; font-size: 1.1rem; line-height: 1.6; }
-.kicker { font: 400 0.72rem var(--font-system); letter-spacing: 0.12em; text-transform: uppercase; }
+.kicker { font: 400 0.72rem var(--font-system); letter-spacing: 0.12em; text-transform: lowercase; }
 .rideActions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.5rem; }
 
 .page :is(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; box-shadow: 0 0 0 6px var(--ink); }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 @keyframes insertCoinBlink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0.22; } }
-@keyframes coinAccepted { 0%, 49% { opacity: 1; filter: brightness(2); } 50%, 99% { opacity: 0.1; filter: none; } 100% { opacity: 0; filter: none; } }
+@keyframes coinAccepted { 0%, 16%, 34%, 50% { opacity: 1; filter: brightness(2); } 17%, 33%, 51%, 83% { opacity: 0.1; filter: none; } 100% { opacity: 0; filter: none; } }
+@keyframes coinSlotBlink { 0%, 55% { box-shadow: 0 0 0.8rem rgb(198 255 46 / 58%), inset 0 0 0 2px rgb(198 255 46 / 74%); } 56%, 100% { box-shadow: 0 0 0.2rem rgb(198 255 46 / 18%), inset 0 0 0 1px rgb(198 255 46 / 28%); } }
+@keyframes coinHardwareAccepted { 0%, 16%, 34%, 50% { filter: brightness(1.55) drop-shadow(0 0 0.6rem rgb(198 255 46 / 72%)); } 17%, 33%, 51%, 100% { filter: none; } }
 @keyframes statusBlink { 0%, 74% { opacity: 1; } 75%, 100% { opacity: 0.35; } }
 
 @media (hover: hover) and (pointer: fine) {
   .navLink:hover { transform: translate(-0.18rem, -0.24rem); }
-  .coinUnit:not(:disabled):hover { transform: translateY(-0.16rem); }
+  .coinDoorAssembly:has(.coinUnit:not(:disabled):hover) { filter: drop-shadow(0 0 0.5rem rgb(198 255 46 / 38%)); transform: translateY(-0.16rem); }
+  .coinUnit:not(:disabled):hover { box-shadow: 0 0 0.9rem rgb(198 255 46 / 64%), inset 0 0 0 2px var(--acid); }
   .entryPaths a:hover { color: var(--tomato); }
   .pauseButton:not(:disabled):hover,
   .sceneLoadButton:hover { background: var(--acid); }
@@ -370,7 +324,7 @@
 .primaryButton:active,
 .secondaryButton:active { transform: scale(0.97); }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .hero { padding-bottom: 9rem; }
   .heroMascotSticker { right: 1rem; bottom: 0.8rem; left: auto; width: clamp(7.25rem, 22vw, 9rem); }
   .welcomeStage::before,
@@ -384,13 +338,16 @@
   .hero > .sectionNumber { left: -0.35rem; }
   .welcomeStage { width: 100%; }
   .rideSectionInner > h2 { max-width: 10ch; }
-  .tokenConsole { grid-template-columns: auto minmax(0, 1fr); }
-  .controlPlate { grid-column: 1 / -1; }
+  .controlHardware { grid-template-columns: minmax(5.5rem, 24%) minmax(0, 1fr); }
+  .controlPlate { display: none; }
+  .serviceRail { display: flex; justify-content: flex-end; min-height: 1.4rem; }
   .playingContent,
   .dialog .playingContent,
   .loadingShell { grid-template-columns: 1fr; }
   .playstationSticker { top: -2.8rem; right: 5rem; width: clamp(6.5rem, 24vw, 8.25rem); }
   .kioskScreen { margin-left: 1.5rem; }
+  .kiosk { padding-bottom: 8.5rem; }
+  .helmetSticker { bottom: -7.2rem; left: 0.25rem; width: 6rem; }
   .kioskHeading { align-items: flex-start; flex-direction: column; }
   .dialogHeader { align-items: flex-start; }
 }
@@ -405,10 +362,11 @@
   .entryPaths { align-items: flex-start; flex-direction: column; }
   .cabinetStatusBar { align-items: flex-start; flex-direction: column; }
   .cabinetStatusBar > div { width: 100%; justify-content: space-between; }
-  .tokenConsole { grid-template-columns: 1fr; justify-items: stretch; }
-  .coinUnit { justify-self: center; }
-  .hardwareLabels { position: relative; right: auto; bottom: auto; left: auto; margin-top: 0.85rem; align-items: start; flex-direction: column; }
-  .controlPanel { padding-bottom: 1rem; }
+  .controlPanel { padding: 0.55rem; }
+  .controlHardware { grid-template-columns: minmax(5.5rem, 24%) minmax(0, 1fr); gap: 0.45rem; }
+  .controlDeckArt { opacity: 0.9; }
+  .serviceRail { padding-right: 0.25rem; padding-left: 0.25rem; }
+  .hardwareLabels { overflow: hidden; font-size: 0.38rem; text-overflow: ellipsis; }
   .kiosk { padding-right: 0.65rem; padding-left: 0.65rem; }
   .kioskScreen { margin-left: 0.7rem; padding: 1.15rem; }
   .kioskHeading,
@@ -419,10 +377,10 @@
 @media (prefers-reduced-motion: reduce) {
   .ticker div,
   .insertCoin,
-  .coinAperture,
+  .coinUnit,
+  .coinDoorAssembly,
   .rideStatus > span { animation: none; }
   .rideFrame[data-control-mode="driving"] .insertCoin { animation: none; opacity: 0; }
-  .rideFrame[data-control-mode="driving"] .coinAperture { animation: none; opacity: 0.38; }
   .navLink,
   .coinUnit,
   .dialog,

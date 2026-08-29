@@ -344,28 +344,59 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
               <div className={styles.controlPanel}>
                 <span className={`${styles.cabinetTexture} ${styles.controlPanelTexture}`} aria-hidden="true" />
                 <div className={styles.tokenConsole}>
-                  <button
-                    ref={tokenControl}
-                    type="button"
-                    className={styles.coinUnit}
-                    disabled={!showAttractControls || state.runtimeStatus !== "ready"}
-                    aria-label="Add token"
-                    aria-describedby="ride-controls-help"
-                    onClick={() => dispatch({ type: "insert-token" })}
-                  >
-                    <div className={styles.coinDoorBezel} aria-hidden="true">
-                      <span className={styles.coinAperture} />
-                      <span className={styles.coinDenomination}>1 PLAY = FREE</span>
-                      <span className={styles.coinReturnButton}><i /></span>
+                  <div className={styles.controlHardware}>
+                    <div className={styles.coinDoorAssembly}>
+                      <Image
+                        className={styles.coinDoorArt}
+                        src="/mall/textures/coin-door.png"
+                        alt=""
+                        width={800}
+                        height={1000}
+                        aria-hidden="true"
+                        draggable={false}
+                      />
+                      <span className={styles.coinFreePlate} aria-hidden="true">
+                        <b>FREE</b>
+                        <small>1 PLAY</small>
+                      </span>
+                      <span className={styles.coinInsertDisplayShade} aria-hidden="true" />
+                      <button
+                        ref={tokenControl}
+                        type="button"
+                        className={styles.coinUnit}
+                        disabled={!showAttractControls || state.runtimeStatus !== "ready"}
+                        aria-label="Add token"
+                        aria-describedby="ride-controls-help"
+                        onClick={() => dispatch({ type: "insert-token" })}
+                      >
+                        <span className={styles.visuallyHidden}>Add token</span>
+                      </button>
                     </div>
-                  </button>
-                  <p id="ride-controls-help" className={styles.controlPlate}>
-                    <span><b>← → / WASD</b> STEER</span><span><b>S / ↓</b> BRAKE</span>
-                    <span><b>R</b> RESET</span><span><b>TAB / ESC</b> EXIT</span>
-                  </p>
-                </div>
-                <div className={styles.hardwareLabels} aria-hidden="true">
-                  <span>DO NOT SIT ON CABINET / 遊技中の飲食はご遠慮ください</span>
+                    <div className={styles.controlDeckMount} aria-hidden="true">
+                      <Image
+                        className={styles.controlDeckArt}
+                        src="/mall/textures/control-deck.png"
+                        alt=""
+                        width={1480}
+                        height={620}
+                        draggable={false}
+                      />
+                    </div>
+                  </div>
+                  <div className={styles.serviceRail}>
+                    <p id="ride-controls-help" className={styles.controlPlate}>
+                      <span><b>← → / WASD</b> — STEER</span>
+                      <i aria-hidden="true">·</i>
+                      <span><b>S / ↓</b> — BRAKE</span>
+                      <i aria-hidden="true">·</i>
+                      <span><b>R</b> — RESET</span>
+                      <i aria-hidden="true">·</i>
+                      <span><b>TAB / ESC</b> — EXIT</span>
+                    </p>
+                    <span className={styles.hardwareLabels} aria-hidden="true">
+                      DO NOT SIT ON CABINET / 遊技中の飲食はご遠慮ください
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
