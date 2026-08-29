@@ -79,7 +79,7 @@ export class RideLabRuntime {
     this.scene.fog = new THREE.Fog(0x11101d, 34, 82);
     this.createArenaVisuals();
     this.vehicle = createVehicleVisual();
-    this.vehicle.root.rotation.y = Math.PI / 2;
+    this.vehicle.root.rotation.y = -Math.PI / 2;
     this.vehiclePose.add(this.vehicle.root);
     this.scene.add(this.vehiclePose);
     this.input = new InputController(options.surface);
