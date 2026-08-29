@@ -4,11 +4,21 @@ import {
   useEffect,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
   type RefObject,
 } from "react";
 import type { MallRideCanvasProps, SceneCommandPort } from "../_lib/scene-contract";
 import { MallRideRuntime, type RideDebugSnapshot } from "./MallRideRuntime";
+
+function subscribeToLocation(callback: () => void) {
+  window.addEventListener("popstate", callback);
+  return () => window.removeEventListener("popstate", callback);
+}
+
+function getDebugEnabled() {
+  return new URLSearchParams(window.location.search).has("rideDebug");
+}
 
 export function MallRideCanvas({
   featuredTitle,
@@ -18,9 +28,11 @@ export function MallRideCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const runtimeRef = useRef<MallRideRuntime | null>(null);
-  const debugEnabled =
-    typeof window !== "undefined" &&
-    new URLSearchParams(window.location.search).has("rideDebug");
+  const debugEnabled = useSyncExternalStore(
+    subscribeToLocation,
+    getDebugEnabled,
+    () => false,
+  );
 
   useEffect(() => {
     const canvas = canvasRef.current;

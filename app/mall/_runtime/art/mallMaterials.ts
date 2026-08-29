@@ -1,15 +1,15 @@
 import * as THREE from "three";
 
 export const MALL_SWATCHES = {
-  ink: 0x17152a,
-  deepIndigo: 0x292844,
-  floorSlate: 0x686d88,
-  tileLight: 0xdad0b6,
-  plaster: 0xeee3c9,
-  coral: 0xff5f72,
-  acid: 0xb9e45a,
-  screenCyan: 0x75e6e5,
-  shadow: 0x242139,
+  ink: 0x090909,
+  deepIndigo: 0x27282b,
+  floorSlate: 0x777a70,
+  tileLight: 0xd5caa9,
+  plaster: 0xe2d8b9,
+  coral: 0xf23f78,
+  acid: 0xc8f23d,
+  screenCyan: 0x60dce2,
+  shadow: 0x050505,
 } as const;
 
 export type MallMaterialRole =
@@ -35,20 +35,23 @@ function toon(
 ) {
   const material = new THREE.MeshToonMaterial({ color, gradientMap });
   material.name = name;
+  material.userData.outlineParameters = {
+    visible: name === "toon.hero.coral" || name === "toon.interactive.acid",
+  };
   return material;
 }
 
 export function createMallMaterialRegistry(): MallMaterialRegistry {
-  // Four values produce graphic lighting steps without baking a palette into
-  // every asset. The texture is luminance data, not display colour data.
+  // Three abrupt values retain a near-black floor under hard light instead of
+  // smoothing every imported asset back into generic low-poly rendering.
   const gradientMap = new THREE.DataTexture(
-    new Uint8Array([38, 104, 181, 255]),
-    4,
+    new Uint8Array([12, 118, 255]),
+    3,
     1,
     THREE.RedFormat,
     THREE.UnsignedByteType,
   );
-  gradientMap.name = "mall-four-band-toon-ramp";
+  gradientMap.name = "mall-three-band-toon-ramp";
   gradientMap.minFilter = THREE.NearestFilter;
   gradientMap.magFilter = THREE.NearestFilter;
   gradientMap.generateMipmaps = false;
@@ -91,7 +94,7 @@ export function createMallMaterialRegistry(): MallMaterialRegistry {
     "shadow.contact": new THREE.MeshBasicMaterial({
       color: MALL_SWATCHES.shadow,
       transparent: true,
-      opacity: 0.38,
+      opacity: 0.62,
       depthWrite: false,
     }),
     "outline.ink": new THREE.MeshBasicMaterial({
@@ -102,6 +105,7 @@ export function createMallMaterialRegistry(): MallMaterialRegistry {
 
   for (const [role, material] of Object.entries(materials)) {
     material.name = role;
+    material.userData.outlineParameters ??= { visible: false };
   }
 
   return {

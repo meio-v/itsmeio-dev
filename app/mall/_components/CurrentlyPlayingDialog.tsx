@@ -34,10 +34,7 @@ export function CurrentlyPlayingDialog({
       onClose={onRequestClose}
     >
       <div className={styles.dialogHeader}>
-        <div>
-          <p className={styles.eyebrow}>Arcade cabinet 01</p>
-          <h2 id="currently-playing-dialog-title">Currently playing</h2>
-        </div>
+        <h2 id="currently-playing-dialog-title"><span>Currently</span><span>Playing</span></h2>
         <button
           type="button"
           className={styles.closeButton}

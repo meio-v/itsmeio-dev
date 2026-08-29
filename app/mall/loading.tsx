@@ -7,12 +7,11 @@ export default function MallLoading() {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
-        <Link className={styles.wordmark} href="/">
-          ITSMEIO.DEV
-        </Link>
-        <nav aria-label="Site">
-          <Link href="/">Main site</Link>
-        </nav>
+        <div className={styles.utilityRail}>
+          <Link href="/">itsmeio.dev</Link>
+          <span aria-hidden="true">深夜営業中 / MALL WING 01 — AFTER HOURS</span>
+        </div>
+        <span className={styles.headerRule} aria-hidden="true" />
       </header>
       <section className={styles.loadingShell} aria-busy="true">
         <div>

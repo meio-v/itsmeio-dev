@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   formatCompletionDate,
   formatCurrentStatus,
@@ -20,7 +22,6 @@ export function CurrentlyPlayingContent({
   return (
     <div className={styles.playingContent}>
       <div className={styles.currentGame}>
-        <p className={styles.eyebrow}>Current</p>
         {content.current ? (
           <>
             <h3>{content.current.title}</h3>
@@ -33,17 +34,38 @@ export function CurrentlyPlayingContent({
             )}
           </>
         ) : (
-          <p className={styles.betweenGames}>{content.emptyMessage}</p>
+          <>
+            <p className={styles.noDisc}>No disc inserted</p>
+            <p className={styles.betweenGames}>{content.emptyMessage}</p>
+          </>
+        )}
+        {compact && (
+          <Image
+            className={styles.playingSticker}
+            src="/mall/stickers/playstation.png"
+            alt=""
+            width={768}
+            height={768}
+            aria-hidden="true"
+            draggable={false}
+          />
         )}
       </div>
 
       <div className={styles.completedGames}>
-        <p className={styles.eyebrow}>Credits rolled</p>
+        <div className={styles.completedHeading}>
+          <h3><span>Recently</span><span>Completed</span></h3>
+          <span aria-hidden="true">SAVE LOG</span>
+        </div>
         {preview.length > 0 ? (
           <>
+            <div className={styles.gameTableHeader} aria-hidden="true">
+              <span>Game</span><span>Cleared</span>
+            </div>
             <ol>
-              {preview.map((game) => (
+              {preview.map((game, index) => (
                 <li key={`${game.title}-${game.completed}`}>
+                  <span className={styles.saveNumber}>{String(index + 2).padStart(2, "0")}</span>
                   <span>{game.title}</span>
                   <time dateTime={game.completed}>
                     {formatCompletionDate(game.completed)}
@@ -52,13 +74,14 @@ export function CurrentlyPlayingContent({
               ))}
             </ol>
             {remaining.length > 0 && (
-              <details className={styles.completedDisclosure} open={!compact}>
+              <details className={styles.completedDisclosure}>
                 <summary>
                   {compact ? "See the full log" : "Full log"}
                 </summary>
                 <ol start={preview.length + 1}>
-                  {remaining.map((game) => (
+                  {remaining.map((game, index) => (
                     <li key={`${game.title}-${game.completed}`}>
+                      <span className={styles.saveNumber}>{String(index + preview.length + 2).padStart(2, "0")}</span>
                       <span>{game.title}</span>
                       <time dateTime={game.completed}>
                         {formatCompletionDate(game.completed)}
@@ -73,6 +96,7 @@ export function CurrentlyPlayingContent({
           <p className={styles.gameNote}>No completed games logged yet.</p>
         )}
       </div>
+
     </div>
   );
 }

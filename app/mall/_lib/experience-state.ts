@@ -13,10 +13,15 @@ export type MallExperienceState = {
 export type MallExperienceAction =
   | { type: "runtime-ready" }
   | { type: "runtime-unavailable"; reason: string }
-  | { type: "take-control" }
-  | { type: "pause-ride" }
-  | { type: "resume-ride" }
-  | { type: "open-poi"; id: PoiId }
+  | { type: "insert-token" }
+  | { type: "exit-ride" }
+  | { type: "pause-attract" }
+  | { type: "resume-attract" }
+  | {
+      type: "open-poi";
+      id: PoiId;
+      restoreMode?: Exclude<RideControlMode, "paused">;
+    }
   | { type: "close-poi" }
   | {
       type: "runtime-control-mode";
@@ -45,10 +50,12 @@ export function mallExperienceReducer(
         runtimeMessage: action.reason,
         controlMode: "paused",
       };
-    case "take-control": {
+    case "insert-token": {
       if (state.selectedPoi) return state;
       return { ...state, controlMode: "driving", resumeMode: "driving" };
     }
+    case "exit-ride":
+      return { ...state, controlMode: "attract", resumeMode: "attract" };
     case "runtime-control-mode": {
       if (state.selectedPoi) return state;
       if (action.mode === "paused") {
@@ -60,14 +67,22 @@ export function mallExperienceReducer(
         resumeMode: action.mode,
       };
     }
-    case "pause-ride":
-      return { ...state, controlMode: "paused" };
-    case "resume-ride":
-      if (state.selectedPoi || state.runtimeStatus === "unavailable") return state;
-      return { ...state, controlMode: state.resumeMode };
+    case "pause-attract":
+      if (state.controlMode !== "attract") return state;
+      return { ...state, controlMode: "paused", resumeMode: "attract" };
+    case "resume-attract":
+      if (
+        state.selectedPoi ||
+        state.runtimeStatus === "unavailable" ||
+        state.resumeMode !== "attract"
+      ) {
+        return state;
+      }
+      return { ...state, controlMode: "attract" };
     case "open-poi": {
       const resumeMode =
-        state.controlMode === "paused" ? state.resumeMode : state.controlMode;
+        action.restoreMode ??
+        (state.controlMode === "paused" ? state.resumeMode : state.controlMode);
       return {
         ...state,
         selectedPoi: action.id,
