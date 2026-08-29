@@ -41,6 +41,7 @@ assert.doesNotMatch(component, /feGaussianBlur/);
 assert.match(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{ filter: url\("#mall-sticker-cutout"\); \}/);
 assert.doesNotMatch(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{[^}]*drop-shadow/);
 assert.match(styles, /\.memoryCardSticker \{[^}]*transform: rotate\(7deg\)/);
+assert.match(styles, /\.memoryCardSticker \{[^}]*filter: drop-shadow\(0\.38rem 0\.44rem 0 var\(--ink\)\)/);
 assert.doesNotMatch(styles, /mask-image: linear-gradient\(to right/);
 assert.match(styles, /\.coinUnit::before \{[^}]*width: 30%/);
 assert.match(styles, /data-control-mode="attract"[^\n]*\.coinUnit::before[^\n]*coinSlotBlink/);
