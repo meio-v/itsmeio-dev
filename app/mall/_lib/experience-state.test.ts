@@ -98,3 +98,22 @@ test("runtime blur exits driving instead of offering a hidden resume state", () 
   assert.equal(exited.controlMode, "attract");
   assert.equal(exited.resumeMode, "attract");
 });
+
+test("graphics interruption recovers without forgetting driving intent", () => {
+  const driving = mallExperienceReducer(initialMallExperienceState, {
+    type: "insert-token",
+  });
+  const interrupted = mallExperienceReducer(driving, {
+    type: "runtime-interrupted",
+    reason: "Restoring graphics",
+  });
+  const restored = mallExperienceReducer(interrupted, {
+    type: "runtime-ready",
+  });
+
+  assert.equal(interrupted.runtimeStatus, "recovering");
+  assert.equal(interrupted.controlMode, "paused");
+  assert.equal(interrupted.resumeMode, "driving");
+  assert.equal(restored.runtimeStatus, "ready");
+  assert.equal(restored.controlMode, "driving");
+});

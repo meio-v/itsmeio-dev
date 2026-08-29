@@ -2,15 +2,15 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 
 const expectedRuntimeHashes = {
-  "app/mall/_runtime/MallRideCanvas.tsx": "1195bbc8e89f93da8a8c7a1d956ef4cb8cb485bb067515f68d782ebcd41e2de5",
-  "app/mall/_runtime/MallRideRuntime.ts": "a66cab2c4205fad6334780531d34a1df192f48c917785eea58b4a1aa6333bbac",
+  "app/mall/_runtime/MallRideCanvas.tsx": "abb8a623cfa214c3058c3df1b89179158971e9289b1d8c7b3390e3d978e9d3f3",
+  "app/mall/_runtime/MallRideRuntime.ts": "e332b662580d289c8f24f88d547ddacf4d8a05833ec035b414825c21ff35c63c",
   "app/mall/_runtime/inputController.ts": "ae55dd9bb46760aaf06391330e372439bed1c77f607c1670a143b866b304c452",
   "app/mall/_runtime/mallPhysics.ts": "b2c9a349b02f661916cc81c94168a89d79a77e95d7da536e466a2a3659cdf835",
-  "app/mall/_runtime/rideTuning.ts": "fb8984d22524e81af50d9f6a6f094db674dd8206d6a6ebe16f6effa00f98982e",
+  "app/mall/_runtime/rideTuning.ts": "fe554d62ca6f22ed08e9663a53a784a4e1c61fa7494b2ec068082060e01cbb60",
   "app/mall/_runtime/rideTypes.ts": "15027221f7a0d45882a788b72c668d6f31237056610c408cf5c0a57e6f7f3fa2",
-  "app/mall/_lib/experience-state.ts": "e8bd2416a3a78b102d4f34a501d78dfc865e5db47912afc89b02c57fdfdca6ab",
-  "app/mall/_lib/scene-contract.ts": "98c6aa6ba2eddb654d5fbd65920ecded7d04f7604041b351fd9bf0cb498bea41",
-  "app/mall/_components/MallSceneSlot.tsx": "0d6987264e936e2dfd1db6e61e51da0658a28053cd6857984e30a252f5b8a707"
+  "app/mall/_lib/experience-state.ts": "f030dd53153acbc6d29bd2d186d3f72f48346085b4505170d068429cb17204b2",
+  "app/mall/_lib/scene-contract.ts": "92dde0510a218e4c3c88c7d1108e5cb23f05a81c79e183740bc43f76350a02db",
+  "app/mall/_components/MallSceneSlot.tsx": "28785291f046557f8a86906a1ac54ba259d0b61339b96cfa761e278c4c4be55f"
 };
 
 function assert(condition, message) {

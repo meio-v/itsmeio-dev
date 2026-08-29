@@ -7,8 +7,8 @@ import type {
   SceneEvent,
 } from "../_lib/scene-contract";
 import { InputController } from "./inputController";
-import { createMallColliders } from "./mallPhysics";
 import { BENCHMARK, RIDE_TUNING } from "./rideTuning";
+import { RidePhysics } from "./ridePhysics";
 import { createVehicleVisual, type VehicleVisual } from "./vehicleVisual";
 import type { RideInput } from "./rideTypes";
 import {
@@ -28,9 +28,16 @@ export type RideDebugSnapshot = {
   mode: RideControlMode;
   speedKph: number;
   position: { x: number; z: number };
+  camera: { x: number; y: number; z: number };
   groundedWheels: number;
   drawCalls: number;
   triangles: number;
+  startupMs: number;
+  firstFrameMs: number;
+  averageRenderMs: number;
+  peakRenderMs: number;
+  reducedMotion: boolean;
+  contextStatus: "active" | "lost" | "disposed";
 };
 
 const quaternionIdentity = { x: 0, y: 0, z: 0, w: 1 };
@@ -44,10 +51,7 @@ export class MallRideRuntime {
   private readonly camera = new THREE.PerspectiveCamera(51, 1, 0.08, 90);
   private readonly renderer: THREE.WebGLRenderer;
   private readonly outline: OutlineEffect;
-  private readonly world: RAPIER.World;
-  private readonly chassis: RAPIER.RigidBody;
-  private readonly chassisCollider: RAPIER.Collider;
-  private readonly vehicle: RAPIER.DynamicRayCastVehicleController;
+  private readonly physics: RidePhysics;
   private readonly visual: VehicleVisual;
   private readonly mallArt: MallArtScene;
   private readonly input: InputController;
@@ -55,6 +59,11 @@ export class MallRideRuntime {
   private readonly cameraBall = new RAPIER.Ball(0.28);
   private readonly cameraPosition = new THREE.Vector3();
   private readonly cameraAim = new THREE.Vector3();
+  private readonly cameraForward = new THREE.Vector3();
+  private readonly cameraPivot = new THREE.Vector3();
+  private readonly cameraDesired = new THREE.Vector3();
+  private readonly cameraTravel = new THREE.Vector3();
+  private readonly cameraAimTarget = new THREE.Vector3();
   private readonly previousPosition = new THREE.Vector3();
   private readonly currentPosition = new THREE.Vector3();
   private readonly previousRotation = new THREE.Quaternion();
@@ -62,7 +71,6 @@ export class MallRideRuntime {
   private readonly startTime = performance.now();
   private mode: RideControlMode = "attract";
   private reducedMotion = false;
-  private animationFrame = 0;
   private lastFrameTime = performance.now();
   private accumulator = 0;
   private steer = 0;
@@ -70,11 +78,20 @@ export class MallRideRuntime {
   private lastSafeAnchor = 0;
   private poiLatched = false;
   private disposed = false;
+  private contextLost = false;
+  private renderSamples = 0;
+  private renderTimeTotal = 0;
+  private peakRenderMs = 0;
+  private startupMs = 0;
+  private firstFrameMs = 0;
+  private firstFrameRendered = false;
+  private disposedSnapshot: RideDebugSnapshot | null = null;
 
   private constructor(
     private readonly options: MallRideRuntimeOptions,
     context: WebGL2RenderingContext,
     assets: MallAssetLibrary,
+    private readonly createStartedAt: number,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       canvas: options.canvas,
@@ -98,37 +115,7 @@ export class MallRideRuntime {
     this.scene.background = new THREE.Color(0x22231f);
     this.scene.fog = new THREE.Fog(0x22231f, 38, 64);
 
-    this.world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
-    this.world.timestep = RIDE_TUNING.fixedStep;
-    createMallColliders(this.world, RAPIER);
-
-    this.chassis = this.world.createRigidBody(
-      RAPIER.RigidBodyDesc.dynamic()
-        .setTranslation(BENCHMARK.start.x, BENCHMARK.start.y, BENCHMARK.start.z)
-        .setLinearDamping(0.18)
-        .setAngularDamping(3.5)
-        .setCanSleep(false),
-    );
-    this.chassis.setEnabledRotations(false, true, false, true);
-    this.chassis.setAdditionalMass(82, true);
-    this.chassis.enableCcd(true);
-    this.chassisCollider = this.world.createCollider(
-      RAPIER.ColliderDesc.cuboid(0.76, 0.18, 0.28)
-        .setTranslation(0, 0.02, 0)
-        .setFriction(0.9)
-        .setRestitution(0.03),
-      this.chassis,
-    );
-
-    this.vehicle = this.world.createVehicleController(this.chassis);
-    this.vehicle.indexUpAxis = 1;
-    this.vehicle.setIndexForwardAxis = 0;
-    // Four narrow contact rays give the invisible chassis enough lateral
-    // leverage to turn reliably while the rendered vehicle remains a moped.
-    this.addWheel({ x: 0.69, y: -0.05, z: 0.14 });
-    this.addWheel({ x: 0.69, y: -0.05, z: -0.14 });
-    this.addWheel({ x: -0.66, y: -0.05, z: 0.14 });
-    this.addWheel({ x: -0.66, y: -0.05, z: -0.14 });
+    this.physics = new RidePhysics(BENCHMARK.start);
 
     this.visual = createVehicleVisual(assets);
     this.mallArt = createMallArtScene(assets);
@@ -139,15 +126,19 @@ export class MallRideRuntime {
     this.input.setEnabled(false);
     options.controlSurface.tabIndex = -1;
     options.controlSurface.style.pointerEvents = "none";
-    options.controlSurface.dataset.controlMode = "attract";
+    options.controlSurface.dataset.controlMode = this.mode;
     this.resizeObserver = new ResizeObserver(this.resize);
     this.resizeObserver.observe(options.canvas);
     options.canvas.addEventListener("webglcontextlost", this.onContextLost);
+    options.canvas.addEventListener(
+      "webglcontextrestored",
+      this.onContextRestored,
+    );
     options.controlSurface.addEventListener("keydown", this.onControlSurfaceKeyDown);
     options.controlSurface.addEventListener("blur", this.onControlSurfaceBlur);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
 
-    const start = this.chassis.translation();
+    const start = this.physics.chassis.translation();
     this.previousPosition.set(start.x, start.y, start.z);
     this.currentPosition.copy(this.previousPosition);
     this.cameraPosition.set(start.x - 5, start.y + 2.7, start.z);
@@ -156,6 +147,7 @@ export class MallRideRuntime {
   }
 
   static async create(options: MallRideRuntimeOptions) {
+    const createStartedAt = performance.now();
     performance.mark("mall:runtime-import-start");
     const [, assets] = await Promise.all([
       RAPIER.init(),
@@ -167,15 +159,15 @@ export class MallRideRuntime {
       powerPreference: "high-performance",
     });
     if (!context) throw new Error("This browser does not provide WebGL 2.");
-    return new MallRideRuntime(options, context, assets);
+    return new MallRideRuntime(options, context, assets, createStartedAt);
   }
 
   start() {
     if (this.disposed) return;
     performance.mark("mall:critical-assets-ready");
+    this.startupMs = performance.now() - this.createStartedAt;
     this.lastFrameTime = performance.now();
     this.renderer.setAnimationLoop(this.frame);
-    performance.mark("mall:first-interactive-frame");
     this.options.onEvent({ type: "runtime-ready" });
   }
 
@@ -187,6 +179,9 @@ export class MallRideRuntime {
         break;
       case "set-motion-mode":
         this.reducedMotion = command.mode === "reduced";
+        if (this.reducedMotion && this.mode === "attract") {
+          this.updateReducedMotionCamera();
+        }
         break;
       case "focus-poi":
         this.resetToAnchor(BENCHMARK.safeAnchors.length - 1);
@@ -201,64 +196,75 @@ export class MallRideRuntime {
   }
 
   getDebugSnapshot(): RideDebugSnapshot {
+    if (this.disposedSnapshot) return this.disposedSnapshot;
     let groundedWheels = 0;
-    for (let wheel = 0; wheel < this.vehicle.numWheels(); wheel += 1) {
-      groundedWheels += Number(this.vehicle.wheelIsInContact(wheel));
+    for (let wheel = 0; wheel < this.physics.vehicle.numWheels(); wheel += 1) {
+      groundedWheels += Number(
+        this.physics.vehicle.wheelIsInContact(wheel),
+      );
     }
     return {
       mode: this.mode,
-      speedKph: Math.abs(this.vehicle.currentVehicleSpeed()) * 3.6,
+      speedKph:
+        Math.abs(this.physics.vehicle.currentVehicleSpeed()) * 3.6,
       position: { x: this.currentPosition.x, z: this.currentPosition.z },
+      camera: {
+        x: this.camera.position.x,
+        y: this.camera.position.y,
+        z: this.camera.position.z,
+      },
       groundedWheels,
       drawCalls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
+      startupMs: this.startupMs,
+      firstFrameMs: this.firstFrameMs,
+      averageRenderMs:
+        this.renderSamples === 0 ? 0 : this.renderTimeTotal / this.renderSamples,
+      peakRenderMs: this.peakRenderMs,
+      reducedMotion: this.reducedMotion,
+      contextStatus: this.disposed
+        ? "disposed"
+        : this.contextLost
+          ? "lost"
+          : "active",
     };
+  }
+
+  resetPerformanceMetrics() {
+    this.renderSamples = 0;
+    this.renderTimeTotal = 0;
+    this.peakRenderMs = 0;
   }
 
   dispose() {
     if (this.disposed) return;
+    this.disposedSnapshot = {
+      ...this.getDebugSnapshot(),
+      contextStatus: "disposed",
+    };
     this.disposed = true;
     this.renderer.setAnimationLoop(null);
-    cancelAnimationFrame(this.animationFrame);
     this.resizeObserver.disconnect();
     this.input.dispose();
     this.options.canvas.removeEventListener("webglcontextlost", this.onContextLost);
+    this.options.canvas.removeEventListener(
+      "webglcontextrestored",
+      this.onContextRestored,
+    );
     this.options.controlSurface.removeEventListener("keydown", this.onControlSurfaceKeyDown);
     this.options.controlSurface.removeEventListener("blur", this.onControlSurfaceBlur);
+    delete this.options.controlSurface.dataset.controlMode;
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
-    this.vehicle.free();
-    this.world.free();
+    this.physics.dispose();
     this.mallArt.dispose();
     this.visual.dispose();
-    this.scene.traverse((object) => {
-      if (!(object instanceof THREE.Mesh)) return;
-      object.geometry.dispose();
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
-      for (const material of materials) material.dispose();
-    });
+    this.scene.clear();
     this.renderer.dispose();
   }
 
-  private addWheel(connection: { x: number; y: number; z: number }) {
-    const index = this.vehicle.numWheels();
-    this.vehicle.addWheel(
-      connection,
-      { x: 0, y: -1, z: 0 },
-      { x: 0, y: 0, z: 1 },
-      RIDE_TUNING.suspensionRestLength,
-      RIDE_TUNING.wheelRadius,
-    );
-    this.vehicle.setWheelMaxSuspensionTravel(index, RIDE_TUNING.suspensionTravel);
-    this.vehicle.setWheelSuspensionStiffness(index, RIDE_TUNING.suspensionStiffness);
-    this.vehicle.setWheelSuspensionCompression(index, RIDE_TUNING.suspensionCompression);
-    this.vehicle.setWheelSuspensionRelaxation(index, RIDE_TUNING.suspensionRelaxation);
-    this.vehicle.setWheelMaxSuspensionForce(index, RIDE_TUNING.suspensionForce);
-    this.vehicle.setWheelFrictionSlip(index, RIDE_TUNING.frictionSlip);
-    this.vehicle.setWheelSideFrictionStiffness(index, RIDE_TUNING.sideFriction);
-  }
-
   private readonly frame = (time: number) => {
-    if (this.disposed) return;
+    if (this.disposed || this.contextLost) return;
+    const renderStartedAt = performance.now();
     const frameDelta = Math.min((time - this.lastFrameTime) / 1000, 0.1);
     this.lastFrameTime = time;
 
@@ -278,55 +284,34 @@ export class MallRideRuntime {
     const alpha = this.accumulator / RIDE_TUNING.fixedStep;
     this.updateVisuals(frameDelta, alpha);
     this.outline.render(this.scene, this.camera);
+    const renderTime = performance.now() - renderStartedAt;
+    this.renderSamples += 1;
+    this.renderTimeTotal += renderTime;
+    this.peakRenderMs = Math.max(this.peakRenderMs, renderTime);
+    if (!this.firstFrameRendered) {
+      this.firstFrameRendered = true;
+      this.firstFrameMs = performance.now() - this.createStartedAt;
+      performance.mark("mall:first-interactive-frame");
+    }
   };
 
   private fixedUpdate(input: RideInput) {
     this.previousPosition.copy(this.currentPosition);
     this.previousRotation.copy(this.currentRotation);
 
-    const speed = this.vehicle.currentVehicleSpeed();
-    const speedRatio = THREE.MathUtils.clamp(Math.abs(speed) / RIDE_TUNING.topSpeedMps, 0, 1);
-    const steerTarget = input.steer;
-    const response = steerTarget === 0 ? RIDE_TUNING.steerReturn : RIDE_TUNING.steerResponse;
-    this.steer = damp(this.steer, steerTarget, response, RIDE_TUNING.fixedStep);
-    const steeringLimit = THREE.MathUtils.lerp(
-      RIDE_TUNING.lowSpeedSteer,
-      RIDE_TUNING.highSpeedSteer,
-      speedRatio,
+    const snapshot = this.physics.step(input);
+    this.steer = snapshot.steer;
+    this.currentPosition.set(
+      snapshot.position.x,
+      snapshot.position.y,
+      snapshot.position.z,
     );
-
-    let engineForce: number = 0;
-    let brakeForce: number = RIDE_TUNING.coastBrake;
-    if (input.throttle > 0 && speed < RIDE_TUNING.topSpeedMps) {
-      engineForce = input.throttle * RIDE_TUNING.engineForce * (1 - speedRatio * 0.58);
-      brakeForce = 0;
-    } else if (input.brakeReverse > 0) {
-      if (speed > 0.35) {
-        brakeForce = input.brakeReverse * RIDE_TUNING.brakeForce;
-      } else if (speed > -RIDE_TUNING.reverseSpeedMps) {
-        engineForce = -input.brakeReverse * RIDE_TUNING.reverseForce;
-        brakeForce = 0;
-      }
-    }
-
-    for (const wheel of [0, 1]) {
-      this.vehicle.setWheelSteering(wheel, -this.steer * steeringLimit);
-      this.vehicle.setWheelEngineForce(wheel, engineForce * 0.09);
-      this.vehicle.setWheelBrake(wheel, brakeForce * 0.3);
-    }
-    for (const wheel of [2, 3]) {
-      this.vehicle.setWheelEngineForce(wheel, engineForce * 0.5);
-      this.vehicle.setWheelBrake(wheel, brakeForce * 0.5);
-    }
-    this.vehicle.updateVehicle(RIDE_TUNING.fixedStep, undefined, undefined, (collider) => {
-      return collider.handle !== this.chassisCollider.handle;
-    });
-    this.world.step();
-
-    const position = this.chassis.translation();
-    const rotation = this.chassis.rotation();
-    this.currentPosition.set(position.x, position.y, position.z);
-    this.currentRotation.set(rotation.x, rotation.y, rotation.z, rotation.w);
+    this.currentRotation.set(
+      snapshot.rotation.x,
+      snapshot.rotation.y,
+      snapshot.rotation.z,
+      snapshot.rotation.w,
+    );
 
     if (input.reset || this.currentPosition.y < -2) this.resetToAnchor(this.lastSafeAnchor);
     this.updateSafeAnchor();
@@ -334,11 +319,12 @@ export class MallRideRuntime {
   }
 
   private updateVisuals(delta: number, alpha: number) {
-    if (this.mode === "attract" && !this.reducedMotion) return;
+    if (this.mode === "attract") return;
     this.visual.root.position.lerpVectors(this.previousPosition, this.currentPosition, alpha);
     this.visual.root.quaternion.slerpQuaternions(this.previousRotation, this.currentRotation, alpha);
     const speedRatio = THREE.MathUtils.clamp(
-      Math.abs(this.vehicle.currentVehicleSpeed()) / RIDE_TUNING.topSpeedMps,
+      Math.abs(this.physics.vehicle.currentVehicleSpeed()) /
+        RIDE_TUNING.topSpeedMps,
       0,
       1,
     );
@@ -347,7 +333,7 @@ export class MallRideRuntime {
     this.visual.lean.rotation.x = this.lean;
     this.visual.frontWheel.rotation.y = -this.steer * RIDE_TUNING.lowSpeedSteer;
 
-    const wheelSpin = this.vehicle.wheelRotation(0) ?? 0;
+    const wheelSpin = this.physics.vehicle.wheelRotation(0) ?? 0;
     this.visual.frontWheel.children[0]?.rotateY(wheelSpin * 0.02);
     this.visual.rearWheel.children[0]?.rotateY(wheelSpin * 0.02);
     this.updateChaseCamera(delta);
@@ -355,16 +341,23 @@ export class MallRideRuntime {
 
   private updateChaseCamera(delta: number) {
     const position = this.visual.root.position;
-    const forward = new THREE.Vector3(1, 0, 0).applyQuaternion(this.visual.root.quaternion).normalize();
-    const pivot = new THREE.Vector3(position.x, position.y + 0.92, position.z);
-    const desired = pivot
-      .clone()
-      .addScaledVector(forward, -RIDE_TUNING.cameraDistance)
-      .add(new THREE.Vector3(0, RIDE_TUNING.cameraHeight, 0));
-    const travel = desired.clone().sub(pivot);
-    const distance = travel.length();
-    const direction = travel.normalize();
-    const hit = this.world.castShape(
+    const forward = this.cameraForward
+      .set(1, 0, 0)
+      .applyQuaternion(this.visual.root.quaternion)
+      .normalize();
+    const pivot = this.cameraPivot.set(
+      position.x,
+      position.y + 0.92,
+      position.z,
+    );
+    const desired = this.cameraDesired
+      .copy(pivot)
+      .addScaledVector(forward, -RIDE_TUNING.cameraDistance);
+    desired.y += RIDE_TUNING.cameraHeight;
+    const direction = this.cameraTravel.copy(desired).sub(pivot);
+    const distance = direction.length();
+    direction.normalize();
+    const hit = this.physics.world.castShape(
       pivot,
       quaternionIdentity,
       direction,
@@ -374,20 +367,26 @@ export class MallRideRuntime {
       true,
       undefined,
       undefined,
-      this.chassisCollider,
-      this.chassis,
+      this.physics.chassisCollider,
+      this.physics.chassis,
     );
     if (hit) desired.copy(pivot).addScaledVector(direction, Math.max(0.45, hit.time_of_impact - 0.18));
 
-    const aim = pivot
-      .clone()
-      .addScaledVector(forward, RIDE_TUNING.cameraLookAhead)
-      .add(new THREE.Vector3(0, 0.18, this.steer * 0.55));
+    const aim = this.cameraAimTarget
+      .copy(pivot)
+      .addScaledVector(forward, RIDE_TUNING.cameraLookAhead);
+    aim.y += 0.18;
+    aim.z += this.steer * 0.55;
     this.cameraPosition.lerp(desired, 1 - Math.exp(-RIDE_TUNING.cameraPositionSharpness * delta));
     this.cameraAim.lerp(aim, 1 - Math.exp(-RIDE_TUNING.cameraAimSharpness * delta));
     this.camera.position.copy(this.cameraPosition);
     this.camera.lookAt(this.cameraAim);
-    this.camera.fov = damp(this.camera.fov, 51 + Math.abs(this.vehicle.currentVehicleSpeed()) * 0.65, 3, delta);
+    this.camera.fov = damp(
+      this.camera.fov,
+      51 + Math.abs(this.physics.vehicle.currentVehicleSpeed()) * 0.65,
+      3,
+      delta,
+    );
     this.camera.updateProjectionMatrix();
   }
 
@@ -402,9 +401,16 @@ export class MallRideRuntime {
     this.camera.lookAt(target.x + 2, target.y + 0.7, target.z);
   }
 
+  private updateReducedMotionCamera() {
+    const target = new THREE.Vector3(-9.5, 0.55, 4.6);
+    this.camera.position.set(target.x - 5.2, 3.25, target.z + 3.1);
+    this.camera.lookAt(target.x + 2, target.y + 0.7, target.z);
+  }
+
   private setMode(mode: RideControlMode) {
     const changed = this.mode !== mode;
     this.mode = mode;
+    this.options.controlSurface.dataset.controlMode = mode;
     this.input.setEnabled(mode === "driving");
     this.options.controlSurface.dataset.controlMode = mode;
     this.options.controlSurface.tabIndex = mode === "driving" ? 0 : -1;
@@ -419,13 +425,7 @@ export class MallRideRuntime {
   private resetToAnchor(index: number) {
     const anchor = BENCHMARK.safeAnchors[index] ?? BENCHMARK.safeAnchors[0];
     this.lastSafeAnchor = index;
-    this.chassis.setTranslation({ x: anchor.x, y: anchor.y, z: anchor.z }, true);
-    this.chassis.setRotation(
-      { x: 0, y: Math.sin(anchor.yaw / 2), z: 0, w: Math.cos(anchor.yaw / 2) },
-      true,
-    );
-    this.chassis.setLinvel({ x: 0, y: 0, z: 0 }, true);
-    this.chassis.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    this.physics.reset(anchor);
     this.currentPosition.set(anchor.x, anchor.y, anchor.z);
     this.previousPosition.copy(this.currentPosition);
     this.currentRotation.set(0, Math.sin(anchor.yaw / 2), 0, Math.cos(anchor.yaw / 2));
@@ -480,8 +480,24 @@ export class MallRideRuntime {
 
   private readonly onContextLost = (event: Event) => {
     event.preventDefault();
+    if (this.disposed || this.contextLost) return;
+    this.contextLost = true;
     this.setMode("paused");
-    this.options.onEvent({ type: "runtime-unavailable", reason: "The 3D view lost its graphics context." });
+    this.options.onEvent({
+      type: "runtime-interrupted",
+      reason: "The 3D view is restoring its graphics context.",
+    });
+  };
+
+  private readonly onContextRestored = () => {
+    if (this.disposed || !this.contextLost) return;
+    this.contextLost = false;
+    this.renderer.resetState();
+    this.resize();
+    this.lastFrameTime = performance.now();
+    this.accumulator = 0;
+    performance.mark("mall:webgl-context-restored");
+    this.options.onEvent({ type: "runtime-ready" });
   };
 
   private readonly onVisibilityChange = () => {

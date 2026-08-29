@@ -78,6 +78,9 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
         case "runtime-ready":
           dispatch({ type: "runtime-ready" });
           return;
+        case "runtime-interrupted":
+          dispatch({ type: "runtime-interrupted", reason: event.reason });
+          return;
         case "runtime-unavailable":
           dispatch({ type: "runtime-unavailable", reason: event.reason });
           return;
@@ -153,7 +156,9 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
       : attractPaused ? "ATTRACT PAUSED" : "ATTRACT MODE"
     : state.runtimeStatus === "unavailable"
       ? (state.runtimeMessage ?? "RIDE UNAVAILABLE")
-      : "LOADING RIDE";
+      : state.runtimeStatus === "recovering"
+        ? (state.runtimeMessage ?? "RESTORING RIDE")
+        : "LOADING RIDE";
 
   return (
     <main className={styles.page}>

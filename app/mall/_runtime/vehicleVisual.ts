@@ -213,6 +213,8 @@ export function createVehicleVisual(assets: MallAssetLibrary): VehicleVisual {
       for (const skeleton of skeletons) skeleton.dispose();
       for (const material of materials) material.dispose();
       gradientMap.dispose();
+      root.removeFromParent();
+      root.clear();
     },
   };
 }

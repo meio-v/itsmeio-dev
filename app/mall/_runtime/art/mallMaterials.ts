@@ -105,7 +105,10 @@ export function createMallMaterialRegistry(): MallMaterialRegistry {
 
   for (const [role, material] of Object.entries(materials)) {
     material.name = role;
-    material.userData.outlineParameters ??= { visible: false };
+    // The environment already uses authored inverted-hull accents. Excluding
+    // its shared materials from OutlineEffect avoids a second full-scene pass;
+    // the moving moped retains the effect's hero outline.
+    material.userData.outlineParameters = { visible: false };
   }
 
   return {

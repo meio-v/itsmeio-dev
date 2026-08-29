@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import {
   Component,
+  useCallback,
   useEffect,
   useState,
   useSyncExternalStore,
@@ -92,7 +93,10 @@ function getBrowserCapability(): RideCapability {
   if (connection?.saveData) return "deferred";
 
   const probe = document.createElement("canvas");
-  return probe.getContext("webgl2") ? "available" : "unavailable";
+  const context = probe.getContext("webgl2");
+  if (!context) return "unavailable";
+  context.getExtension("WEBGL_lose_context")?.loseContext();
+  return "available";
 }
 
 export function MallSceneSlot({
@@ -106,6 +110,7 @@ export function MallSceneSlot({
     getServerCapability,
   );
   const [forceLoad, setForceLoad] = useState(false);
+  const [runtimeFailure, setRuntimeFailure] = useState<string | null>(null);
   const capability =
     detectedCapability === "deferred" && forceLoad
       ? "available"
@@ -119,6 +124,16 @@ export function MallSceneSlot({
       });
     }
   }, [capability, onEvent]);
+
+  const handleRuntimeEvent = useCallback(
+    (event: Parameters<typeof onEvent>[0]) => {
+      if (event.type === "runtime-unavailable") {
+        setRuntimeFailure(event.reason);
+      }
+      onEvent(event);
+    },
+    [onEvent],
+  );
 
   if (capability === "checking") {
     return <SceneFallback message="Checking ride support…" />;
@@ -147,15 +162,21 @@ export function MallSceneSlot({
     );
   }
 
+  if (runtimeFailure) {
+    return (
+      <SceneFallback message="The ride is unavailable. The rest of the mall is still open." />
+    );
+  }
+
   return (
     <SceneErrorBoundary
       onError={(reason) =>
-        onEvent({ type: "runtime-unavailable", reason })
+        handleRuntimeEvent({ type: "runtime-unavailable", reason })
       }
     >
       <MallRideCanvas
         featuredTitle={featuredTitle}
-        onEvent={onEvent}
+        onEvent={handleRuntimeEvent}
         onPortReady={onPortReady as (port: SceneCommandPort | null) => void}
       />
     </SceneErrorBoundary>
