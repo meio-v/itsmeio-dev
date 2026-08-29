@@ -1,0 +1,33 @@
+scripts/cut-doodle-stickers.mjs
+  s_918a32a48b13b9::t_414c6137349778 14-35,37-43,45-49,55,58-66,68
+  s_918a32a48b13b9::t_869bfb08d507f9 67,69-72
+  s_918a32a48b13b9::t_cba4ad8371c721 1-13,50-54,56-57,73-85
+  s_918a32a48b13b9::t_3733416c53cfe1 36,44
+scripts/verify-mall-scope.mjs
+  s_918a32a48b13b9::t_8f277701683ab1 24-25,38-48,55,57-58,71-77,86-87
+  s_918a32a48b13b9::t_86029af831b99a 59,61-64,66-69
+  s_918a32a48b13b9::t_2f81dd82f6b637 13
+  s_918a32a48b13b9::t_dc934f721d91df 49
+  s_918a32a48b13b9::t_eb2736f0c1ad3d 14,16-18,21,23
+  s_918a32a48b13b9::t_94d788cdcaa7ed 70
+scripts/verify-mall-browser.mjs
+  s_918a32a48b13b9::t_8f277701683ab1 19,57-58,67-70,87,122-124,178-179,202,204,219-222,225-226,236-241,253,268
+docs/testing/mall-hardening.md
+  s_918a32a48b13b9::t_8f277701683ab1 15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ffef0af707501e193528fa5fc4d90c25c3fdd436",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
