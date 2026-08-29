@@ -87,7 +87,7 @@
 .routeCue { display: inline-flex; align-items: center; gap: 0.75rem; margin: 0; font: 400 clamp(1.15rem, 1.8vw, 1.65rem) "Anton", Impact, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
 .routeCue span { width: 2.75rem; height: 0.25rem; background: var(--tomato); }
 .entryPaths a { color: var(--cobalt); border-bottom: 2px solid currentColor; font: 400 0.84rem var(--font-system); text-decoration: none; }
-.routeMeta { position: absolute; z-index: -1; top: clamp(2rem, 5vw, 4.75rem); right: clamp(0.35rem, 1.5vw, 1.35rem); margin: 0; padding: 0.55rem 0.4rem; color: var(--paper); background: var(--ink); font: 400 clamp(0.62rem, 0.8vw, 0.76rem) var(--font-system); letter-spacing: 0.08em; line-height: 1.2; pointer-events: none; text-orientation: upright; writing-mode: vertical-lr; }
+.routeMeta { position: absolute; z-index: 8; top: clamp(2rem, 5vw, 4.75rem); right: clamp(0.35rem, 1.5vw, 1.35rem); margin: 0; padding: 0.55rem 0.4rem; color: var(--paper); background: var(--ink); font: 400 clamp(0.62rem, 0.8vw, 0.76rem) var(--font-system); letter-spacing: 0.08em; line-height: 1.2; pointer-events: none; text-orientation: upright; writing-mode: vertical-lr; }
 .routeJapanese { text-orientation: upright; }
 .routeJapanese { font-family: var(--font-japanese); }
 .routeRomaji { text-orientation: sideways; }
@@ -237,6 +237,7 @@
 .completedDisclosure summary { width: fit-content; color: var(--acid); font: 400 0.72rem var(--font-system); cursor: pointer; }
 .visitorNote { position: relative; display: grid; width: fit-content; margin: clamp(2rem, 4vw, 3.5rem) 0 0 auto; padding: 0.85rem 1.25rem; background: var(--pink); box-shadow: 0.42rem 0.48rem 0 var(--ink); font-family: var(--font-system); transform: rotate(-1.6deg); }
 .helmetSticker { bottom: clamp(-5.8rem, -5vw, -3.7rem); left: clamp(-1.5rem, -1vw, -0.35rem); width: clamp(7.8rem, 14vw, 12.5rem); transform: rotate(-6deg); }
+.memoryCardSticker { right: clamp(-1rem, -0.5vw, -0.25rem); bottom: clamp(5.5rem, 9vw, 8rem); width: clamp(5.75rem, 9vw, 8rem); transform: rotate(7deg); }
 .visitorNote span { font-size: clamp(0.8rem, 1.4vw, 1.05rem); letter-spacing: 0.06em; }
 .visitorNote small { margin-top: 0.25rem; color: var(--brown); letter-spacing: 0.16em; }
 
@@ -374,6 +375,7 @@
   .kioskScreen { margin-left: 1.5rem; }
   .kiosk { padding-bottom: 8.5rem; }
   .helmetSticker { bottom: -7.2rem; left: 0.25rem; width: 6rem; }
+  .memoryCardSticker { right: 0.25rem; bottom: 5rem; width: 5.5rem; }
   .kioskHeading { align-items: flex-start; flex-direction: column; }
   .dialogHeader { align-items: flex-start; }
 }

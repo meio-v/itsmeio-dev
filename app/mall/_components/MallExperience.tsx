@@ -456,6 +456,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
             aria-hidden="true"
             draggable={false}
           />
+          <Image
+            className={`${styles.pageSticker} ${styles.memoryCardSticker}`}
+            src="/mall/stickers/doodles/memory-card.png"
+            alt=""
+            width={1254}
+            height={1254}
+            aria-hidden="true"
+            draggable={false}
+          />
           <div className={styles.visitorNote} aria-hidden="true">
             <span>THANK YOU FOR VISIT — PLEASE ENJOY LOOKING</span>
             <small>ごゆっくりどうぞ</small>

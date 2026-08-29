@@ -22,7 +22,8 @@ assert.match(component, /id="ride-controls-help" className=\{styles\.visuallyHid
 assert.doesNotMatch(component, /id="ride-controls-help" className=\{styles\.controlPlate\}/);
 assert.match(component, /DO NOT SIT ON CABINET \/ 遊技中の飲食はご遠慮ください/);
 assert.doesNotMatch(component, /coinDoorBezel|coinAperture|coinReturnButton/);
-assert.doesNotMatch(component, /memory-card|memoryCardSticker/);
+assert.match(component, /src="\/mall\/stickers\/doodles\/memory-card\.png"/);
+assert.match(component, /className=\{`\$\{styles\.pageSticker\} \$\{styles\.memoryCardSticker\}`\}/);
 
 assert.match(styles, /\.controlHardware \{[^}]*grid-template-columns: minmax\(8rem, 24%\) minmax\(0, 1fr\)/);
 assert.match(styles, /\.controlDeckMount \{[^}]*aspect-ratio: 1563 \/ 631/);
@@ -39,7 +40,7 @@ assert.match(component, /<feOffset in="outlineMask" dx="6" dy="7"/);
 assert.doesNotMatch(component, /feGaussianBlur/);
 assert.match(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{ filter: url\("#mall-sticker-cutout"\); \}/);
 assert.doesNotMatch(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{[^}]*drop-shadow/);
-assert.doesNotMatch(styles, /\.memoryCardSticker/);
+assert.match(styles, /\.memoryCardSticker \{[^}]*transform: rotate\(7deg\)/);
 assert.doesNotMatch(styles, /mask-image: linear-gradient\(to right/);
 assert.match(styles, /\.coinUnit::before \{[^}]*width: 30%/);
 assert.match(styles, /data-control-mode="attract"[^\n]*\.coinUnit::before[^\n]*coinSlotBlink/);

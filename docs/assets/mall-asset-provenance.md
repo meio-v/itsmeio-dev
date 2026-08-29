@@ -32,6 +32,7 @@ All third-party sources below are CC0. Attribution is retained voluntarily.
 | `public/mall/fonts/graffiti-xenoa-regular.otf` | Nirmana Visual, user-provided Graffiti Xenoa demo bundle | `dd2d027019fd2b8a2c5687f3698b24ab752280b7e0c38d92499598d110effc68` | Personal-use demo license. Self-hosted only for the decorative `01`–`03` section numerals; CSS tracking is widened to compensate for the display face's naturally tight spacing. |
 | `public/mall/textures/control-deck-panel-full.png` | User-provided original illustration | `d5b337a59b54e83d9a006c2438bf31595e7f1530bd7069b70ba82beae6c22208` | Rebuilt from the untouched source alpha bounds with transparent safety padding around the complete casing, then given a cache-safe asset URL. The real ride controls and semantics remain separate HTML. |
 | `public/mall/textures/coin-door.png` | User-provided original illustration | `61da7713a511acd640bfd796cd20c3549fe7dfe79f80c45bdfb5db28abf609e8` | Cropped nondestructively from the supplied transparent source. The `FREE / 1 PLAY` denomination plate and interactive aperture are layered in HTML so state and accessibility remain intact. |
+| `public/mall/stickers/doodles/memory-card.png` | User-provided original illustration | `6f380d81839be51e92d1f047695ee096676b22b3b8d72db36180c3799f647113` | Shipped unchanged as a decorative sticker in the Currently Playing poster wall. |
 
 ## Shipped file checksums
 
