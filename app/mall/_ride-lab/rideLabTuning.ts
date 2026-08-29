@@ -60,7 +60,7 @@ export const DEFAULT_RIDE_LAB_TUNING: Readonly<RideLabTuning> = Object.freeze({
   fixedStep: 1 / 60,
   maxCatchUpSteps: 4,
   engineTorque: 150,
-  engineInertia: 0.35,
+  engineInertia: 0.9,
   throttleRise: 2.4,
   throttleFall: 3.2,
   topSpeedMps: 18,

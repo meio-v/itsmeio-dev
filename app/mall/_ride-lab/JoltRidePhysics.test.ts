@@ -28,6 +28,21 @@ test("native Jolt motorcycle accelerates, coasts, and brakes deterministically",
   assert.deepEqual(first, second);
 });
 
+test("balanced acceleration reaches 30 km/h in a controllable window", async () => {
+  const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+  const targetSpeedMps = 30 / 3.6;
+  let elapsedSeconds = 0;
+  let snapshot = physics.snapshot();
+  while (snapshot.speedMps < targetSpeedMps && elapsedSeconds < 6) {
+    snapshot = physics.step({ ...idle, throttle: 1 });
+    elapsedSeconds += DEFAULT_RIDE_LAB_TUNING.fixedStep;
+  }
+  physics.dispose();
+  assert.ok(snapshot.speedMps >= targetSpeedMps);
+  assert.ok(elapsedSeconds >= 3.5, `expected 0–30 km/h to take at least 3.5s, observed ${elapsedSeconds.toFixed(2)}s`);
+  assert.ok(elapsedSeconds <= 5, `expected 0–30 km/h within 5s, observed ${elapsedSeconds.toFixed(2)}s`);
+});
+
 test("create and dispose returns Jolt-owned memory to its baseline", async () => {
   const Jolt = await loadJolt();
   const before = Jolt.JoltInterface.prototype.sGetFreeMemory();
@@ -101,7 +116,7 @@ test("the authored test ramp produces a grounded-airborne-grounded journey", asy
   let sawTakeoff = false;
   let sawLandingAfterTakeoff = false;
   for (let step = 0; step < 220; step += 1) {
-    const snapshot = physics.step({ ...idle, throttle: 1, steer: step < 80 ? -0.35 : 0 });
+    const snapshot = physics.step({ ...idle, throttle: 1, steer: step < 100 ? -0.35 : 0 });
     sawTakeoff ||= snapshot.movementTransition === "takeoff";
     sawLandingAfterTakeoff ||= sawTakeoff && snapshot.movementTransition === "landing";
   }
