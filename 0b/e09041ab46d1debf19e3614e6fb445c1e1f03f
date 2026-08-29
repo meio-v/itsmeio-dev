@@ -1,0 +1,23 @@
+scripts/verify-mall-restyle.mjs
+  s_918a32a48b13b9::t_9745fb18af5527 11
+app/mall/_lib/experience-state.ts
+  s_918a32a48b13b9::t_e000f05898357b 85-87
+app/mall/_lib/experience-state.test.ts
+  s_918a32a48b13b9::t_e000f05898357b 47-61
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "0be09041ab46d1debf19e3614e6fb445c1e1f03f",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
