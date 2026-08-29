@@ -35,19 +35,20 @@ for (const file of changed) {
 
 const basePackage = JSON.parse(git("show", `${base}:package.json`));
 const currentPackage = JSON.parse(await readFile(new URL("../package.json", import.meta.url)));
-const addedDependencies = Object.keys(currentPackage.dependencies ?? {})
-  .filter((dependency) => !basePackage.dependencies?.[dependency])
-  .sort();
-assert.deepEqual(addedDependencies, [
-  "@dimforge/rapier3d-compat",
-  "@fontsource/anton",
-  "@fontsource/bricolage-grotesque",
-  "@fontsource/dotgothic16",
-  "@fontsource/redaction-20",
-  "three",
-]);
-assert.equal(currentPackage.devDependencies["@types/three"], "^0.183.1");
-assert.equal(currentPackage.devDependencies.playwright, "^1.62.1");
+assert.deepEqual(currentPackage.dependencies, {
+  ...basePackage.dependencies,
+  "@dimforge/rapier3d-compat": "^0.20.0",
+  "@fontsource/anton": "^5.3.0",
+  "@fontsource/bricolage-grotesque": "^5.3.0",
+  "@fontsource/dotgothic16": "^5.3.0",
+  "@fontsource/redaction-20": "^5.3.0",
+  three: "^0.185.1",
+});
+assert.deepEqual(currentPackage.devDependencies, {
+  ...basePackage.devDependencies,
+  "@types/three": "^0.183.1",
+  playwright: "^1.62.1",
+});
 
 const experiencePath = "app/mall/_components/MallExperience.tsx";
 const after = await readFile(new URL(`../${experiencePath}`, import.meta.url), "utf8");
