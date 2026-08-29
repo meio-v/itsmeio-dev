@@ -1,0 +1,21 @@
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_77be2c1b861974 68,90
+  s_918a32a48b13b9::t_63e6cbd8416865 358
+  s_918a32a48b13b9::t_42c15031464876 66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4c904c1c58b416c8b7da795a13266b6f82444ba9",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
