@@ -1,0 +1,36 @@
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_894c26a81c761c 55-56
+  s_fc8a0c8160e8ba::t_be80f3f03288da 3,54
+  s_fc8a0c8160e8ba::t_38daad835f5ba7 57-58
+  s_fc8a0c8160e8ba::t_4d793c6a013711 59-60
+app/mall/_ride-lab/JoltRidePhysics.test.ts
+  s_fc8a0c8160e8ba::t_7206ad3cd292fd 70-78
+app/mall/_ride-lab/JoltRidePhysics.ts
+  s_fc8a0c8160e8ba::t_be80f3f03288da 3,234,474-480,482,484
+  s_fc8a0c8160e8ba::t_7206ad3cd292fd 186,465-473,481,483,485-486
+  s_fc8a0c8160e8ba::t_aef9bb08bd0de9 487-488
+app/mall/_ride-lab/RideLabRuntime.ts
+  s_fc8a0c8160e8ba::t_7206ad3cd292fd 295
+app/mall/_ride-lab/rideLabModel.ts
+  s_fc8a0c8160e8ba::t_be80f3f03288da 41-51
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_fd371201798e3c 232-233,235
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_08f40d325659d0 2,4-7,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "af06cbe5a4b16eea355684f6df3d5af7a9aedd9f",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
