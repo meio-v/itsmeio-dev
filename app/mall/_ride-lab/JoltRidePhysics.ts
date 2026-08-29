@@ -1,6 +1,6 @@
 import initJolt from "jolt-physics/wasm-compat";
 
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, signedLeanRadians, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
 import type { RideLabInput, RideLabSnapshot, ResolvedRideIntent } from "./rideLabTypes.ts";
 import type { RideLabTuning } from "./rideLabTuning.ts";
 
@@ -183,6 +183,7 @@ export class JoltRidePhysics {
     if (this.wasGrounded && input.aerialAction) this.applyPreloadForce();
     if (aerialStep.ollieImpulse > 0) this.applyVerticalImpulse(aerialStep.ollieImpulse);
     if (aerialStep.upwardForce > 0) this.applyVerticalForce(aerialStep.upwardForce);
+    this.applyLowSpeedUprightAssist();
     const topSpeedFactor = clamp(1 - Math.max(0, this.previousSpeed - this.tuning.topSpeedMps) / 2, 0, 1);
     this.controller.SetDriverInput(
       this.intent.throttle * topSpeedFactor,
@@ -230,7 +231,7 @@ export class JoltRidePhysics {
     const y = rotationY;
     const z = rotationZ;
     const w = rotationW;
-    const leanRadians = Math.atan2(2 * (w * z + x * y), 1 - 2 * (y * y + z * z));
+    const leanRadians = signedLeanRadians({ x, y, z, w });
     const grounded = this.isGroundContact(frontWheel) || this.isGroundContact(rearWheelBase);
     const movementTransition = this.wasGrounded && !grounded ? "takeoff"
       : !this.wasGrounded && grounded ? "landing"
@@ -459,6 +460,30 @@ export class JoltRidePhysics {
     const force = new this.Jolt.Vec3(0, amount, 0);
     this.bodyInterface.AddForce(this.motorcycleBody.GetID(), force, this.Jolt.EActivation_Activate);
     this.Jolt.destroy(force);
+  }
+
+  private applyLowSpeedUprightAssist() {
+    if (!this.wasGrounded) return;
+    const horizontalSpeed = Math.hypot(this.linearVelocityOut.GetX(), this.linearVelocityOut.GetZ());
+    const assistSpeedLimit = 1.5;
+    if (horizontalSpeed >= assistSpeedLimit) return;
+    const rotationX = this.rotationOut.GetX();
+    const rotationY = this.rotationOut.GetY();
+    const rotationZ = this.rotationOut.GetZ();
+    const rotationW = this.rotationOut.GetW();
+    const lean = signedLeanRadians({ x: rotationX, y: rotationY, z: rotationZ, w: rotationW });
+    const forwardX = 2 * (rotationX * rotationZ + rotationW * rotationY);
+    const forwardY = 2 * (rotationY * rotationZ - rotationW * rotationX);
+    const forwardZ = 1 - 2 * (rotationX * rotationX + rotationY * rotationY);
+    const angularAlongForward = this.angularVelocityOut.GetX() * forwardX
+      + this.angularVelocityOut.GetY() * forwardY
+      + this.angularVelocityOut.GetZ() * forwardZ;
+    const speedBlend = 1 - horizontalSpeed / assistSpeedLimit;
+    const torqueAmount = (-lean * this.tuning.leanSpring * 4 - angularAlongForward * this.tuning.leanDamping * 4)
+      * this.tuning.rideAssist * speedBlend;
+    const torque = new this.Jolt.Vec3(forwardX * torqueAmount, forwardY * torqueAmount, forwardZ * torqueAmount);
+    this.bodyInterface.AddTorque(this.motorcycleBody.GetID(), torque, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(torque);
   }
 
   private findGrindWall(actionHeld: boolean): GrindWall | null {

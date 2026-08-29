@@ -38,6 +38,17 @@ export function longitudinalSpeed(
   return velocity.x * forwardX + velocity.y * forwardY + velocity.z * forwardZ;
 }
 
+export function signedLeanRadians(rotation: { x: number; y: number; z: number; w: number }) {
+  const upX = 2 * (rotation.x * rotation.y - rotation.w * rotation.z);
+  const upY = 1 - 2 * (rotation.x * rotation.x + rotation.z * rotation.z);
+  const upZ = 2 * (rotation.y * rotation.z + rotation.w * rotation.x);
+  const forwardX = 2 * (rotation.x * rotation.z + rotation.w * rotation.y);
+  const forwardZ = 1 - 2 * (rotation.x * rotation.x + rotation.y * rotation.y);
+  const correctionAlongForward = -upZ * forwardX + upX * forwardZ;
+  const upAlongWorldUp = upY;
+  return Math.atan2(-correctionAlongForward, upAlongWorldUp);
+}
+
 export type AerialMechanicPhase = "grounded" | "preload" | "airborne" | "hover" | "grind" | "depleted";
 
 export type AerialMechanicState = {

@@ -67,6 +67,15 @@ test("reset clears drivetrain, wheel, and warm-start state to a repeatable basel
   assert.deepEqual(afterSecondReset, afterFirstReset);
 });
 
+test("near-stationary upright assist prevents the parked moped from tipping over", async () => {
+  const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+  let snapshot = physics.snapshot();
+  for (let step = 0; step < 1_800; step += 1) snapshot = physics.step(idle);
+  physics.dispose();
+  assert.equal(snapshot.grounded, true);
+  assert.ok(Math.abs(snapshot.leanRadians) < 0.05);
+});
+
 test("the authored test ramp produces a grounded-airborne-grounded journey", async () => {
   const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
   let sawTakeoff = false;

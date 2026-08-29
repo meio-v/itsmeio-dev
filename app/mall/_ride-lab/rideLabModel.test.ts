@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveTouchSteer, retainTransitionPulse, speedLineStrength } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
 test("throttle acknowledges immediately but takes time to reach full drive", () => {
@@ -49,6 +49,13 @@ test("longitudinal speed remains exact while the moped is pitched on a ramp", ()
   const rotation = { x: Math.sin(halfAngle), y: 0, z: 0, w: Math.cos(halfAngle) };
   const velocity = { x: 0, y: -Math.SQRT1_2 * 10, z: Math.SQRT1_2 * 10 };
   assert.ok(Math.abs(longitudinalSpeed(velocity, rotation) - 10) < 1e-12);
+});
+
+test("lean measurement stays upright regardless of heading", () => {
+  assert.ok(Math.abs(signedLeanRadians({ x: 0, y: 0, z: 0, w: 1 })) < 1e-12);
+  assert.ok(Math.abs(signedLeanRadians({ x: 0, y: 1, z: 0, w: 0 })) < 1e-12);
+  const halfLean = 0.1;
+  assert.ok(Math.abs(Math.abs(signedLeanRadians({ x: Math.sin(halfLean), y: Math.cos(halfLean), z: 0, w: 0 })) - 0.2) < 1e-12);
 });
 
 test("held ground action stores preload until release produces a bounded ollie", () => {

@@ -229,7 +229,10 @@ try {
   await page.waitForFunction(() => window.__rideLabRuntime?.getDebugSnapshot().reducedMotion === true);
   assert.equal(await surface.evaluate((element) => getComputedStyle(element).getPropertyValue("--ride-line-strength").trim()), "0.000");
 
+  await page.evaluate(() => window.__rideLabRuntime.setScenario("start"));
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === true);
   await surface.focus();
+  await page.waitForTimeout(50);
   await page.keyboard.down("Space");
   await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().preload > 0.1);
   await page.evaluate(() => window.__rideLabRuntime.pause());

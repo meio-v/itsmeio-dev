@@ -292,7 +292,7 @@ export class RideLabRuntime {
     this.vehiclePose.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
     const loadDelta = clampLoad(this.snapshot.rearSuspensionLoad - this.snapshot.frontSuspensionLoad);
     this.vehicle.root.position.y = -Math.min(0.12, (this.snapshot.frontSuspensionLoad + this.snapshot.rearSuspensionLoad) / 500);
-    this.vehicle.root.rotation.x = Math.PI / 2 + loadDelta * 0.045;
+    this.vehicle.root.rotation.x = loadDelta * 0.045;
     this.inverseVehicleRootRotation.copy(this.vehicle.root.quaternion).invert();
     this.preloadOffset
       .set(0, -this.snapshot.preload * this.tuning.preloadCompression, 0)
