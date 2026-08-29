@@ -28,6 +28,22 @@ test("attract motion pauses and resumes without becoming a driving control", () 
   assert.equal(resumed.controlMode, "attract");
 });
 
+test("closing the arcade restores a deliberately paused attract ride", () => {
+  const paused = mallExperienceReducer(initialMallExperienceState, {
+    type: "pause-attract",
+  });
+  const open = mallExperienceReducer(paused, {
+    type: "open-poi",
+    id: "currently-playing",
+  });
+  const closed = mallExperienceReducer(open, { type: "close-poi" });
+
+  assert.equal(open.poiReturnMode, "paused");
+  assert.equal(closed.controlMode, "paused");
+  assert.equal(closed.resumeMode, "attract");
+  assert.equal(closed.poiReturnMode, null);
+});
+
 test("arriving at the arcade exits driving behind the dialog", () => {
   const driving = mallExperienceReducer(initialMallExperienceState, {
     type: "insert-token",

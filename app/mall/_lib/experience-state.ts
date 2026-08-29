@@ -8,6 +8,7 @@ export type MallExperienceState = {
   controlMode: RideControlMode;
   resumeMode: Exclude<RideControlMode, "paused">;
   selectedPoi: PoiId | null;
+  poiReturnMode: RideControlMode | null;
 };
 
 export type MallExperienceAction =
@@ -34,6 +35,7 @@ export const initialMallExperienceState: MallExperienceState = {
   controlMode: "attract",
   resumeMode: "attract",
   selectedPoi: null,
+  poiReturnMode: null,
 };
 
 export function mallExperienceReducer(
@@ -80,22 +82,24 @@ export function mallExperienceReducer(
       }
       return { ...state, controlMode: "attract" };
     case "open-poi": {
-      const resumeMode =
-        action.restoreMode ??
-        (state.controlMode === "paused" ? state.resumeMode : state.controlMode);
+      const poiReturnMode = action.restoreMode ?? state.controlMode;
       return {
         ...state,
         selectedPoi: action.id,
-        resumeMode,
+        poiReturnMode,
         controlMode: "paused",
       };
     }
-    case "close-poi":
+    case "close-poi": {
+      const returnMode = state.poiReturnMode ?? state.resumeMode;
       return {
         ...state,
         selectedPoi: null,
+        poiReturnMode: null,
         controlMode:
-          state.runtimeStatus === "unavailable" ? "paused" : state.resumeMode,
+          state.runtimeStatus === "unavailable" ? "paused" : returnMode,
+        resumeMode: returnMode === "paused" ? state.resumeMode : returnMode,
       };
+    }
   }
 }

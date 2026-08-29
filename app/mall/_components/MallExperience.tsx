@@ -67,7 +67,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
 
   const skipRide = useCallback((event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    const contentRegion = document.getElementById("mall-content");
+    const contentRegion = document.getElementById("currently-playing");
     contentRegion?.focus({ preventScroll: true });
     contentRegion?.scrollIntoView({ block: "start" });
   }, []);
@@ -157,7 +157,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
 
   return (
     <main className={styles.page}>
-      <a className={styles.skipLink} href="#mall-content" onClick={skipRide}>Skip the ride</a>
+      <a className={styles.skipLink} href="#currently-playing" onClick={skipRide}>Skip the ride</a>
 
       <header className={styles.header}>
         <div className={styles.utilityRail}>
@@ -309,7 +309,9 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
                     onPortReady={setScenePort}
                   />
                   <span className={`${styles.cabinetTexture} ${styles.screenGlassTexture}`} aria-hidden="true" />
-                  <span className={styles.insertCoin} aria-hidden="true">Insert coin</span>
+                  {state.runtimeStatus === "ready" && !state.selectedPoi && (
+                    <span className={styles.insertCoin} aria-hidden="true">Insert coin</span>
+                  )}
                 </div>
                 <div className={`${styles.cabinetSidePanel} ${styles.cabinetSideRight}`} aria-hidden="true">
                   <span className={styles.maintenanceSticker}>INSP. 08/26</span>
@@ -348,7 +350,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
         </div>
       </section>
 
-      <section id="mall-content" className={styles.kiosk} tabIndex={-1} aria-labelledby="currently-playing-title">
+      <section id="currently-playing" className={styles.kiosk} tabIndex={-1} aria-labelledby="currently-playing-title">
         <span className={`${styles.sectionNumber} ${styles.kioskNumber}`} aria-hidden="true">03</span>
         <div className={styles.kioskInner}>
           <div className={styles.kioskServiceStrip} aria-hidden="true"><span>03 / POSTER WALL</span><span>CABINET 01</span></div>

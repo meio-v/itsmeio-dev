@@ -109,7 +109,7 @@
       },
       {
         "component": "CurrentlyPlayingKiosk",
-        "id": "mall-content",
+        "id": "currently-playing",
         "children": [
           { "component": "ServiceStrip", "copy": ["02 / demo unit", "Cabinet 01"] },
           {
