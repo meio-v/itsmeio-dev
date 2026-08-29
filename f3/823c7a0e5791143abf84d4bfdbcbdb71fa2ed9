@@ -1,0 +1,168 @@
+GATES.md
+  s_fc8a0c8160e8ba::t_ba36ec703bed5c 54,57
+  s_fc8a0c8160e8ba::t_a994693809195d 55-56,58
+app/mall/_ride-lab/rideLabControls.ts
+  s_fc8a0c8160e8ba::t_87e3f8e98eb918 34-36
+  s_fc8a0c8160e8ba::t_e58cf4b4622214 58-60,70
+  s_fc8a0c8160e8ba::t_29d6f37a364b2d 64-65
+  s_fc8a0c8160e8ba::t_4e6d6029d372e9 61-63,71-72
+  s_fc8a0c8160e8ba::t_e4a1b5aa56078e 18-20
+docs/testing/ride-lab-phase-1.md
+  s_fc8a0c8160e8ba::t_1a510263678088 21
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 20
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_4e6ec9318353e0 234
+  s_fc8a0c8160e8ba::t_33d8f382df8e86 210-213
+  s_fc8a0c8160e8ba::t_cbe01ec1b7ac97 145
+  s_fc8a0c8160e8ba::t_5cdd627199b7ef 71,95
+  s_fc8a0c8160e8ba::t_1a510263678088 9,86-89,101
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 75,99-100,315
+  s_fc8a0c8160e8ba::t_d5b89c0db28d56 149-152,155,157-159,162
+  s_fc8a0c8160e8ba::t_82ae306eb780db 153
+  s_fc8a0c8160e8ba::t_6cecedce208dea 293-296
+  s_fc8a0c8160e8ba::t_a4f4078dac7fae 299-300
+  s_fc8a0c8160e8ba::t_ca7fbda5ab9338 69,93
+  s_fc8a0c8160e8ba::t_a35e3a493a0627 298,301
+  s_fc8a0c8160e8ba::t_0c96010248318e 72,96
+  s_fc8a0c8160e8ba::t_d7612b2d6a70d8 67,91
+  s_fc8a0c8160e8ba::t_6b48578178ce89 196,202
+  s_fc8a0c8160e8ba::t_4455e81b73c42c 66,90
+  s_fc8a0c8160e8ba::t_fe8a1538693d95 68,92
+  s_fc8a0c8160e8ba::t_76d18080cb74f5 73,97
+  s_fc8a0c8160e8ba::t_7f2372418d4a6b 70,94
+  s_fc8a0c8160e8ba::t_5b767e1fb58ccd 160,166
+  s_fc8a0c8160e8ba::t_1ec308dff3da94 163-165,167-168,170-175
+  s_fc8a0c8160e8ba::t_a04dd4094565ec 74,98
+  s_fc8a0c8160e8ba::t_df49050d45e778 156,161,169
+app/mall/_ride-lab/rideLabArena.ts
+  s_fc8a0c8160e8ba::t_0a82cafb5f9dbc 1
+app/mall/_ride-lab/rideLabTuning.ts
+  s_fc8a0c8160e8ba::t_29d6f37a364b2d 11-12,78-79,144-145,191
+  s_fc8a0c8160e8ba::t_7f2372418d4a6b 113
+  s_fc8a0c8160e8ba::t_4a7c6b4deb3fbe 116
+  s_fc8a0c8160e8ba::t_ed688f984360c4 141
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 1
+  s_fc8a0c8160e8ba::t_5cdd627199b7ef 209-210
+  s_fc8a0c8160e8ba::t_ef22f63ac20835 189
+  s_fc8a0c8160e8ba::t_526cf974422c2a 117,164,171
+  s_fc8a0c8160e8ba::t_90b8b0090ac0c5 165,172
+  s_fc8a0c8160e8ba::t_fe8a1538693d95 94,102
+  s_fc8a0c8160e8ba::t_e4a1b5aa56078e 30-32,96-98,179,208
+  s_fc8a0c8160e8ba::t_4e6d6029d372e9 8-10,18-19,75-77,85-86,140,142-143,151-152,190,194-195
+  s_fc8a0c8160e8ba::t_e58cf4b4622214 5-7,17,72-74,84,138-139,149-150,188
+  s_fc8a0c8160e8ba::t_87e3f8e98eb918 46-48,112,114,184
+app/mall/_ride-lab/rideLabTuning.test.ts
+  s_fc8a0c8160e8ba::t_50dc54f121f8c0 27,30-31
+  s_fc8a0c8160e8ba::t_59676e1e587ceb 70,76
+  s_fc8a0c8160e8ba::t_76d18080cb74f5 42
+  s_fc8a0c8160e8ba::t_ef22f63ac20835 59-60,67
+  s_fc8a0c8160e8ba::t_ddcb0b3bca1d52 10-13
+  s_fc8a0c8160e8ba::t_7f2372418d4a6b 39
+  s_fc8a0c8160e8ba::t_d7612b2d6a70d8 36
+  s_fc8a0c8160e8ba::t_fe8a1538693d95 37
+  s_fc8a0c8160e8ba::t_4ec5c2d1f9ba1b 14-17
+  s_fc8a0c8160e8ba::t_ea397afd9f07a5 3,32,34
+  s_fc8a0c8160e8ba::t_0c96010248318e 41,80-81
+  s_fc8a0c8160e8ba::t_4a7c6b4deb3fbe 23
+  s_fc8a0c8160e8ba::t_6d53668ed3de11 18-21
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 22,24-25,33,44-45,71
+  s_fc8a0c8160e8ba::t_ca7fbda5ab9338 38,77
+  s_fc8a0c8160e8ba::t_5cdd627199b7ef 40,78-79
+  s_fc8a0c8160e8ba::t_29d6f37a364b2d 26,28-29,43,82
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_d7612b2d6a70d8 46
+  s_fc8a0c8160e8ba::t_4e6d6029d372e9 63,65-66
+  s_918a32a48b13b9::t_641cca1857e27a 24-25,74-75
+  s_fc8a0c8160e8ba::t_def88d935dd029 34-35
+  s_fc8a0c8160e8ba::t_28c1c4e4b71fb8 26-33,36-40,44-45,47-49
+  s_fc8a0c8160e8ba::t_e58cf4b4622214 4,64,67-73
+  s_fc8a0c8160e8ba::t_e4a1b5aa56078e 18-23
+  s_fc8a0c8160e8ba::t_79404d7ed14b57 52-59
+app/mall/_ride-lab/RideLabRuntime.ts
+  s_fc8a0c8160e8ba::t_ed688f984360c4 45,334-335
+  s_fc8a0c8160e8ba::t_4e6d6029d372e9 69-71,73,271-274,319-324,326-327,331,341-342,344-347,349,351-353
+  s_fc8a0c8160e8ba::t_0a82cafb5f9dbc 7,432-433,437,441-446
+  s_fc8a0c8160e8ba::t_e58cf4b4622214 9,318
+  s_fc8a0c8160e8ba::t_29d6f37a364b2d 72,325,332-333,336-337,350
+  s_fc8a0c8160e8ba::t_41db2cc39afb04 329
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_7cb5e1cef584b5 2,4-7,10
+app/mall/_ride-lab/rideLabModel.ts
+  s_fc8a0c8160e8ba::t_e58cf4b4622214 42-58,194
+  s_fc8a0c8160e8ba::t_44c8219ec86a72 10-15,25-27
+  s_fc8a0c8160e8ba::t_e4a1b5aa56078e 35-41
+app/mall/_ride-lab/JoltRidePhysics.ts
+  s_fc8a0c8160e8ba::t_8bd09c6665ae39 586-588
+  s_fc8a0c8160e8ba::t_2a62ae1216c112 96,191-192,339,589-596,605-608,612-618,620-621
+  s_fc8a0c8160e8ba::t_e16dd81958bc52 222,549,551-558,562-563
+  s_fc8a0c8160e8ba::t_a475938a467b71 242-244,583,585,624-625,739-741
+  s_fc8a0c8160e8ba::t_ef22f63ac20835 619
+  s_fc8a0c8160e8ba::t_e585a42da10cef 660-667
+  s_fc8a0c8160e8ba::t_e4a1b5aa56078e 4,224-229,231
+  s_fc8a0c8160e8ba::t_d067a22ad74d6c 13-41,610-611
+  s_fc8a0c8160e8ba::t_0b863573cdf4ba 550,559,561
+  s_fc8a0c8160e8ba::t_41db2cc39afb04 597-604
+  s_fc8a0c8160e8ba::t_6cedf831d5e5e3 239-240,565,656-659,676-682,690-696,699-707,742
+  s_fc8a0c8160e8ba::t_3b4c02ac83fb96 560
+  s_fc8a0c8160e8ba::t_c3715c42f967e3 525
+  s_fc8a0c8160e8ba::t_848bfaead61ea9 609
+  s_918a32a48b13b9::t_ac9d6b525ae7f7 564,566,708,743
+  s_fc8a0c8160e8ba::t_5ebc3c266087b3 584
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 668-675,684,687
+  s_fc8a0c8160e8ba::t_50bb154e1eb22d 633-650
+  s_fc8a0c8160e8ba::t_0a82cafb5f9dbc 3,42,384-388
+  s_fc8a0c8160e8ba::t_87e3f8e98eb918 622-623,626-632,651-655,683,685-686,688-689,697-698
+  s_fc8a0c8160e8ba::t_3fbeaec253dc27 466,472-473,484,491
+app/mall/ride-lab/_components/RideLabExperience.tsx
+  s_fc8a0c8160e8ba::t_4455e81b73c42c 36
+  s_fc8a0c8160e8ba::t_be616a4cf1473d 13-14
+app/mall/_ride-lab/JoltRidePhysics.test.ts
+  s_fc8a0c8160e8ba::t_b0bd9c43b1f244 124-131,136-137,139,141,155-163,167,188
+  s_fc8a0c8160e8ba::t_8bd09c6665ae39 196,215
+  s_fc8a0c8160e8ba::t_4263b9447ede69 135,145-149,182
+  s_fc8a0c8160e8ba::t_069309974e2490 133-134,144,150,179-180
+  s_fc8a0c8160e8ba::t_7a95ec0995efd1 185-186
+  s_fc8a0c8160e8ba::t_c324142a7deb61 168,171-175
+  s_fc8a0c8160e8ba::t_848bfaead61ea9 200,213-214,216
+  s_fc8a0c8160e8ba::t_dfe2c7bcd83069 118-123,140,164-166,189-195
+  s_fc8a0c8160e8ba::t_1408e6be1782c9 138,142,170
+  s_fc8a0c8160e8ba::t_2bcd88bfca3f3f 184,187
+  s_fc8a0c8160e8ba::t_ba36ec703bed5c 206,208,220,244-245,248-249
+  s_fc8a0c8160e8ba::t_ea397afd9f07a5 224-225,228,234,238,251-252
+  s_fc8a0c8160e8ba::t_1b38d5e1f65186 197-199,201-205,211-212,217-219
+  s_fc8a0c8160e8ba::t_e0589d9e8e7c28 255-280
+  s_fc8a0c8160e8ba::t_3fbeaec253dc27 283,287
+  s_fc8a0c8160e8ba::t_b55699eb8c973f 181
+  s_fc8a0c8160e8ba::t_f520d9017d0429 177
+  s_fc8a0c8160e8ba::t_2222890342718c 42-43
+  s_fc8a0c8160e8ba::t_7c5c57d0e4ef9b 169
+  s_fc8a0c8160e8ba::t_ee9c550f557334 207,209-210
+  s_fc8a0c8160e8ba::t_4f49230994ac60 221-222,227,229,240-243,250,253-254
+  s_fc8a0c8160e8ba::t_526cf974422c2a 223,226,230-233,235-237,239,246-247
+  s_fc8a0c8160e8ba::t_ac00eff10d743a 132,143,151-154,178
+  s_fc8a0c8160e8ba::t_31c0409b6e1019 176,183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f3823c7a0e5791143abf84d4bfdbcbdb71fa2ed9",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    },
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
