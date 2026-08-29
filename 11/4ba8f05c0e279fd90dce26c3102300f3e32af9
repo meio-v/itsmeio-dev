@@ -1,0 +1,30 @@
+app/mall/_ride-lab/RideLabRuntime.ts
+  s_fc8a0c8160e8ba::t_f183ced1ec2b82 7,109-112,165-166
+  s_fc8a0c8160e8ba::t_84bc43b967d39b 168
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_f183ced1ec2b82 3,72-82
+  s_fc8a0c8160e8ba::t_4a208475c0266d 83-84
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_850d1687a359df 131-137,139-141
+  s_fc8a0c8160e8ba::t_f183ced1ec2b82 125-130,138,142
+app/mall/_ride-lab/rideLabLifecycle.ts
+  s_fc8a0c8160e8ba::t_f183ced1ec2b82 1-12
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_5752a96e33aa61 2,4-7,10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "114ba8f05c0e279fd90dce26c3102300f3e32af9",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
