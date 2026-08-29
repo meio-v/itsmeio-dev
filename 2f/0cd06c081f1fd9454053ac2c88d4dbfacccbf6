@@ -1,0 +1,44 @@
+app/mall/_ride-lab/JoltRidePhysics.test.ts
+  s_fc8a0c8160e8ba::t_1385d4bb8cd2d8 98,100,104,108-115,123
+  s_fc8a0c8160e8ba::t_7d6915f9a5a465 94
+GATES.md
+  s_fc8a0c8160e8ba::t_efe344e77f0fba 49
+  s_fc8a0c8160e8ba::t_a5e23f07304e14 50-51
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 53
+  s_fc8a0c8160e8ba::t_ac905bc6b7fcca 52
+app/mall/_ride-lab/rideLabModel.ts
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 31-38
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 162-164
+app/mall/_ride-lab/JoltRidePhysics.ts
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 14-16,475,491-495,497-504,509-517
+  s_fc8a0c8160e8ba::t_7c4bf8c08db45d 518-519
+  s_fc8a0c8160e8ba::t_b58d1f559e1b52 3,190-191,195,488-490,496,505-508
+app/mall/_ride-lab/rideLabControls.ts
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 27
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_7cb5e1cef584b5 2,4-7,10
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_a5e23f07304e14 4,29-30,32-34,36-38
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 31
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 39-44
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_8c9d58a4823b29 8-9,244
+app/mall/_ride-lab/rideLabTuning.ts
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 28,67,74,101,130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "2f0cd06c081f1fd9454053ac2c88d4dbfacccbf6",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
