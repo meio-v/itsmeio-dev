@@ -35,6 +35,10 @@ test("presentation tuning preserves the physics world while physical tuning rebu
   ), false);
   assert.equal(requiresRideLabPhysicsRebuild(
     { ...DEFAULT_RIDE_LAB_TUNING },
+    { ...DEFAULT_RIDE_LAB_TUNING, preloadCompression: DEFAULT_RIDE_LAB_TUNING.preloadCompression + 0.01 },
+  ), false);
+  assert.equal(requiresRideLabPhysicsRebuild(
+    { ...DEFAULT_RIDE_LAB_TUNING },
     { ...DEFAULT_RIDE_LAB_TUNING, engineTorque: DEFAULT_RIDE_LAB_TUNING.engineTorque + 10 },
   ), true);
 });

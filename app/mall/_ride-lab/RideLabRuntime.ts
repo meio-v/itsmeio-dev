@@ -84,7 +84,7 @@ export class RideLabRuntime {
     this.vehiclePose.add(this.vehicle.root);
     this.scene.add(this.vehiclePose);
     this.input = new InputController(options.surface);
-    this.actionInput = new RideLabActionController(options.surface);
+    this.actionInput = new RideLabActionController(options.surface, () => this.cancelAerialInput(false));
     this.input.setEnabled(true);
     this.actionInput.setEnabled(true);
     this.resizeObserver = new ResizeObserver(this.resize);

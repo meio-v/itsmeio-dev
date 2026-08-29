@@ -8,6 +8,7 @@ const PRESENTATION_KEYS = new Set<keyof RideLabTuning>([
   "speedLineThreshold",
   "speedLineIntensity",
   "feedbackIntensity",
+  "preloadCompression",
 ]);
 
 export type RideLabTuning = {

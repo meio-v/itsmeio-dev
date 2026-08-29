@@ -3,11 +3,11 @@ export class RideLabActionController {
   private virtualHeld = false;
   private enabled = false;
 
-  constructor(private readonly surface: HTMLElement) {
+  constructor(private readonly surface: HTMLElement, private readonly onForcedRelease: () => void) {
     surface.addEventListener("keydown", this.onKeyDown);
     surface.addEventListener("focusout", this.onFocusOut);
     document.addEventListener("keyup", this.onKeyUp);
-    window.addEventListener("blur", this.release);
+    window.addEventListener("blur", this.forceRelease);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
   }
 
@@ -33,7 +33,7 @@ export class RideLabActionController {
     this.surface.removeEventListener("keydown", this.onKeyDown);
     this.surface.removeEventListener("focusout", this.onFocusOut);
     document.removeEventListener("keyup", this.onKeyUp);
-    window.removeEventListener("blur", this.release);
+    window.removeEventListener("blur", this.forceRelease);
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
   }
 
@@ -52,11 +52,17 @@ export class RideLabActionController {
   };
 
   private readonly onFocusOut = (event: FocusEvent) => {
-    if (!(event.relatedTarget instanceof Node) || !this.surface.contains(event.relatedTarget)) this.release();
+    if (!(event.relatedTarget instanceof Node) || !this.surface.contains(event.relatedTarget)) this.forceRelease();
   };
 
   private readonly onVisibilityChange = () => {
-    if (document.hidden) this.release();
+    if (document.hidden) this.forceRelease();
+  };
+
+  private readonly forceRelease = () => {
+    if (!this.keyboardHeld && !this.virtualHeld) return;
+    this.release();
+    this.onForcedRelease();
   };
 
   private readonly release = () => {

@@ -174,6 +174,16 @@ try {
   await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grounded === true);
   await surface.focus();
   await page.keyboard.down("Space");
+  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().preload > 0.1);
+  await page.locator("label", { hasText: "Follow distance" }).locator('input[type="range"]').focus();
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "false");
+  await page.keyboard.up("Space");
+  await page.waitForTimeout(50);
+  const focusCancelled = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  assert.equal(focusCancelled.preload, 0);
+  assert.notEqual(focusCancelled.eventPulse, "ollie");
+  await surface.focus();
+  await page.keyboard.down("Space");
   const actionFrame = Number(await surface.getAttribute("data-frame"));
   await page.waitForFunction((frame) => Number(document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-frame")) > frame, actionFrame);
   assert.equal(await surface.getAttribute("data-accepted-action"), "true");
