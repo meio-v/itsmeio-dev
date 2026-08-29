@@ -1,0 +1,421 @@
+@font-face {
+  font-family: "Graffiti Xenoa";
+  src: url("/mall/fonts/graffiti-xenoa-regular.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.page {
+  --ink: #14110f;
+  --paper: #f0e9d8;
+  --cobalt: #1f4fff;
+  --tomato: #e63f2a;
+  --mustard: #e0a41c;
+  --welcome-yellow: color-mix(in srgb, var(--mustard) 68%, var(--paper));
+  --pink: #e8a3b8;
+  --acid: #c6ff2e;
+  --brown: #563328;
+  --font-system: "DotGothic16", monospace;
+  --font-japanese: "WDXL Lubrifont JP N", "DotGothic16", sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  min-height: 100vh;
+  overflow-x: clip;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: "Bricolage Grotesque", "Arial Narrow", Arial, sans-serif;
+  font-weight: 700;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--paper);
+  background: var(--ink);
+  font-family: var(--font-system);
+  transform: translateY(-160%);
+}
+.skipLink:focus { transform: translateY(0); }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.stickerFilterDefs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
+.header { position: relative; background: var(--paper); border-bottom: 0.875rem solid var(--ink); }
+.utilityRail { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem 1.5rem; padding: 0.9rem clamp(1rem, 4vw, 3.5rem) 0.65rem; }
+.utilityRail a { color: var(--ink); font: italic 400 clamp(1.65rem, 2.8vw, 2.4rem)/0.9 "Redaction 20", Georgia, serif; letter-spacing: -0.01em; text-decoration: none; }
+.utilityRail span { color: var(--brown); font: 400 0.76rem var(--font-system); letter-spacing: 0.08em; }
+.headerRule { display: block; height: 0.38rem; margin: 0 clamp(1rem, 4vw, 3.5rem); background: var(--ink); }
+.navGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.65rem, 1.6vw, 1.4rem); padding: 1.15rem clamp(1rem, 4vw, 3.5rem) 1.65rem; }
+.navPlate { position: relative; min-width: 0; }
+.navUnderplate { position: absolute; inset: 0 -0.5rem -0.55rem 0.5rem; background: var(--ink); clip-path: polygon(2% 4%, 99% 0, 100% 97%, 0 100%); pointer-events: none; }
+.navLink { position: relative; display: block; min-height: 8rem; padding: 1rem 1.1rem 0.9rem; color: var(--ink); clip-path: polygon(0 5%, 100% 0, 98% 100%, 1% 96%); text-decoration: none; transition: transform 140ms ease; }
+.navPlate:nth-child(2) .navLink { clip-path: polygon(1% 0, 100% 4%, 99% 97%, 0 100%); }
+.navPlate:nth-child(3) .navLink { clip-path: polygon(0 3%, 99% 0, 100% 100%, 1% 98%); }
+.navPlate:nth-child(4) .navLink { clip-path: polygon(2% 0, 100% 2%, 98% 98%, 0 100%); }
+.navWork { color: var(--paper); background: var(--cobalt); }
+.navPlaying { color: var(--paper); background: var(--tomato); }
+.navResume { background: var(--mustard); }
+.navGithub { background: var(--pink); }
+.playerBadge { display: block; width: max-content; margin-bottom: 0.45rem; padding: 0.08rem 0.42rem; color: var(--acid); background: var(--ink); font: 400 0.72rem var(--font-system); letter-spacing: 0.14em; }
+.navLink strong { display: block; font: 700 italic clamp(1.55rem, 2.25vw, 2.3rem)/0.92 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.035em; text-transform: uppercase; }
+.navLink small { display: block; margin-top: 0.45rem; font: 400 0.73rem var(--font-system); letter-spacing: 0.04em; opacity: 0.88; }
+.navLink small { font-family: var(--font-japanese); }
+
+.hero { position: relative; padding: clamp(2.1rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3.5rem) clamp(2.75rem, 6vw, 5.5rem); overflow: hidden; background: var(--paper); border-bottom: 0.875rem solid var(--ink); isolation: isolate; }
+.heroPolygon,
+.heroTone { position: absolute; z-index: -2; top: clamp(1.9rem, 6vw, 5rem); right: 0; width: 44%; height: clamp(7.5rem, 16vw, 15rem); clip-path: polygon(6% 8%, 100% 0, 100% 100%, 0 92%); pointer-events: none; }
+.heroPolygon { background: var(--cobalt); }
+.heroTone { background-image: radial-gradient(circle, rgb(20 17 15 / 42%) 1.4px, transparent 1.7px); background-size: 1rem 1rem; clip-path: polygon(46% 4%, 100% 0, 100% 100%, 20% 96%); }
+.sectionNumber { position: absolute; z-index: 5; top: clamp(0.65rem, 2vw, 1.9rem); left: clamp(0.5rem, 2vw, 2.5rem); display: inline-block; isolation: isolate; color: var(--acid); font: 400 clamp(4rem, 7vw, 7rem)/0.8 "Graffiti Xenoa", "Anton", Impact, sans-serif; font-kerning: none; letter-spacing: 0.12em; paint-order: stroke fill; pointer-events: none; transform: rotate(-7deg); -webkit-text-stroke: 0.42rem var(--ink); }
+.sectionNumber::before { position: absolute; z-index: -1; inset: 0; color: var(--ink); content: attr(data-number); transform: translate(0.14em, 0.13em); -webkit-text-stroke-color: var(--ink); }
+.wordmark { position: relative; z-index: 1; margin: 0 0 0 clamp(2.5rem, 7vw, 7.5rem); padding-left: 0.12em; font-family: "Redaction 20", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; line-height: 0.84; }
+.wordmark span { display: block; font-size: clamp(4rem, 12.5vw, 12.25rem); }
+.wordmark span:last-child { margin-left: clamp(1.5rem, 9vw, 11.25rem); }
+.wordmark b { color: var(--tomato); font-weight: inherit; }
+.welcomeStage { position: relative; z-index: 7; width: min(42.5rem, 94%); margin: clamp(0.85rem, 1.8vw, 1.5rem) 0 0 auto; transform: rotate(-0.6deg); }
+.welcomeStage::before,
+.welcomeStage::after { position: absolute; top: 9%; bottom: auto; left: -10.5rem; width: 11rem; height: 2.2rem; content: ""; clip-path: polygon(100% 0, 100% 100%, 0 50%); pointer-events: none; }
+.welcomeStage::before { z-index: -1; background: var(--ink); transform: translate(0.5rem, 0.6rem); }
+.welcomeStage::after { z-index: 1; background: var(--welcome-yellow); }
+.welcomeUnderplate { position: absolute; inset: 0 -0.75rem -0.88rem 0.75rem; background: var(--ink); clip-path: polygon(1% 3%, 100% 0, 99% 100%, 0 98%); }
+.welcome { position: relative; overflow: hidden; background: var(--welcome-yellow); clip-path: polygon(0 2%, 99% 0, 100% 98%, 1% 100%); }
+.welcome p { position: relative; z-index: 1; margin: 0; padding: clamp(1.4rem, 3vw, 2.25rem) clamp(1.4rem, 3.4vw, 2.75rem) clamp(1.65rem, 3.4vw, 2.5rem); font: 800 clamp(1.2rem, 2.2vw, 1.875rem)/1.24 "Bricolage Grotesque", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.014em; text-wrap: pretty; }
+.welcomeTone { position: absolute; right: 0; bottom: 0; width: 52%; height: 62%; background-image: radial-gradient(circle, rgb(20 17 15 / 42%) 1.5px, transparent 1.8px); background-size: 0.7rem 0.7rem; clip-path: polygon(36% 0, 100% 22%, 100% 100%, 0 100%); pointer-events: none; }
+.entryPaths { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; gap: 0.9rem 1.75rem; margin-top: clamp(1.5rem, 3vw, 2.5rem); }
+.routeCue { display: inline-flex; align-items: center; gap: 0.75rem; margin: 0; font: 400 clamp(1.15rem, 1.8vw, 1.65rem) "Anton", Impact, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
+.routeCue span { width: 2.75rem; height: 0.25rem; background: var(--tomato); }
+.entryPaths a { color: var(--cobalt); border-bottom: 2px solid currentColor; font: 400 0.84rem var(--font-system); text-decoration: none; }
+.routeMeta { position: absolute; z-index: 8; top: clamp(2rem, 5vw, 4.75rem); right: clamp(0.35rem, 1.5vw, 1.35rem); margin: 0; padding: 0.55rem 0.4rem; color: var(--paper); background: var(--ink); font: 400 clamp(0.62rem, 0.8vw, 0.76rem) var(--font-system); letter-spacing: 0.08em; line-height: 1.2; pointer-events: none; text-orientation: upright; writing-mode: vertical-lr; }
+.routeJapanese { text-orientation: upright; }
+.routeJapanese { font-family: var(--font-japanese); }
+.routeRomaji { text-orientation: sideways; }
+.pageSticker { position: absolute; z-index: 6; height: auto; object-fit: contain; pointer-events: none; user-select: none; }
+.pageSticker,
+.rideSticker,
+.playstationSticker { filter: url("#mall-sticker-cutout"); }
+.heroMascotSticker { bottom: clamp(7.5rem, 9vw, 9.5rem); left: clamp(7rem, 20vw, 18rem); width: clamp(13rem, 23vw, 21rem); transform: rotate(-3deg); }
+
+.ticker { overflow: hidden; color: var(--acid); background: var(--ink); border-bottom: 0.875rem solid var(--ink); }
+.ticker div { display: flex; width: max-content; animation: ticker 22s linear infinite; }
+.ticker span { padding: 0.6rem 0; white-space: nowrap; font: 700 italic clamp(1.35rem, 2.4vw, 2.3rem) "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.025em; text-transform: uppercase; }
+
+.rideSection { position: relative; padding: clamp(1.9rem, 4.5vw, 4rem) clamp(1rem, 4vw, 3.5rem) clamp(2.5rem, 5vw, 4.5rem); background: var(--cobalt); border-bottom: 0.875rem solid var(--ink); }
+.rideNumber { top: 0.8rem; right: clamp(0.65rem, 3vw, 3.1rem); left: auto; transform: rotate(6deg); }
+.rideSticker { position: absolute; z-index: 6; height: auto; object-fit: contain; pointer-events: none; user-select: none; }
+.mopedSticker { top: clamp(1.25rem, 3vw, 2.75rem); right: clamp(5.8rem, 11vw, 10rem); width: clamp(6rem, 10vw, 9.5rem); transform: rotate(-11deg); }
+.vendoSticker { right: clamp(0.2rem, 1vw, 0.9rem); bottom: clamp(-2.9rem, -2.2vw, -1.7rem); width: clamp(5.75rem, 9vw, 8.25rem); transform: rotate(6deg); }
+.rideSectionInner { position: relative; z-index: 1; max-width: 77.5rem; margin: 0 auto; }
+.rideSectionInner > h2 { margin: 0 0 clamp(1.15rem, 2.4vw, 1.9rem); color: var(--paper); font: 700 italic clamp(2rem, 4.1vw, 3.9rem)/0.9 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.045em; text-transform: uppercase; }
+.rideSectionInner > h2 span { color: var(--ink); }
+.cabinetStage { position: relative; padding-top: clamp(0.7rem, 1.2vw, 1rem); transform: rotate(0.35deg); }
+.cabinetStage::before { position: absolute; z-index: 4; top: 0; right: -0.55rem; left: -0.35rem; height: clamp(0.95rem, 1.6vw, 1.35rem); content: ""; background: var(--ink); border-bottom: 0.24rem solid var(--acid); box-shadow: 0 0.35rem 0 rgb(20 17 15 / 30%); clip-path: polygon(1% 0, 99% 0, 100% 72%, 0 100%); pointer-events: none; }
+.tokenSticker { z-index: 5; top: clamp(1.2rem, 2vw, 1.8rem); left: clamp(-1.4rem, -1.2vw, -0.65rem); width: clamp(4.4rem, 7vw, 6.4rem); transform: rotate(-9deg); }
+.cabinetUnderplate { position: absolute; inset: 0 -0.65rem -0.75rem 0.65rem; background: var(--ink); }
+.rideFrame { position: relative; overflow: hidden; background: var(--ink); border: 4px solid var(--acid); isolation: isolate; }
+.cabinetTexture { position: absolute; inset: 0; display: none; background-position: center; background-size: cover; pointer-events: none; }
+.rideFrame[data-texture-body="on"] .cabinetBodyTexture,
+.rideFrame[data-texture-marquee="on"] .marqueeTexture,
+.rideFrame[data-texture-control-panel="on"] .controlPanelTexture,
+.rideFrame[data-texture-screen-glass="on"] .screenGlassTexture { display: block; }
+.rideFrame[data-texture-control-panel="on"] .controlDeckArt { display: block; }
+.cabinetBodyTexture { z-index: 0; background-image: url("/mall/textures/cabinet-body.png"); mix-blend-mode: overlay; opacity: 0.25; }
+.cabinetMarquee { position: relative; z-index: 1; display: grid; justify-items: center; min-height: clamp(5.4rem, 8vw, 6.5rem); padding: 0.65rem 1rem 0.6rem; overflow: hidden; color: var(--ink); background: var(--acid); border-bottom: 4px solid var(--ink); box-shadow: inset 0 0 2rem rgb(255 255 180 / 48%); text-align: center; }
+.cabinetMarquee::after { position: absolute; z-index: 2; inset: 0; content: ""; background-image: radial-gradient(circle at 0.6rem 50%, var(--ink) 2.5px, transparent 3px); background-size: 1.75rem 100%; opacity: 0.14; pointer-events: none; }
+.marqueeTexture { z-index: 1; background-image: url("/mall/textures/marquee.png"); background-position: center 7%; background-repeat: no-repeat; background-size: 100% auto; filter: brightness(0.82) contrast(1.9) saturate(0.72); mix-blend-mode: multiply; opacity: 0.34; }
+.cabinetMarquee strong,
+.cabinetMarquee small { position: relative; z-index: 3; }
+.cabinetMarquee strong { display: block; font: 700 italic clamp(1.6rem, 3.2vw, 3rem)/0.96 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.025em; text-transform: uppercase; }
+.cabinetMarquee small { display: block; margin-top: 0.2rem; font: 400 clamp(0.7rem, 1.1vw, 0.95rem) var(--font-system); letter-spacing: 0.24em; }
+.cabinetMarquee small { font-family: var(--font-japanese); }
+.cabinetStatusBar { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.15rem; padding: 0.7rem 1rem; color: var(--paper); background: var(--ink); border-bottom: 4px solid var(--acid); font: 400 clamp(0.76rem, 1.3vw, 1rem) var(--font-system); letter-spacing: 0.1em; }
+.cabinetStatusBar > div { display: flex; align-items: center; gap: 0.85rem; }
+.rideStatus { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.8125rem; }
+.rideStatus > span { width: 0.68rem; height: 0.68rem; background: var(--acid); animation: statusBlink 2s steps(1) infinite; }
+.pauseButton { min-height: 2.1rem; padding: 0.45rem 1rem; color: var(--ink); background: var(--paper); border: 0; font: 400 0.8125rem var(--font-system); cursor: pointer; }
+.cabinetScreenRow { position: relative; z-index: 2; display: grid; grid-template-columns: clamp(1.8rem, 3.8vw, 3.5rem) minmax(0, 1fr) clamp(1.8rem, 3.8vw, 3.5rem); }
+.cabinetSidePanel { position: relative; min-width: 0; overflow: hidden; background: linear-gradient(104deg, transparent 0 44%, rgb(240 233 216 / 12%) 45% 46%, transparent 47% 100%), var(--ink); }
+.cabinetSidePanel::before { position: absolute; top: 24%; bottom: 22%; width: 0.42rem; content: ""; background: repeating-linear-gradient(to bottom, rgb(240 233 216 / 48%) 0 0.14rem, transparent 0.14rem 0.72rem); opacity: 0.72; }
+.cabinetSidePanel::after { position: absolute; inset: 0.7rem 0.45rem; content: ""; background: radial-gradient(circle at 50% 0, #77736b 0 0.13rem, #050504 0.14rem 0.22rem, transparent 0.23rem), radial-gradient(circle at 50% 100%, #77736b 0 0.13rem, #050504 0.14rem 0.22rem, transparent 0.23rem); pointer-events: none; }
+.cabinetSideLeft { border-right: 3px solid var(--acid); clip-path: polygon(0 0, 78% 0, 100% 100%, 0 100%); }
+.cabinetSideLeft::before { left: 0.52rem; }
+.cabinetSideRight { border-left: 3px solid var(--acid); clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
+.cabinetSideRight::before { right: 0.52rem; }
+.serialPlate,
+.maintenanceSticker { position: absolute; z-index: 2; color: rgb(240 233 216 / 52%); font: 400 clamp(0.42rem, 0.7vw, 0.58rem) var(--font-system); letter-spacing: 0.08em; white-space: nowrap; }
+.serialPlate { bottom: 1.2rem; left: 50%; transform: translateX(-50%) rotate(-90deg); }
+.maintenanceSticker { right: 50%; bottom: 1rem; padding: 0.22rem 0.3rem; color: rgb(20 17 15 / 58%); background: rgb(224 164 28 / 62%); transform: translateX(50%) rotate(90deg); }
+.screenViewport { position: relative; aspect-ratio: 2 / 1; min-width: 0; overflow: hidden; background: #221638; isolation: isolate; }
+:global(.mall-ride-surface) { position: absolute; inset: 0; outline: none; }
+.screenGlassTexture { z-index: 11; background-image: url("/mall/textures/screen-glass.png"); background-position: center; background-size: cover; filter: contrast(1.08); mix-blend-mode: screen; opacity: 0.18; }
+.controlPanel { position: relative; z-index: 2; padding: clamp(0.7rem, 1.4vw, 1rem); overflow: hidden; background: color-mix(in srgb, var(--paper) 88%, white); border-top: 4px solid var(--acid); }
+.controlPanelTexture { z-index: 1; background-image: url("/mall/textures/control-panel.png"); filter: brightness(1.22) contrast(0.62) saturate(0.28); mix-blend-mode: multiply; opacity: 0.16; }
+.tokenConsole { position: relative; z-index: 2; display: grid; gap: 0.65rem; }
+.controlHardware { display: grid; grid-template-columns: minmax(8rem, 24%) minmax(0, 1fr); align-items: center; gap: clamp(0.6rem, 1.2vw, 0.9rem); perspective: 70rem; }
+.coinDoorAssembly { position: relative; align-self: center; justify-self: center; width: 100%; max-width: 18rem; aspect-ratio: 4 / 5; transition: transform 140ms var(--ease-out), filter 140ms ease; }
+.coinDoorArt { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0.28rem 0 rgb(0 0 0 / 72%)); pointer-events: none; user-select: none; }
+.coinFreePlate { position: absolute; z-index: 2; top: 7.3%; left: 59%; display: grid; place-content: center; width: 23.3%; height: 15.8%; color: var(--ink); background: #ef3c88; border: 0.16rem solid var(--ink); border-radius: 0.38rem; box-shadow: inset 0 0.15rem 0 rgb(255 255 255 / 24%), inset 0 -0.18rem 0 rgb(80 8 35 / 25%); font-family: "Goldman", "Arial Narrow", Arial, sans-serif; line-height: 0.9; text-align: center; transform: rotate(0.3deg); pointer-events: none; }
+.coinFreePlate b { font-size: clamp(0.58rem, 1.4vw, 1rem); letter-spacing: -0.04em; }
+.coinFreePlate small { padding-top: 0.16rem; border-top: 0.1rem solid currentColor; font-size: clamp(0.27rem, 0.58vw, 0.44rem); font-weight: 700; }
+.coinInsertDisplayShade { position: absolute; z-index: 3; top: 7.3%; left: 17.5%; width: 38.5%; height: 15.8%; background: rgb(12 13 11 / 0%); border-radius: 0.35rem; transition: background-color 160ms ease; pointer-events: none; }
+.coinUnit { position: absolute; z-index: 4; top: 30%; left: 50%; width: clamp(2.75rem, 21%, 4rem); height: clamp(3.25rem, 28%, 5rem); padding: 0; background: transparent; border: 0; border-radius: 0.35rem; cursor: pointer; translate: -50% 0; transition: transform 140ms var(--ease-out); }
+.coinUnit::before { position: absolute; top: 5%; bottom: 8%; left: 50%; width: 30%; content: ""; border-radius: 0.18rem; pointer-events: none; transform: translateX(-50%); transition: box-shadow 140ms ease; }
+.coinUnit:disabled { cursor: default; }
+.controlDeckMount { position: relative; align-self: center; min-width: 0; aspect-ratio: 1563 / 631; overflow: visible; background: transparent; transform: perspective(72rem) rotateX(-4deg) scale(0.99) translateY(-0.12rem); transform-origin: top center; }
+.controlDeckArt { position: absolute; inset: 0; display: none; width: 100%; height: 100%; object-fit: fill; opacity: 0.98; filter: contrast(1.03) saturate(1.05) drop-shadow(0 0.34rem 0 rgb(20 17 15 / 72%)); pointer-events: none; user-select: none; }
+.serviceRail { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.65rem 1rem; min-height: 2.1rem; padding: 0.45rem 0.65rem 0.25rem; color: rgb(20 17 15 / 68%); border-top: 1px solid rgb(20 17 15 / 20%); }
+.insertCoin { position: absolute; z-index: 12; top: 50%; left: 50%; padding: 0.38rem 0.65rem; color: var(--acid); background: rgb(20 17 15 / 82%); border: 2px solid currentColor; font: 400 clamp(0.72rem, 1.35vw, 1.1rem) var(--font-system); letter-spacing: 0.12em; text-transform: uppercase; animation: insertCoinBlink 1.1s steps(1) infinite; pointer-events: none; transform: translate(-50%, -50%); }
+.rideFrame[data-control-mode="attract"] .coinUnit::before { animation: coinSlotBlink 1.1s steps(1) infinite; }
+.rideFrame[data-control-mode="driving"] .insertCoin {
+  animation: coinAccepted 240ms steps(1) 1 forwards;
+}
+.rideFrame[data-control-mode="driving"] .coinDoorAssembly { animation: coinHardwareAccepted 240ms steps(1) 1; }
+.rideFrame[data-control-mode="driving"] .coinInsertDisplayShade { background: rgb(12 13 11 / 76%); }
+.rideFrame[data-control-mode="paused"] :is(.insertCoin, .coinUnit) {
+  animation: none;
+  opacity: 0.62;
+}
+.pauseButton:disabled { cursor: not-allowed; opacity: 0.58; }
+.controlPlate { display: flex; flex-wrap: wrap; align-items: center; gap: 0.28rem 0.5rem; margin: 0; font: 400 clamp(0.52rem, 0.78vw, 0.66rem) var(--font-system); letter-spacing: 0.035em; }
+.controlPlate span { display: inline-flex; align-items: center; gap: 0.28rem; }
+.controlPlate b { padding: 0.06rem 0.24rem; color: rgb(20 17 15 / 82%); background: transparent; border: 1px solid rgb(20 17 15 / 38%); font-weight: 400; }
+.controlPlate i { color: rgb(20 17 15 / 30%); font-style: normal; }
+.hardwareLabels { color: rgb(20 17 15 / 42%); font: 400 clamp(0.42rem, 0.65vw, 0.54rem) var(--font-system); letter-spacing: 0.055em; white-space: nowrap; }
+
+.sceneFallback { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; overflow: hidden; }
+.sceneStatus { position: relative; z-index: 10; display: grid; justify-items: center; gap: 0.7rem; max-width: 28rem; padding: 1rem; color: var(--paper); background: rgb(20 17 15 / 88%); border: 2px solid var(--acid); font: 400 0.8rem var(--font-system); text-align: center; }
+.sceneLoadButton,
+.closeButton,
+.primaryButton,
+.secondaryButton { min-height: 2.75rem; padding: 0.7rem 1rem; border: 0; font: 400 0.8rem var(--font-system); text-decoration: none; cursor: pointer; }
+.sceneLoadButton,
+.primaryButton { color: var(--ink); background: var(--acid); }
+.secondaryButton { display: inline-flex; align-items: center; color: var(--paper); background: var(--cobalt); }
+:global(.mall-touch-controls) { position: absolute; z-index: 12; right: 0.75rem; bottom: 0.75rem; left: 0.75rem; display: none; justify-content: space-between; pointer-events: none; }
+:global(.mall-touch-steer),
+:global(.mall-touch-pedals) { display: flex; gap: 0.45rem; pointer-events: auto; }
+:global(.mall-touch-controls button) { min-width: 3.25rem; min-height: 3.25rem; color: var(--paper); background: rgb(20 17 15 / 90%); border: 2px solid var(--acid); font-family: var(--font-system); touch-action: none; }
+:global(.mall-ride-debug) { position: absolute; z-index: 12; top: 0.8rem; left: 0.8rem; display: grid; grid-template-columns: repeat(3, auto); gap: 0.25rem 0.75rem; padding: 0.55rem 0.7rem; color: var(--acid); background: rgb(20 17 15 / 90%); border: 2px solid var(--acid); font: 400 0.62rem var(--font-system); pointer-events: none; }
+
+.kiosk { position: relative; padding: clamp(2.4rem, 5vw, 4.75rem) clamp(1rem, 4vw, 3.5rem) clamp(3.5rem, 7vw, 6.9rem); background: var(--paper); }
+.kioskNumber { top: 1rem; left: clamp(0.75rem, 2vw, 2.5rem); }
+.kioskInner { position: relative; max-width: 77.5rem; margin: 0 auto; }
+.kioskServiceStrip { display: flex; justify-content: space-between; margin-left: clamp(6.75rem, 10vw, 9rem); padding: 0.4rem 0.25rem 0.65rem; color: var(--brown); font: 400 0.72rem var(--font-system); letter-spacing: 0.08em; }
+.kioskServiceStrip span:last-child { padding: 0.18rem 0.4rem; color: var(--paper); background: var(--brown); }
+.kioskScreenStage { position: relative; }
+.playstationSticker { position: absolute; z-index: 4; top: clamp(-3.8rem, -3.2vw, -2.4rem); right: clamp(5.5rem, 12vw, 11rem); width: clamp(7.75rem, 13vw, 11rem); height: auto; pointer-events: none; transform: rotate(-8deg); user-select: none; }
+.kioskScreen { position: relative; margin-left: clamp(1.4rem, 5vw, 5rem); padding: clamp(1.5rem, 3vw, 2.6rem); overflow: hidden; color: var(--ink); background: var(--tomato); box-shadow: 0.75rem 0.85rem 0 var(--ink); clip-path: polygon(0 1%, 99% 0, 100% 100%, 1% 98%); }
+.kioskScreen::before { position: absolute; top: 0; right: 0; width: 45%; height: 52%; content: ""; background-image: radial-gradient(circle, rgb(20 17 15 / 48%) 1.4px, transparent 1.7px); background-size: 0.7rem 0.7rem; clip-path: polygon(30% 0, 100% 0, 100% 100%); pointer-events: none; }
+.kanaRail { position: absolute; z-index: 2; top: clamp(1.2rem, 2vw, 2rem); right: clamp(0.7rem, 1.5vw, 1.4rem); color: rgb(20 17 15 / 72%); font: 400 clamp(0.85rem, 1.3vw, 1.1rem) var(--font-system); letter-spacing: 0.3em; writing-mode: vertical-rl; }
+.kanaRail { font-family: var(--font-japanese); }
+.kioskHeading { position: relative; z-index: 1; display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-right: clamp(1.8rem, 4vw, 3.2rem); }
+.kioskHeading h2,
+.dialogHeader h2 { margin: 0; color: var(--paper); font: 700 italic clamp(2.9rem, 6.8vw, 6.75rem)/0.88 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.045em; text-transform: uppercase; }
+.kioskHeading h2 span,
+.dialogHeader h2 span { display: block; }
+.kioskHeading a { flex: 0 0 auto; padding: 0.7rem 1rem; color: var(--paper); background: var(--ink); font: 400 0.8rem var(--font-system); text-decoration: none; }
+.playingContent { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.85fr); gap: clamp(1.25rem, 3vw, 2.75rem); align-items: start; margin-top: clamp(1.25rem, 2.6vw, 2.15rem); padding-right: clamp(1.8rem, 4vw, 3.2rem); }
+.currentGame { position: relative; min-height: 14rem; padding: clamp(1.15rem, 2.4vw, 1.9rem); overflow: visible; background: var(--paper); transform: rotate(0.7deg); }
+.noDisc,
+.currentGame h3 { position: relative; max-width: 12ch; margin: 0; color: var(--tomato); font: 700 italic clamp(1.45rem, 3vw, 2.8rem)/0.9 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.04em; text-transform: uppercase; }
+.betweenGames,
+.gameNote { position: relative; max-width: 40ch; margin: 0.75rem 0 0; font-size: clamp(1rem, 1.6vw, 1.3rem); line-height: 1.35; }
+.gameMeta { position: relative; display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.8rem 0 0; }
+.gameMeta span { padding: 0.25rem 0.45rem; color: var(--paper); background: var(--tomato); font: 400 0.7rem var(--font-system); }
+.completedGames { padding: clamp(1.15rem, 2.4vw, 1.75rem); color: var(--paper); background: var(--cobalt); box-shadow: 0.55rem 0.65rem 0 var(--ink); clip-path: polygon(1% 0, 100% 2%, 99% 98%, 0 100%); transform: rotate(1deg); }
+.completedHeading { display: flex; align-items: start; justify-content: space-between; gap: 1rem; }
+.completedHeading h3 { margin: 0; font: 700 italic clamp(1.35rem, 2.15vw, 1.95rem)/0.94 "Goldman", "Arial Narrow", Arial, sans-serif; letter-spacing: -0.035em; text-transform: uppercase; }
+.completedHeading h3 span { display: block; }
+.completedHeading > span { color: var(--acid); font: 400 0.62rem var(--font-system); letter-spacing: 0.1em; }
+.gameTableHeader { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0.75rem; margin-top: 1rem; padding-bottom: 0.38rem; color: var(--acid); border-bottom: 3px solid var(--acid); font: 400 0.72rem var(--font-system); letter-spacing: 0.08em; text-transform: uppercase; }
+.completedGames ol { margin: 0.65rem 0 0; padding: 0; list-style: none; }
+.completedGames li { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr) auto; gap: 0.65rem; align-items: center; padding: 0.48rem 0; border-bottom: 1px solid rgb(240 233 216 / 28%); font: 400 0.78rem var(--font-system); }
+.saveNumber { display: grid; place-items: center; width: 1.6rem; height: 1.6rem; color: var(--ink); background: var(--acid); font-size: 0.62rem; }
+.completedGames time { color: var(--acid); white-space: nowrap; }
+.completedDisclosure { margin-top: 0.85rem; }
+.completedDisclosure summary { width: fit-content; color: var(--acid); font: 400 0.72rem var(--font-system); cursor: pointer; }
+.visitorNote { position: relative; display: grid; width: fit-content; margin: clamp(2rem, 4vw, 3.5rem) 0 0 auto; padding: 0.85rem 1.25rem; background: var(--pink); box-shadow: 0.42rem 0.48rem 0 var(--ink); font-family: var(--font-system); transform: rotate(-1.6deg); }
+.helmetSticker { bottom: clamp(-5.8rem, -5vw, -3.7rem); left: clamp(-1.5rem, -1vw, -0.35rem); width: clamp(7.8rem, 14vw, 12.5rem); transform: rotate(-6deg); }
+.memoryCardSticker { right: clamp(-1rem, -0.5vw, -0.25rem); bottom: clamp(5.5rem, 9vw, 8rem); width: clamp(5.75rem, 9vw, 8rem); transform: rotate(7deg); }
+.visitorNote span { font-size: clamp(0.8rem, 1.4vw, 1.05rem); letter-spacing: 0.06em; }
+.visitorNote small { margin-top: 0.25rem; color: var(--brown); letter-spacing: 0.16em; }
+
+.footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding: 1.25rem clamp(1rem, 4vw, 3.5rem) 1.6rem; color: var(--paper); background: var(--ink); }
+.footer > span { font: italic 400 clamp(1.45rem, 2.5vw, 2rem)/0.9 "Redaction 20", Georgia, serif; letter-spacing: -0.01em; }
+.footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.footer a { color: var(--paper); font: 400 0.75rem var(--font-system); }
+
+.skipLink,
+.utilityRail span,
+.playerBadge,
+.navLink small,
+.entryPaths a,
+.routeMeta,
+.cabinetMarquee small,
+.cabinetStatusBar,
+.pauseButton,
+.serialPlate,
+.maintenanceSticker,
+.insertCoin,
+.coinDenomination,
+.controlPlate,
+.hardwareLabels,
+.sceneStatus,
+.sceneLoadButton,
+.primaryButton,
+.secondaryButton,
+:global(.mall-touch-controls button),
+:global(.mall-ride-debug),
+.kioskServiceStrip,
+.kanaRail,
+.kioskHeading a,
+.gameMeta span,
+.completedHeading > span,
+.gameTableHeader,
+.completedGames li,
+.completedDisclosure summary,
+.visitorNote,
+.footer a,
+.posterCaption,
+.kicker { text-transform: lowercase; }
+
+.dialog { width: min(64rem, calc(100% - 2rem)); max-height: calc(100dvh - 2rem); padding: 0; overflow: auto; color: var(--ink); background: var(--tomato); border: 4px solid var(--paper); box-shadow: 0.65rem 0.75rem 0 var(--acid); transform-origin: center; transition: opacity 250ms var(--ease-out), transform 250ms var(--ease-out), display 250ms allow-discrete, overlay 250ms allow-discrete; }
+.dialog::backdrop { background: rgb(20 17 15 / 84%); transition: opacity 250ms var(--ease-out), display 250ms allow-discrete, overlay 250ms allow-discrete; }
+.dialog:not([open]) { opacity: 0; transform: scale(0.96); }
+.dialogHeader { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding: clamp(1.35rem, 3vw, 2.35rem); border-bottom: 5px solid var(--acid); }
+.dialogHeader h2 { color: var(--acid); font-size: clamp(2.6rem, 6vw, 5rem); }
+.closeButton { width: 3rem; padding: 0; color: var(--paper); background: var(--tomato); border: 3px solid var(--paper); font: 400 0 "Anton", Impact, sans-serif; }
+.closeButton::after { content: "×"; font-size: 1.75rem; }
+.dialog .playingContent { margin: 0; padding: clamp(1.35rem, 3vw, 2.35rem); }
+@starting-style { .dialog[open] { opacity: 0; transform: scale(0.96); } .dialog[open]::backdrop { opacity: 0; } }
+
+.poster { position: absolute; inset: 0; overflow: hidden; background: linear-gradient(#302b38 0 18%, #827b7b 18% 66%, #544c5a 66%); }
+.poster::before { position: absolute; inset: 18% 0 34%; content: ""; background: repeating-linear-gradient(90deg, transparent 0 20%, rgb(0 0 0 / 18%) 20% 21%); }
+.posterNoise { display: none; }
+.posterCeiling { position: absolute; z-index: 2; top: 5%; right: 8%; left: 8%; display: flex; justify-content: space-around; }
+.posterCeiling span { width: 18%; height: 0.55rem; background: #d8efdf; border: 2px solid var(--ink); }
+.posterStorefront { position: absolute; z-index: 2; top: 25%; right: 8%; width: 35%; height: 28%; padding: 1rem; background: #18121f; border: 5px solid var(--ink); }
+.posterStorefront span { display: block; color: var(--acid); font: 400 clamp(1.5rem, 5vw, 4rem) "Anton", Impact, sans-serif; text-align: center; }
+.posterShutter { position: absolute; z-index: 2; top: 31%; left: 7%; width: 29%; height: 22%; background: repeating-linear-gradient(#59636a 0 0.7rem, #31383d 0.7rem 0.85rem); border: 5px solid var(--ink); }
+.posterKiosk { position: absolute; z-index: 3; right: 47%; bottom: 24%; width: 13%; height: 21%; background: #74658a; border: 4px solid var(--ink); }
+.posterLane { position: absolute; right: -10%; bottom: -38%; left: -10%; height: 75%; background: repeating-linear-gradient(90deg, #4f4853 0 12%, #5c545f 12% 24%); border-top: 5px solid var(--ink); transform: perspective(20rem) rotateX(47deg); }
+.posterMoped { position: absolute; z-index: 5; bottom: 12%; left: 28%; width: 18%; height: 18%; }
+.posterMoped i { position: absolute; bottom: 0; width: 28%; aspect-ratio: 1; background: #292432; border: 4px solid var(--ink); border-radius: 50%; }
+.posterMoped i:first-child { left: 3%; }
+.posterMoped i:nth-child(2) { right: 3%; }
+.posterMoped b { position: absolute; right: 17%; bottom: 16%; left: 15%; height: 43%; background: var(--tomato); border: 4px solid var(--ink); }
+.posterCaption { position: absolute; z-index: 9; bottom: 1rem; left: 1rem; padding: 0.4rem 0.55rem; color: var(--paper); background: var(--ink); font: 400 0.65rem var(--font-system); }
+.loadingShell,
+.routeError { display: grid; align-items: center; gap: 2rem; width: min(100% - 2rem, 78rem); min-height: calc(100vh - 8rem); margin: 0 auto; padding: 3rem 0; }
+.loadingShell { grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 1.2fr); }
+.loadingShell h1,
+.routeError h1 { margin: 1rem 0 1.5rem; font: 400 clamp(3.2rem, 8vw, 7rem)/0.85 "Anton", Impact, sans-serif; text-transform: uppercase; }
+.loadingShell > .poster { position: relative; min-height: 32rem; border: 6px solid var(--ink); }
+.routeError { place-content: center; max-width: 54rem; }
+.routeError p:not(.kicker) { max-width: 42rem; font-size: 1.1rem; line-height: 1.6; }
+.kicker { font: 400 0.72rem var(--font-system); letter-spacing: 0.12em; text-transform: lowercase; }
+.rideActions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.5rem; }
+
+.page :is(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--paper); outline-offset: 3px; box-shadow: 0 0 0 6px var(--ink); }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes insertCoinBlink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0.22; } }
+@keyframes coinAccepted { 0%, 16%, 34%, 50% { opacity: 1; filter: brightness(2); } 17%, 33%, 51%, 83% { opacity: 0.1; filter: none; } 100% { opacity: 0; filter: none; } }
+@keyframes coinSlotBlink { 0%, 55% { box-shadow: 0 0 0.8rem rgb(198 255 46 / 58%), inset 0 0 0 2px rgb(198 255 46 / 74%); } 56%, 100% { box-shadow: 0 0 0.2rem rgb(198 255 46 / 18%), inset 0 0 0 1px rgb(198 255 46 / 28%); } }
+@keyframes coinHardwareAccepted { 0%, 16%, 34%, 50% { filter: brightness(1.55) drop-shadow(0 0 0.6rem rgb(198 255 46 / 72%)); } 17%, 33%, 51%, 100% { filter: none; } }
+@keyframes statusBlink { 0%, 74% { opacity: 1; } 75%, 100% { opacity: 0.35; } }
+
+@media (hover: hover) and (pointer: fine) {
+  .navLink:hover { transform: translate(-0.18rem, -0.24rem); }
+  .coinDoorAssembly:has(.coinUnit:not(:disabled):hover) { filter: drop-shadow(0 0 0.5rem rgb(198 255 46 / 38%)); transform: translateY(-0.16rem); }
+  .coinUnit:not(:disabled):hover::before { box-shadow: 0 0 0.9rem rgb(198 255 46 / 64%), inset 0 0 0 2px var(--acid); }
+  .entryPaths a:hover { color: var(--tomato); }
+  .pauseButton:not(:disabled):hover,
+  .sceneLoadButton:hover { background: var(--acid); }
+  .kioskHeading a:hover { color: var(--paper); background: var(--cobalt); }
+  .footer a:hover { color: var(--acid); }
+  .closeButton:hover { color: var(--ink); background: var(--paper); }
+}
+.coinUnit:not(:disabled):active,
+.pauseButton:not(:disabled):active,
+.closeButton:active,
+.sceneLoadButton:active,
+.primaryButton:active,
+.secondaryButton:active { transform: scale(0.97); }
+
+@media (max-width: 1100px) {
+  .hero { padding-bottom: 9rem; }
+  .heroMascotSticker { right: 1rem; bottom: 0.8rem; left: auto; width: clamp(7.25rem, 22vw, 9rem); }
+  .welcomeStage::before,
+  .welcomeStage::after { top: auto; right: 4.8rem; bottom: -4.4rem; left: auto; width: 4.5rem; height: 4.75rem; clip-path: polygon(0 0, 30% 0, 100% 100%); }
+  .welcomeStage::before { transform: translate(0.38rem, 0.42rem); }
+}
+@media (max-width: 760px) {
+  .utilityRail { align-items: flex-start; flex-direction: column; }
+  .navGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wordmark { margin-left: 1.8rem; }
+  .hero > .sectionNumber { left: -0.35rem; }
+  .welcomeStage { width: 100%; }
+  .routeMeta { right: 1.5rem; }
+  .welcomeStage::before,
+  .welcomeStage::after { right: 3.5rem; bottom: -6rem; height: 6.25rem; }
+  .rideSectionInner > h2 { max-width: 10ch; }
+  .cabinetStage { padding-top: 0.55rem; }
+  .cabinetStage::before { right: -0.2rem; left: -0.15rem; height: 0.8rem; border-bottom-width: 0.18rem; }
+  .cabinetScreenRow { grid-template-columns: clamp(0.7rem, 2.8vw, 1.05rem) minmax(0, 1fr) clamp(0.7rem, 2.8vw, 1.05rem); }
+  .serialPlate,
+  .maintenanceSticker { display: none; }
+  .controlHardware { grid-template-columns: minmax(5.5rem, 24%) minmax(0, 1fr); }
+  .controlPlate { display: none; }
+  .serviceRail { display: flex; justify-content: flex-end; min-height: 1.4rem; }
+  .playingContent,
+  .dialog .playingContent,
+  .loadingShell { grid-template-columns: 1fr; }
+  .playstationSticker { top: -2.8rem; right: 5rem; width: clamp(6.5rem, 24vw, 8.25rem); }
+  .kioskScreen { margin-left: 1.5rem; }
+  .kiosk { padding-bottom: 8.5rem; }
+  .helmetSticker { bottom: -7.2rem; left: 0.25rem; width: 6rem; }
+  .memoryCardSticker { right: 0.25rem; bottom: 5rem; width: 5.5rem; }
+  .kioskHeading { align-items: flex-start; flex-direction: column; }
+  .dialogHeader { align-items: flex-start; }
+}
+@media (hover: none) and (pointer: coarse) {
+  .pauseButton { min-width: 2.75rem; min-height: 2.75rem; }
+  :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) { display: flex; }
+}
+@media (max-width: 760px) and (hover: none) and (pointer: coarse) { :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) { top: 5.5rem; bottom: auto; } }
+@media (max-width: 430px) {
+  .navLink { min-height: 6.7rem; }
+  .heroPolygon,
+  .heroTone { width: 56%; }
+  .wordmark span { font-size: clamp(3.4rem, 17vw, 5rem); }
+  .welcome p { font-size: 1.08rem; }
+  .entryPaths { align-items: flex-start; flex-direction: column; }
+  .cabinetStatusBar { align-items: flex-start; flex-direction: column; }
+  .cabinetStatusBar > div { width: 100%; justify-content: space-between; }
+  .controlPanel { padding: 0.55rem; }
+  .controlHardware { grid-template-columns: minmax(5.5rem, 24%) minmax(0, 1fr); gap: 0.45rem; }
+  .controlDeckArt { opacity: 0.9; }
+  .serviceRail { padding-right: 0.25rem; padding-left: 0.25rem; }
+  .hardwareLabels { display: none; }
+  .kiosk { padding-right: 0.65rem; padding-left: 0.65rem; }
+  .kioskScreen { margin-left: 0.7rem; padding: 1.15rem; }
+  .kioskHeading,
+  .playingContent { padding-right: 1.25rem; }
+  .completedGames li { grid-template-columns: 1.6rem minmax(0, 1fr); }
+  .completedGames time { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker div,
+  .insertCoin,
+  .coinUnit,
+  .coinUnit::before,
+  .coinDoorAssembly,
+  .rideStatus > span { animation: none; }
+  .rideFrame[data-control-mode="driving"] .insertCoin { animation: none; opacity: 0; }
+  .navLink,
+  .coinUnit,
+  .dialog,
+  .dialog::backdrop { transition-duration: 0.01ms; }
+  .page :is(button, a, summary):active { transform: none; }
+}

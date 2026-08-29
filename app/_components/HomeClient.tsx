@@ -11,6 +11,7 @@ import { CurrentlyPlaying } from "./CurrentlyPlaying";
 import { SquishCat } from "./SquishCat";
 import { PageShell } from "./PageShell";
 import type { PostMeta } from "@/lib/posts";
+import type { CurrentlyPlayingContent } from "@/lib/currently-playing";
 
 const TABS = ["DEVLOG", "ABOUT", "PORTFOLIO"] as const;
 
@@ -201,7 +202,13 @@ function Portfolio() {
   );
 }
 
-export function HomeClient({ posts }: { posts: PostMeta[] }) {
+export function HomeClient({
+  posts,
+  currentlyPlaying,
+}: {
+  posts: PostMeta[];
+  currentlyPlaying: CurrentlyPlayingContent;
+}) {
   const [tab, setTab] = useState<(typeof TABS)[number]>("DEVLOG");
   const { t } = useTheme();
 
@@ -299,7 +306,7 @@ export function HomeClient({ posts }: { posts: PostMeta[] }) {
             ))}
           </PsxBox>
           <DitherDivider />
-          <CurrentlyPlaying />
+          <CurrentlyPlaying content={currentlyPlaying} />
           <SquishCat />
         </>
       )}
