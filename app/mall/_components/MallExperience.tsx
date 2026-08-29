@@ -25,6 +25,7 @@ const CABINET_TEXTURES = {
 export function MallExperience({ content }: { content: CurrentlyPlayingContentType }) {
   const [state, dispatch] = useReducer(mallExperienceReducer, initialMallExperienceState);
   const scenePort = useRef<SceneCommandPort | null>(null);
+  const controlModeRef = useRef(state.controlMode);
   const focusOrigin = useRef<HTMLElement | null>(null);
   const tokenControl = useRef<HTMLButtonElement | null>(null);
   const pushedPanelHash = useRef(false);
@@ -124,6 +125,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
   }, [openArcade, state.selectedPoi]);
 
   useEffect(() => {
+    controlModeRef.current = state.controlMode;
     scenePort.current?.dispatch({ type: "set-control-mode", mode: state.controlMode });
   }, [state.controlMode]);
 
@@ -140,6 +142,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
 
   const setScenePort = useCallback((port: SceneCommandPort | null) => {
     scenePort.current = port;
+    port?.dispatch({ type: "set-control-mode", mode: controlModeRef.current });
   }, []);
 
   const attractPaused = state.controlMode === "paused" && state.resumeMode === "attract";
