@@ -27,6 +27,8 @@ All third-party sources below are CC0. Attribution is retained voluntarily.
 | `potted-plant.glb`, `trashcan.glb`, `cardboard-box-closed.glb`, `cardboard-box-open.glb` | [Kenney Furniture Kit](https://kenney.nl/assets/furniture-kit) | `e67652d0932cee41683f74711c03d3e192a2af9979ef8e6b237711f5482d46b0` | Selected four mundane props; pruned unused accessors; recolored and clustered away from the driving line. |
 | `atm.glb` | [pixelmannen Low-Poly ATMs](https://opengameart.org/content/low-poly-atms) | `fc1a7cb87067516269e095617077e8fa5df542a9715e575d5299a26aa66c523f` | Selected `ATM_NORMAL.obj`; converted to binary glTF with `obj2gltf`; retained material names so screens, controls, and body can receive semantic runtime materials. |
 | Redaction 20 Italic font bundle | [Forest Young and Jeremy Mickel](https://usemodify.com/fonts/redaction/) via `@fontsource/redaction-20@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted and used for the mall wordmark. |
+| Goldman font bundle | [Jaikishan Patel / MagicType](https://github.com/magictype/goldman) via `@fontsource/goldman@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for mall display labels; the slant is an intentional CSS oblique because the family ships Regular and Bold only. |
+| WDXL Lubrifont JP N font bundle | [Google Fonts](https://fonts.google.com/specimen/WDXL+Lubrifont+JP+N) via `@fontsource/wdxl-lubrifont-jp-n@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for Japanese signage, with DotGothic16 retained as the rollback fallback. |
 
 ## Shipped file checksums
 

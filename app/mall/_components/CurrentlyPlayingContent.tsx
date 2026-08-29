@@ -52,7 +52,7 @@ export function CurrentlyPlayingContent({
             <ol>
               {preview.map((game, index) => (
                 <li key={`${game.title}-${game.completed}`}>
-                  <span className={styles.saveNumber}>{String(index + 2).padStart(2, "0")}</span>
+                  <span className={styles.saveNumber}>{String(index + 1).padStart(2, "0")}</span>
                   <span>{game.title}</span>
                   <time dateTime={game.completed}>
                     {formatCompletionDate(game.completed)}
@@ -68,7 +68,7 @@ export function CurrentlyPlayingContent({
                 <ol start={preview.length + 1}>
                   {remaining.map((game, index) => (
                     <li key={`${game.title}-${game.completed}`}>
-                      <span className={styles.saveNumber}>{String(index + preview.length + 2).padStart(2, "0")}</span>
+                      <span className={styles.saveNumber}>{String(index + preview.length + 1).padStart(2, "0")}</span>
                       <span>{game.title}</span>
                       <time dateTime={game.completed}>
                         {formatCompletionDate(game.completed)}

@@ -228,6 +228,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
           <p className={styles.routeCue}><span aria-hidden="true" />Take the long way in</p>
           <a href={CURRENTLY_PLAYING_HASH} onClick={openFromLink}>or go straight to the arcade →</a>
         </div>
+        <Image
+          className={`${styles.pageSticker} ${styles.heroMascotSticker}`}
+          src="/mall/stickers/mascot-janitor.png"
+          alt=""
+          width={1344}
+          height={1344}
+          aria-hidden="true"
+          draggable={false}
+        />
         <p className={styles.routeMeta} aria-hidden="true">
           <span className={styles.routeJapanese}>深夜営業中</span>
           <span className={styles.routeRomaji}> / MALL WING 01 — AFTER HOURS / NO COIN NEEDED</span>
@@ -264,6 +273,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
         <div className={styles.rideSectionInner}>
           <h2>Come explore with me<span>.</span></h2>
           <div className={styles.cabinetStage}>
+            <Image
+              className={`${styles.pageSticker} ${styles.tokenSticker}`}
+              src="/mall/stickers/doodles/free-play-token.png"
+              alt=""
+              width={318}
+              height={319}
+              aria-hidden="true"
+              draggable={false}
+            />
             <span className={styles.cabinetUnderplate} aria-hidden="true" />
             <div
               className={styles.rideFrame}
@@ -361,6 +379,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
           <div className={styles.kioskServiceStrip} aria-hidden="true"><span>03 / POSTER WALL</span><span>CABINET 01</span></div>
           <div className={styles.kioskScreenStage}>
             <Image
+              className={`${styles.pageSticker} ${styles.memoryCardSticker}`}
+              src="/mall/stickers/doodles/memory-card.png"
+              alt=""
+              width={299}
+              height={443}
+              aria-hidden="true"
+              draggable={false}
+            />
+            <Image
               className={styles.playstationSticker}
               src="/mall/stickers/playstation.png"
               alt=""
@@ -378,6 +405,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
               <CurrentlyPlayingContent content={content} compact />
             </div>
           </div>
+          <Image
+            className={`${styles.pageSticker} ${styles.helmetSticker}`}
+            src="/mall/stickers/doodles/moped-helmet.png"
+            alt=""
+            width={434}
+            height={515}
+            aria-hidden="true"
+            draggable={false}
+          />
           <div className={styles.visitorNote} aria-hidden="true">
             <span>THANK YOU FOR VISIT — PLEASE ENJOY LOOKING</span>
             <small>ごゆっくりどうぞ</small>

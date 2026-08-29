@@ -21,7 +21,7 @@ const cuts = {
   },
   "memory-card": {
     left: 835, top: 8, width: 326, height: 462,
-    mask: "M55 15 280 30 310 365 240 440 65 410 15 315 25 65Z",
+    mask: "M55 15 280 30 310 365 240 440 70 440 22 400 15 315 25 65Z",
   },
   "food-court-receipt": {
     left: 1134, top: 2, width: 384, height: 552,

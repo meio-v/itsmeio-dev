@@ -32,11 +32,11 @@ const css = await read("app/mall/mall.module.css");
 const page = await read("app/mall/page.tsx");
 const packageJson = JSON.parse(await read("package.json"));
 
-for (const font of ["@fontsource/anton", "@fontsource/bricolage-grotesque", "@fontsource/dotgothic16", "@fontsource/redaction-20"]) {
+for (const font of ["@fontsource/anton", "@fontsource/bricolage-grotesque", "@fontsource/dotgothic16", "@fontsource/goldman", "@fontsource/redaction-20", "@fontsource/wdxl-lubrifont-jp-n"]) {
   assert(packageJson.dependencies?.[font], `${font} is not self-hosted through the project dependencies`);
 }
 
-for (const importPath of ["@fontsource/anton", "@fontsource/bricolage-grotesque", "@fontsource/dotgothic16", "@fontsource/redaction-20"]) {
+for (const importPath of ["@fontsource/anton", "@fontsource/bricolage-grotesque", "@fontsource/dotgothic16", "@fontsource/goldman", "@fontsource/redaction-20", "@fontsource/wdxl-lubrifont-jp-n"]) {
   assert(page.includes(importPath), `${importPath} is not loaded by the mall route`);
 }
 

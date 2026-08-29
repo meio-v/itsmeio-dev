@@ -41,7 +41,9 @@ assert.deepEqual(currentPackage.dependencies, {
   "@fontsource/anton": "^5.3.0",
   "@fontsource/bricolage-grotesque": "^5.3.0",
   "@fontsource/dotgothic16": "^5.3.0",
+  "@fontsource/goldman": "^5.3.0",
   "@fontsource/redaction-20": "^5.3.0",
+  "@fontsource/wdxl-lubrifont-jp-n": "^5.3.0",
   three: "^0.185.1",
 });
 assert.deepEqual(currentPackage.devDependencies, {
