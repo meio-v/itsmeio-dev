@@ -181,7 +181,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
 
       <header className={styles.header}>
         <div className={styles.utilityRail}>
-          <Link href="/">itsmeio.dev</Link>
+          <Link href="/">It&apos;s Meio.(The)Dev</Link>
         </div>
         <span className={styles.headerRule} aria-hidden="true" />
         <nav className={styles.navGrid} aria-label="Site">

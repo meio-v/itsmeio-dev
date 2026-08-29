@@ -44,7 +44,7 @@
 
 .header { position: relative; background: var(--paper); border-bottom: 0.875rem solid var(--ink); }
 .utilityRail { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem 1.5rem; padding: 0.9rem clamp(1rem, 4vw, 3.5rem) 0.65rem; }
-.utilityRail a { color: var(--ink); font: 400 1.35rem/1 "Anton", Impact, sans-serif; letter-spacing: 0.06em; text-decoration: none; text-transform: uppercase; }
+.utilityRail a { color: var(--ink); font: italic 400 clamp(1.65rem, 2.8vw, 2.4rem)/0.9 "Redaction 20", Georgia, serif; letter-spacing: -0.01em; text-decoration: none; }
 .utilityRail span { color: var(--brown); font: 400 0.76rem var(--font-system); letter-spacing: 0.08em; }
 .headerRule { display: block; height: 0.38rem; margin: 0 clamp(1rem, 4vw, 3.5rem); background: var(--ink); }
 .navGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.65rem, 1.6vw, 1.4rem); padding: 1.15rem clamp(1rem, 4vw, 3.5rem) 1.65rem; }
@@ -76,7 +76,7 @@
 .wordmark b { color: var(--tomato); font-weight: inherit; }
 .welcomeStage { position: relative; z-index: 7; width: min(42.5rem, 94%); margin: clamp(0.85rem, 1.8vw, 1.5rem) 0 0 auto; transform: rotate(-0.6deg); }
 .welcomeStage::before,
-.welcomeStage::after { position: absolute; top: 18%; bottom: auto; left: -10.5rem; width: 11rem; height: 4.2rem; content: ""; clip-path: polygon(100% 0, 100% 100%, 0 50%); pointer-events: none; }
+.welcomeStage::after { position: absolute; top: 9%; bottom: auto; left: -10.5rem; width: 11rem; height: 2.2rem; content: ""; clip-path: polygon(100% 0, 100% 100%, 0 50%); pointer-events: none; }
 .welcomeStage::before { z-index: -1; background: var(--ink); transform: translate(0.5rem, 0.6rem); }
 .welcomeStage::after { z-index: 1; background: var(--welcome-yellow); }
 .welcomeUnderplate { position: absolute; inset: 0 -0.75rem -0.88rem 0.75rem; background: var(--ink); clip-path: polygon(1% 3%, 100% 0, 99% 100%, 0 98%); }
@@ -111,7 +111,7 @@
 .rideSectionInner > h2 span { color: var(--ink); }
 .cabinetStage { position: relative; padding-top: clamp(0.7rem, 1.2vw, 1rem); transform: rotate(0.35deg); }
 .cabinetStage::before { position: absolute; z-index: 4; top: 0; right: -0.55rem; left: -0.35rem; height: clamp(0.95rem, 1.6vw, 1.35rem); content: ""; background: var(--ink); border-bottom: 0.24rem solid var(--acid); box-shadow: 0 0.35rem 0 rgb(20 17 15 / 30%); clip-path: polygon(1% 0, 99% 0, 100% 72%, 0 100%); pointer-events: none; }
-.tokenSticker { z-index: 5; top: clamp(-2.9rem, -2.4vw, -1.9rem); left: clamp(-1.7rem, -1.5vw, -0.8rem); width: clamp(4.4rem, 7vw, 6.4rem); transform: rotate(-9deg); }
+.tokenSticker { z-index: 5; top: clamp(1.2rem, 2vw, 1.8rem); left: clamp(-1.4rem, -1.2vw, -0.65rem); width: clamp(4.4rem, 7vw, 6.4rem); transform: rotate(-9deg); }
 .cabinetUnderplate { position: absolute; inset: 0 -0.65rem -0.75rem 0.65rem; background: var(--ink); }
 .rideFrame { position: relative; overflow: hidden; background: var(--ink); border: 4px solid var(--acid); isolation: isolate; }
 .cabinetTexture { position: absolute; inset: 0; display: none; background-position: center; background-size: cover; pointer-events: none; }
@@ -159,13 +159,14 @@
 .coinFreePlate b { font-size: clamp(0.58rem, 1.4vw, 1rem); letter-spacing: -0.04em; }
 .coinFreePlate small { padding-top: 0.16rem; border-top: 0.1rem solid currentColor; font-size: clamp(0.27rem, 0.58vw, 0.44rem); font-weight: 700; }
 .coinInsertDisplayShade { position: absolute; z-index: 3; top: 7.3%; left: 17.5%; width: 38.5%; height: 15.8%; background: rgb(12 13 11 / 0%); border-radius: 0.35rem; transition: background-color 160ms ease; pointer-events: none; }
-.coinUnit { position: absolute; z-index: 4; top: 30%; left: 50%; width: clamp(2.75rem, 21%, 4rem); height: clamp(3.25rem, 28%, 5rem); padding: 0; background: transparent; border: 0; border-radius: 0.35rem; cursor: pointer; translate: -50% 0; transition: box-shadow 140ms ease, transform 140ms var(--ease-out); }
+.coinUnit { position: absolute; z-index: 4; top: 30%; left: 50%; width: clamp(2.75rem, 21%, 4rem); height: clamp(3.25rem, 28%, 5rem); padding: 0; background: transparent; border: 0; border-radius: 0.35rem; cursor: pointer; translate: -50% 0; transition: transform 140ms var(--ease-out); }
+.coinUnit::before { position: absolute; top: 5%; bottom: 8%; left: 50%; width: 30%; content: ""; border-radius: 0.18rem; pointer-events: none; transform: translateX(-50%); transition: box-shadow 140ms ease; }
 .coinUnit:disabled { cursor: default; }
 .controlDeckMount { position: relative; align-self: center; min-width: 0; aspect-ratio: 1563 / 631; overflow: visible; background: transparent; transform: perspective(72rem) rotateX(-4deg) scale(0.99) translateY(-0.12rem); transform-origin: top center; }
 .controlDeckArt { position: absolute; inset: 0; display: none; width: 100%; height: 100%; object-fit: fill; opacity: 0.98; filter: contrast(1.03) saturate(1.05) drop-shadow(0 0.34rem 0 rgb(20 17 15 / 72%)); pointer-events: none; user-select: none; }
 .serviceRail { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.65rem 1rem; min-height: 2.1rem; padding: 0.45rem 0.65rem 0.25rem; color: rgb(20 17 15 / 68%); border-top: 1px solid rgb(20 17 15 / 20%); }
 .insertCoin { position: absolute; z-index: 12; top: 50%; left: 50%; padding: 0.38rem 0.65rem; color: var(--acid); background: rgb(20 17 15 / 82%); border: 2px solid currentColor; font: 400 clamp(0.72rem, 1.35vw, 1.1rem) var(--font-system); letter-spacing: 0.12em; text-transform: uppercase; animation: insertCoinBlink 1.1s steps(1) infinite; pointer-events: none; transform: translate(-50%, -50%); }
-.rideFrame[data-control-mode="attract"] .coinUnit { animation: coinSlotBlink 1.1s steps(1) infinite; }
+.rideFrame[data-control-mode="attract"] .coinUnit::before { animation: coinSlotBlink 1.1s steps(1) infinite; }
 .rideFrame[data-control-mode="driving"] .insertCoin {
   animation: coinAccepted 240ms steps(1) 1 forwards;
 }
@@ -198,9 +199,9 @@
 :global(.mall-ride-debug) { position: absolute; z-index: 12; top: 0.8rem; left: 0.8rem; display: grid; grid-template-columns: repeat(3, auto); gap: 0.25rem 0.75rem; padding: 0.55rem 0.7rem; color: var(--acid); background: rgb(20 17 15 / 90%); border: 2px solid var(--acid); font: 400 0.62rem var(--font-system); pointer-events: none; }
 
 .kiosk { position: relative; padding: clamp(2.4rem, 5vw, 4.75rem) clamp(1rem, 4vw, 3.5rem) clamp(3.5rem, 7vw, 6.9rem); background: var(--paper); }
-.kioskNumber { top: 1rem; }
+.kioskNumber { top: 1rem; left: clamp(0.75rem, 2vw, 2.5rem); }
 .kioskInner { position: relative; max-width: 77.5rem; margin: 0 auto; }
-.kioskServiceStrip { display: flex; justify-content: space-between; margin-left: clamp(2.5rem, 8vw, 7rem); padding: 0.4rem 0.25rem 0.65rem; color: var(--brown); font: 400 0.72rem var(--font-system); letter-spacing: 0.08em; }
+.kioskServiceStrip { display: flex; justify-content: space-between; margin-left: clamp(6.75rem, 10vw, 9rem); padding: 0.4rem 0.25rem 0.65rem; color: var(--brown); font: 400 0.72rem var(--font-system); letter-spacing: 0.08em; }
 .kioskServiceStrip span:last-child { padding: 0.18rem 0.4rem; color: var(--paper); background: var(--brown); }
 .kioskScreenStage { position: relative; }
 .playstationSticker { position: absolute; z-index: 4; top: clamp(-3.8rem, -3.2vw, -2.4rem); right: clamp(5.5rem, 12vw, 11rem); width: clamp(7.75rem, 13vw, 11rem); height: auto; pointer-events: none; transform: rotate(-8deg); user-select: none; }
@@ -240,7 +241,7 @@
 .visitorNote small { margin-top: 0.25rem; color: var(--brown); letter-spacing: 0.16em; }
 
 .footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1.5rem; padding: 1.25rem clamp(1rem, 4vw, 3.5rem) 1.6rem; color: var(--paper); background: var(--ink); }
-.footer > span { font: 800 1rem "Bricolage Grotesque", Arial, sans-serif; }
+.footer > span { font: italic 400 clamp(1.45rem, 2.5vw, 2rem)/0.9 "Redaction 20", Georgia, serif; letter-spacing: -0.01em; }
 .footer nav { display: flex; flex-wrap: wrap; gap: 1.25rem; }
 .footer a { color: var(--paper); font: 400 0.75rem var(--font-system); }
 
@@ -326,7 +327,7 @@
 @media (hover: hover) and (pointer: fine) {
   .navLink:hover { transform: translate(-0.18rem, -0.24rem); }
   .coinDoorAssembly:has(.coinUnit:not(:disabled):hover) { filter: drop-shadow(0 0 0.5rem rgb(198 255 46 / 38%)); transform: translateY(-0.16rem); }
-  .coinUnit:not(:disabled):hover { box-shadow: 0 0 0.9rem rgb(198 255 46 / 64%), inset 0 0 0 2px var(--acid); }
+  .coinUnit:not(:disabled):hover::before { box-shadow: 0 0 0.9rem rgb(198 255 46 / 64%), inset 0 0 0 2px var(--acid); }
   .entryPaths a:hover { color: var(--tomato); }
   .pauseButton:not(:disabled):hover,
   .sceneLoadButton:hover { background: var(--acid); }
@@ -345,8 +346,8 @@
   .hero { padding-bottom: 9rem; }
   .heroMascotSticker { right: 1rem; bottom: 0.8rem; left: auto; width: clamp(7.25rem, 22vw, 9rem); }
   .welcomeStage::before,
-  .welcomeStage::after { top: auto; right: 4.3rem; bottom: -6.7rem; left: auto; width: 5.25rem; height: 7rem; clip-path: polygon(0 0, 58% 0, 100% 100%); }
-  .welcomeStage::before { transform: translate(0.5rem, 0.6rem); }
+  .welcomeStage::after { top: auto; right: 4.8rem; bottom: -4.4rem; left: auto; width: 4.5rem; height: 4.75rem; clip-path: polygon(0 0, 30% 0, 100% 100%); }
+  .welcomeStage::before { transform: translate(0.38rem, 0.42rem); }
 }
 @media (max-width: 760px) {
   .utilityRail { align-items: flex-start; flex-direction: column; }
@@ -354,6 +355,8 @@
   .wordmark { margin-left: 1.8rem; }
   .hero > .sectionNumber { left: -0.35rem; }
   .welcomeStage { width: 100%; }
+  .welcomeStage::before,
+  .welcomeStage::after { right: 3.5rem; bottom: -6rem; height: 6.25rem; }
   .rideSectionInner > h2 { max-width: 10ch; }
   .cabinetStage { padding-top: 0.55rem; }
   .cabinetStage::before { right: -0.2rem; left: -0.15rem; height: 0.8rem; border-bottom-width: 0.18rem; }
@@ -403,6 +406,7 @@
   .ticker div,
   .insertCoin,
   .coinUnit,
+  .coinUnit::before,
   .coinDoorAssembly,
   .rideStatus > span { animation: none; }
   .rideFrame[data-control-mode="driving"] .insertCoin { animation: none; opacity: 0; }
