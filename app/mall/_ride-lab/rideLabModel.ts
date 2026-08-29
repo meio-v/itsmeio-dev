@@ -28,6 +28,14 @@ export function resolveTouchSteer(leftPressed: boolean, rightPressed: boolean) {
   return Number(rightPressed) - Number(leftPressed);
 }
 
+export function resolveSteeringBlend(steer: number, riderWeightShiftRatio: number) {
+  const weightRatio = Math.max(0, Math.min(1, riderWeightShiftRatio));
+  return {
+    weightShift: steer * weightRatio,
+    handlebar: steer * (1 - weightRatio),
+  };
+}
+
 export function resolveSuspensionLoadPresentation(loadDifference: number) {
   const normalizedLoad = Math.max(-1, Math.min(1, loadDifference / 28));
   return {
@@ -151,7 +159,9 @@ export function advanceAerialMechanic(
 
 export function speedLineStrength(speedMps: number, accelerationMps2: number, tuning: RideLabTuning) {
   if (speedMps < tuning.speedLineThreshold) return 0;
-  const speed = (speedMps - tuning.speedLineThreshold) / Math.max(1, tuning.topSpeedMps - tuning.speedLineThreshold);
+  const minimumOnset = 0.12;
+  const speedProgress = (speedMps - tuning.speedLineThreshold) / Math.max(1, tuning.topSpeedMps - tuning.speedLineThreshold);
+  const speed = minimumOnset + Math.max(0, speedProgress) * (1 - minimumOnset);
   const accelerationLead = Math.max(0, accelerationMps2) / 8;
   return Math.min(1, Math.max(0, speed + accelerationLead * 0.25)) * tuning.speedLineIntensity * tuning.feedbackIntensity;
 }

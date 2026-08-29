@@ -46,6 +46,11 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
   EXPECT: /# fail 0/
   EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=6a74883a47932def735c96219e743fa75ce497c2e59a66f8fd3ea763b1e17c01; output-bytes=6571
 
+- [x] G8: speed lines remain off below 100 km/h and steering intent resolves to an explicit 80% rider-shift / 20% handlebar blend
+  CHECK: npm run test:ride-lab
+  EXPECT: /# fail 0/
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=834f76328eaab1fd723364c997961d4578e71faa8d33de5e3333cb64981f4181; output-bytes=9838
+
 A human must approve subjective motorcycle handling, camera feel, visual feedback,
 and authored direction before any behavior is promoted into `/mall`. Automated
 completion of this development lab does not claim that approval.

@@ -91,24 +91,28 @@ test("near-stationary upright assist prevents the parked moped from tipping over
   assert.ok(Math.abs(snapshot.leanRadians) < 0.05);
 });
 
-test("mirrored steering produces symmetric bounded lean", async () => {
+test("mirrored rider weight shift leans into turns with symmetric bounded roll", async () => {
   const run = async (steer: number) => {
     const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
     let peakLean = 0;
+    let snapshot = physics.snapshot();
     for (let step = 0; step < 120; step += 1) {
-      const snapshot = physics.step({ ...idle, throttle: 1, steer });
+      snapshot = physics.step({ ...idle, throttle: 1, steer });
       if (Math.abs(snapshot.leanRadians) > Math.abs(peakLean)) peakLean = snapshot.leanRadians;
     }
     physics.dispose();
-    return peakLean;
+    return { peakLean, lateralPosition: snapshot.position.x };
   };
   const left = await run(-0.35);
   const right = await run(0.35);
-  assert.ok(left > 0);
-  assert.ok(right < 0);
-  assert.ok(Math.abs(left) < 0.72);
-  assert.ok(Math.abs(right) < 0.72);
-  assert.ok(Math.abs(Math.abs(left) - Math.abs(right)) < 0.01);
+  assert.ok(left.peakLean < 0);
+  assert.ok(right.peakLean > 0);
+  assert.ok(left.lateralPosition > 0);
+  assert.ok(right.lateralPosition < 0);
+  assert.ok(Math.abs(left.peakLean) < 0.72);
+  assert.ok(Math.abs(right.peakLean) < 0.72);
+  assert.ok(Math.abs(Math.abs(left.peakLean) - Math.abs(right.peakLean)) < 0.01);
+  assert.ok(Math.abs(Math.abs(left.lateralPosition) - Math.abs(right.lateralPosition)) < 0.01);
 });
 
 test("the authored test ramp produces a grounded-airborne-grounded journey", async () => {
@@ -116,7 +120,7 @@ test("the authored test ramp produces a grounded-airborne-grounded journey", asy
   let sawTakeoff = false;
   let sawLandingAfterTakeoff = false;
   for (let step = 0; step < 220; step += 1) {
-    const snapshot = physics.step({ ...idle, throttle: 1, steer: step < 100 ? -0.35 : 0 });
+    const snapshot = physics.step({ ...idle, throttle: 1, steer: step < 120 ? -1 : 0 });
     sawTakeoff ||= snapshot.movementTransition === "takeoff";
     sawLandingAfterTakeoff ||= sawTakeoff && snapshot.movementTransition === "landing";
   }

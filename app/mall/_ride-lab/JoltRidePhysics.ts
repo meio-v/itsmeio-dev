@@ -1,6 +1,6 @@
 import initJolt from "jolt-physics/wasm-compat";
 
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, signedLeanRadians, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveSteeringBlend, signedLeanRadians, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
 import type { RideLabInput, RideLabSnapshot, ResolvedRideIntent } from "./rideLabTypes.ts";
 import type { RideLabTuning } from "./rideLabTuning.ts";
 
@@ -184,10 +184,12 @@ export class JoltRidePhysics {
     if (aerialStep.ollieImpulse > 0) this.applyVerticalImpulse(aerialStep.ollieImpulse);
     if (aerialStep.upwardForce > 0) this.applyVerticalForce(aerialStep.upwardForce);
     this.applyLowSpeedUprightAssist();
+    const steering = resolveSteeringBlend(this.intent.steer, this.tuning.riderWeightShiftRatio);
+    this.applyRiderWeightShift(steering.weightShift);
     const topSpeedFactor = clamp(1 - Math.max(0, this.previousSpeed - this.tuning.topSpeedMps) / 2, 0, 1);
     this.controller.SetDriverInput(
       this.intent.throttle * topSpeedFactor,
-      this.intent.steer,
+      steering.handlebar,
       this.intent.brake,
       this.intent.brake > 0.84 ? (this.intent.brake - 0.84) / 0.16 : 0,
     );
@@ -467,14 +469,8 @@ export class JoltRidePhysics {
     const horizontalSpeed = Math.hypot(this.linearVelocityOut.GetX(), this.linearVelocityOut.GetZ());
     const assistSpeedLimit = 1.5;
     if (horizontalSpeed >= assistSpeedLimit) return;
-    const rotationX = this.rotationOut.GetX();
-    const rotationY = this.rotationOut.GetY();
-    const rotationZ = this.rotationOut.GetZ();
-    const rotationW = this.rotationOut.GetW();
+    const { rotationX, rotationY, rotationZ, rotationW, forwardX, forwardY, forwardZ } = this.currentForwardAxis();
     const lean = signedLeanRadians({ x: rotationX, y: rotationY, z: rotationZ, w: rotationW });
-    const forwardX = 2 * (rotationX * rotationZ + rotationW * rotationY);
-    const forwardY = 2 * (rotationY * rotationZ - rotationW * rotationX);
-    const forwardZ = 1 - 2 * (rotationX * rotationX + rotationY * rotationY);
     const angularAlongForward = this.angularVelocityOut.GetX() * forwardX
       + this.angularVelocityOut.GetY() * forwardY
       + this.angularVelocityOut.GetZ() * forwardZ;
@@ -484,6 +480,39 @@ export class JoltRidePhysics {
     const torque = new this.Jolt.Vec3(forwardX * torqueAmount, forwardY * torqueAmount, forwardZ * torqueAmount);
     this.bodyInterface.AddTorque(this.motorcycleBody.GetID(), torque, this.Jolt.EActivation_Activate);
     this.Jolt.destroy(torque);
+  }
+
+  private applyRiderWeightShift(weightShift: number) {
+    if (!this.wasGrounded || weightShift === 0) return;
+    const horizontalSpeed = Math.hypot(this.linearVelocityOut.GetX(), this.linearVelocityOut.GetZ());
+    const speedBlend = clamp(
+      (horizontalSpeed - this.tuning.riderWeightShiftStartSpeedMps)
+        / (this.tuning.riderWeightShiftFullSpeedMps - this.tuning.riderWeightShiftStartSpeedMps),
+      0,
+      1,
+    );
+    if (speedBlend === 0) return;
+    const { forwardX, forwardY, forwardZ } = this.currentForwardAxis();
+    const torqueAmount = this.tuning.massKg * 9.81 * this.tuning.riderWeightShiftMeters * weightShift * speedBlend;
+    const torque = new this.Jolt.Vec3(forwardX * torqueAmount, forwardY * torqueAmount, forwardZ * torqueAmount);
+    this.bodyInterface.AddTorque(this.motorcycleBody.GetID(), torque, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(torque);
+  }
+
+  private currentForwardAxis() {
+    const rotationX = this.rotationOut.GetX();
+    const rotationY = this.rotationOut.GetY();
+    const rotationZ = this.rotationOut.GetZ();
+    const rotationW = this.rotationOut.GetW();
+    return {
+      rotationX,
+      rotationY,
+      rotationZ,
+      rotationW,
+      forwardX: 2 * (rotationX * rotationZ + rotationW * rotationY),
+      forwardY: 2 * (rotationY * rotationZ - rotationW * rotationX),
+      forwardZ: 1 - 2 * (rotationX * rotationX + rotationY * rotationY),
+    };
   }
 
   private findGrindWall(actionHeld: boolean): GrindWall | null {

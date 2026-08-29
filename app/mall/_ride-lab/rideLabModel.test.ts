@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { acquireAndConstruct } from "./rideLabLifecycle.ts";
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveHeldAerialFeedback, resolveSteeringBlend, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
 test("throttle acknowledges immediately but takes time to reach full drive", () => {
@@ -26,11 +26,22 @@ test("released steering physically recovers over multiple fixed steps", () => {
   assert.ok(next.steer < 1);
 });
 
-test("acceleration leads speed-line feedback once speed clears its threshold", () => {
-  const steady = speedLineStrength(8, 0, DEFAULT_RIDE_LAB_TUNING);
-  const accelerating = speedLineStrength(8, 4, DEFAULT_RIDE_LAB_TUNING);
+test("speed lines stay off below 100 km/h and acceleration leads once above it", () => {
+  assert.equal(speedLineStrength(99 / 3.6, 20, DEFAULT_RIDE_LAB_TUNING), 0);
+  assert.ok(speedLineStrength(100 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING) > 0);
+  const steady = speedLineStrength(105 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING);
+  const accelerating = speedLineStrength(105 / 3.6, 4, DEFAULT_RIDE_LAB_TUNING);
+  assert.ok(steady > 0);
   assert.ok(accelerating > steady);
-  assert.equal(speedLineStrength(2, 20, DEFAULT_RIDE_LAB_TUNING), 0);
+});
+
+test("turn intent blends eighty percent rider weight shift with twenty percent handlebar", () => {
+  const right = resolveSteeringBlend(1, 0.8);
+  const partialLeft = resolveSteeringBlend(-0.5, 0.8);
+  assert.ok(Math.abs(right.weightShift - 0.8) < 1e-12);
+  assert.ok(Math.abs(right.handlebar - 0.2) < 1e-12);
+  assert.ok(Math.abs(partialLeft.weightShift + 0.4) < 1e-12);
+  assert.ok(Math.abs(partialLeft.handlebar + 0.1) < 1e-12);
 });
 
 test("a state transition survives later ordinary input in the same render frame", () => {

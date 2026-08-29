@@ -13,9 +13,19 @@ test("configuration rejects unknown schema versions and malformed JSON", () => {
 });
 
 test("unsafe imported values are bounded and ordered", () => {
-  const safe = sanitizeRideLabTuning({ engineTorque: 99999, rideAssist: -4, suspensionMin: 0.6, suspensionMax: 0.2, ollieMinImpulse: 1500, ollieMaxImpulse: 300 });
+  const safe = sanitizeRideLabTuning({
+    engineTorque: 99999,
+    rideAssist: -4,
+    riderWeightShiftStartSpeedMps: 10,
+    riderWeightShiftFullSpeedMps: 1,
+    suspensionMin: 0.6,
+    suspensionMax: 0.2,
+    ollieMinImpulse: 1500,
+    ollieMaxImpulse: 300,
+  });
   assert.equal(safe.engineTorque, 400);
   assert.equal(safe.rideAssist, 0);
+  assert.ok(safe.riderWeightShiftFullSpeedMps > safe.riderWeightShiftStartSpeedMps);
   assert.ok(safe.suspensionMax > safe.suspensionMin);
   assert.ok(safe.ollieMaxImpulse >= safe.ollieMinImpulse);
 });

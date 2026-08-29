@@ -5,6 +5,8 @@ import { writeFile } from "node:fs/promises";
 import { createServer } from "node:net";
 import { chromium } from "playwright";
 
+import { RIDE_LAB_CONTROLS } from "../app/mall/_ride-lab/rideLabControls.ts";
+
 const port = await allocatePort();
 const baseUrl = `http://127.0.0.1:${port}`;
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", String(port)], {
@@ -239,7 +241,7 @@ try {
   assert.ok(releasedGrind.grindReleaseSpeedMps > grinding.horizontalSpeedMps * 0.9);
 
   const controls = page.locator('input[type="range"]');
-  assert.equal(await controls.count(), 42);
+  assert.equal(await controls.count(), RIDE_LAB_CONTROLS.length);
   assert.equal(await page.locator("details").last().getAttribute("open"), null);
   for (let index = 0; index < await controls.count(); index += 1) {
     const control = controls.nth(index);

@@ -1,13 +1,13 @@
 {
-  "measuredAt": "2026-08-29T13:59:27.161Z",
+  "measuredAt": "2026-08-29T14:19:22.541Z",
   "engine": "Jolt MotorcycleController",
-  "startupMs": 41.5,
-  "firstFrameMs": 63.10000002384186,
-  "averageRenderMs": 1.0119999992847442,
-  "peakRenderMs": 21.30000001192093,
+  "startupMs": 43.19999998807907,
+  "firstFrameMs": 83,
+  "averageRenderMs": 1.1260869567808898,
+  "peakRenderMs": 21.600000023841858,
   "drawCalls": 37,
   "triangles": 2000,
-  "transferBytes": 2160414,
+  "transferBytes": 2160956,
   "liveRuntimes": 1,
   "animationLoops": 1
 }

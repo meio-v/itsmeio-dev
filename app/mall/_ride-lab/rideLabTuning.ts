@@ -25,6 +25,10 @@ export type RideLabTuning = {
   frontBrakeTorque: number;
   rearBrakeTorque: number;
   maxSteerRadians: number;
+  riderWeightShiftRatio: number;
+  riderWeightShiftMeters: number;
+  riderWeightShiftStartSpeedMps: number;
+  riderWeightShiftFullSpeedMps: number;
   steerRise: number;
   steerReturn: number;
   maxLeanRadians: number;
@@ -63,13 +67,17 @@ export const DEFAULT_RIDE_LAB_TUNING: Readonly<RideLabTuning> = Object.freeze({
   engineInertia: 0.9,
   throttleRise: 2.4,
   throttleFall: 3.2,
-  topSpeedMps: 18,
+  topSpeedMps: 32,
   linearDamping: 0.08,
   brakeRise: 5.5,
   brakeFall: 8,
   frontBrakeTorque: 500,
   rearBrakeTorque: 250,
   maxSteerRadians: Math.PI / 6,
+  riderWeightShiftRatio: 0.8,
+  riderWeightShiftMeters: 0.18,
+  riderWeightShiftStartSpeedMps: 1,
+  riderWeightShiftFullSpeedMps: 5,
   steerRise: 4,
   steerReturn: 5.5,
   maxLeanRadians: Math.PI / 4.6,
@@ -96,7 +104,7 @@ export const DEFAULT_RIDE_LAB_TUNING: Readonly<RideLabTuning> = Object.freeze({
   cameraHeight: 2.15,
   cameraLag: 5.5,
   speedFovGain: 13,
-  speedLineThreshold: 5.5,
+  speedLineThreshold: 100 / 3.6,
   speedLineIntensity: 0.8,
   feedbackIntensity: 1,
 });
@@ -125,7 +133,9 @@ const limits: Record<keyof RideLabTuning, readonly [number, number]> = {
   fixedStep: [1 / 120, 1 / 30], maxCatchUpSteps: [1, 8], engineTorque: [40, 400], engineInertia: [0.05, 2],
   throttleRise: [0.25, 12], throttleFall: [0.25, 12], topSpeedMps: [5, 40], linearDamping: [0, 2],
   brakeRise: [0.25, 16], brakeFall: [0.25, 20], frontBrakeTorque: [50, 1500], rearBrakeTorque: [20, 1200],
-  maxSteerRadians: [0.08, 0.9], steerRise: [0.25, 16], steerReturn: [0.25, 20], maxLeanRadians: [0.25, 1.45],
+  maxSteerRadians: [0.08, 0.9], riderWeightShiftRatio: [0, 1], riderWeightShiftMeters: [0.02, 0.5],
+  riderWeightShiftStartSpeedMps: [0, 10], riderWeightShiftFullSpeedMps: [0.5, 20],
+  steerRise: [0.25, 16], steerReturn: [0.25, 20], maxLeanRadians: [0.25, 1.45],
   leanSpring: [20, 1500], leanDamping: [1, 150], rideAssist: [0, 1], massKg: [70, 420], centerOfMassDrop: [0.05, 0.8],
   wheelRadius: [0.15, 0.7], suspensionMin: [0.02, 0.6], suspensionMax: [0.08, 1],
   frontSuspensionFrequency: [0.25, 8], rearSuspensionFrequency: [0.25, 8], cameraDistance: [2.5, 12], cameraHeight: [0.5, 6],
@@ -144,6 +154,7 @@ export function sanitizeRideLabTuning(value: unknown): RideLabTuning {
     result[key] = Math.min(max, Math.max(min, candidate));
   }
   result.maxCatchUpSteps = Math.round(result.maxCatchUpSteps);
+  result.riderWeightShiftFullSpeedMps = Math.max(result.riderWeightShiftFullSpeedMps, result.riderWeightShiftStartSpeedMps + 0.5);
   result.suspensionMax = Math.max(result.suspensionMax, result.suspensionMin + 0.04);
   result.ollieMaxImpulse = Math.max(result.ollieMaxImpulse, result.ollieMinImpulse);
   return result;
