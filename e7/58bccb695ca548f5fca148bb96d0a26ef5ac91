@@ -1,0 +1,48 @@
+scripts/verify-ride-lab-browser.mjs
+  s_fc8a0c8160e8ba::t_8c9d58a4823b29 8-9,244
+GATES.md
+  s_fc8a0c8160e8ba::t_a5e23f07304e14 50-51
+  s_fc8a0c8160e8ba::t_8a01ecb752cecf 49
+  s_fc8a0c8160e8ba::t_3cc7e899f16761 52-53
+app/mall/_ride-lab/JoltRidePhysics.ts
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 472,488,491-493,495,497-502,507-515
+  s_fc8a0c8160e8ba::t_b58d1f559e1b52 3,187-188,192,485-487,494,503-506
+  s_fc8a0c8160e8ba::t_7c4bf8c08db45d 516-517
+  s_fc8a0c8160e8ba::t_9e9d4d8d612cd9 489-490,496
+app/mall/_ride-lab/rideLabTuning.ts
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 28,70,77,107
+  s_fc8a0c8160e8ba::t_9e9d4d8d612cd9 29-31,78-80,136-138,157
+app/mall/_ride-lab/rideLabTuning.test.ts
+  s_fc8a0c8160e8ba::t_0165eca2c525e6 16-25,28
+app/mall/_ride-lab/JoltRidePhysics.test.ts
+  s_fc8a0c8160e8ba::t_7d6915f9a5a465 94
+  s_fc8a0c8160e8ba::t_1385d4bb8cd2d8 98,100,104,108-115,123
+app/mall/_ride-lab/rideLabModel.ts
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 162-164
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 31-38
+app/mall/_ride-lab/rideLabControls.ts
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 27
+  s_fc8a0c8160e8ba::t_9e9d4d8d612cd9 28-30
+docs/testing/ride-lab-measurements.json
+  s_fc8a0c8160e8ba::t_7cb5e1cef584b5 2,4-7,10
+app/mall/_ride-lab/rideLabModel.test.ts
+  s_fc8a0c8160e8ba::t_a5e23f07304e14 4,29-30,32-34,36-38
+  s_fc8a0c8160e8ba::t_32d33ebed195cd 39-44
+  s_fc8a0c8160e8ba::t_b3364d4fbc103b 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "e758bccb695ca548f5fca148bb96d0a26ef5ac91",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
