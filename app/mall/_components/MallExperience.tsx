@@ -163,6 +163,21 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
   return (
     <main className={styles.page}>
       <a className={styles.skipLink} href="#currently-playing" onClick={skipRide}>Skip the ride</a>
+      <svg className={styles.stickerFilterDefs} aria-hidden="true" focusable="false">
+        <filter id="mall-sticker-cutout" x="-25%" y="-25%" width="170%" height="180%" colorInterpolationFilters="sRGB">
+          <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="outlineMask" />
+          <feFlood floodColor="var(--paper)" result="outlineColor" />
+          <feComposite in="outlineColor" in2="outlineMask" operator="in" result="outline" />
+          <feOffset in="outlineMask" dx="6" dy="7" result="shadowMask" />
+          <feFlood floodColor="var(--ink)" result="shadowColor" />
+          <feComposite in="shadowColor" in2="shadowMask" operator="in" result="shadow" />
+          <feMerge>
+            <feMergeNode in="shadow" />
+            <feMergeNode in="outline" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </svg>
 
       <header className={styles.header}>
         <div className={styles.utilityRail}>
@@ -375,10 +390,10 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
                     <div className={styles.controlDeckMount} aria-hidden="true">
                       <Image
                         className={styles.controlDeckArt}
-                        src="/mall/textures/control-deck-panel.png"
+                        src="/mall/textures/control-deck-panel-full.png"
                         alt=""
-                        width={1480}
-                        height={620}
+                        width={1563}
+                        height={631}
                         draggable={false}
                       />
                     </div>
