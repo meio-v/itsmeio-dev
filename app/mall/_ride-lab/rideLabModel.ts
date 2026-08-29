@@ -28,6 +28,14 @@ export function resolveTouchSteer(leftPressed: boolean, rightPressed: boolean) {
   return Number(rightPressed) - Number(leftPressed);
 }
 
+export function resolveSuspensionLoadPresentation(loadDifference: number) {
+  const normalizedLoad = Math.max(-1, Math.min(1, loadDifference / 28));
+  return {
+    pitchRadians: normalizedLoad * 0.045,
+    rollRadians: 0,
+  };
+}
+
 export function longitudinalSpeed(
   velocity: { x: number; y: number; z: number },
   rotation: { x: number; y: number; z: number; w: number },

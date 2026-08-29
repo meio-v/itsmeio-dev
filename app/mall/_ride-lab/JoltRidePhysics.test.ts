@@ -76,6 +76,26 @@ test("near-stationary upright assist prevents the parked moped from tipping over
   assert.ok(Math.abs(snapshot.leanRadians) < 0.05);
 });
 
+test("mirrored steering produces symmetric bounded lean", async () => {
+  const run = async (steer: number) => {
+    const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
+    let peakLean = 0;
+    for (let step = 0; step < 120; step += 1) {
+      const snapshot = physics.step({ ...idle, throttle: 1, steer });
+      if (Math.abs(snapshot.leanRadians) > Math.abs(peakLean)) peakLean = snapshot.leanRadians;
+    }
+    physics.dispose();
+    return peakLean;
+  };
+  const left = await run(-0.35);
+  const right = await run(0.35);
+  assert.ok(left > 0);
+  assert.ok(right < 0);
+  assert.ok(Math.abs(left) < 0.72);
+  assert.ok(Math.abs(right) < 0.72);
+  assert.ok(Math.abs(Math.abs(left) - Math.abs(right)) < 0.01);
+});
+
 test("the authored test ramp produces a grounded-airborne-grounded journey", async () => {
   const physics = await JoltRidePhysics.create({ ...DEFAULT_RIDE_LAB_TUNING });
   let sawTakeoff = false;

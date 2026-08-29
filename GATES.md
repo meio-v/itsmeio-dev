@@ -12,7 +12,7 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
 - [x] G1: native Jolt handling plus preload release, ollie, hover depletion, ground recharge, and wall-grind state behave deterministically under focused tests
   CHECK: npm run test:ride-lab
   EXPECT: /# fail 0/
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=09424f742b16b50af9c7613d4445af2a745b5f029ddd0ca7a11aee07111c5457; output-bytes=8200
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=23dc30ebe153440a16fa761ec7d1e5fdffdde03f1cff4ffa76aeb7acc9ca336c; output-bytes=8962
 
 - [x] G2: the mall and rideLab TypeScript surfaces are type-safe
   CHECK: npm run typecheck
@@ -27,7 +27,7 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
 - [x] G4: existing mall tests and a production build pass while both optional routes remain closed
   CHECK: npm run test:mall && npm run build && npm run verify:ride-lab:production
   EXPECT: rideLab production gate verification passed
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=85bd8a236e4b0962aeca2a00846378fe5f4578e511ef2a2e0952f57e53a95e87; output-bytes=8233
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=e85d944b324c35bac0deed4e7fd5f1edba16717bee69b56fd578fa143b63ece8; output-bytes=7901
 
 - [x] G5: browser verification covers the complete preload-to-ollie-to-hover-to-recharge journey, wall grind, first-frame feedback, tuning, reload, context loss, reduced motion, and mobile layout
   CHECK: npm run verify:ride-lab
@@ -40,6 +40,11 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
   EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=428a602ea8d1dabf353bfdd44de237c3134dcf4ece54be1650b84e6ba481a223; output-bytes=37
 
 ## Promotion gate (not a completion claim)
+
+- [x] G7: straight acceleration presents suspension load as pitch, and mirrored turns remain symmetric below the assisted lean ceiling
+  CHECK: node --experimental-strip-types --test --test-reporter=tap app/mall/_ride-lab/rideLabModel.test.ts app/mall/_ride-lab/JoltRidePhysics.test.ts
+  EXPECT: /# fail 0/
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=6a74883a47932def735c96219e743fa75ce497c2e59a66f8fd3ea763b1e17c01; output-bytes=6571
 
 A human must approve subjective motorcycle handling, camera feel, visual feedback,
 and authored direction before any behavior is promoted into `/mall`. Automated

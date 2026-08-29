@@ -4,7 +4,7 @@ import { InputController } from "../_runtime/inputController";
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
 import { RideLabActionController } from "./RideLabActionController";
-import { normalizedSpeed, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
+import { normalizedSpeed, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
 
@@ -290,9 +290,10 @@ export class RideLabRuntime {
     const { position, rotation } = this.snapshot;
     this.vehiclePose.position.set(position.x, position.y, position.z);
     this.vehiclePose.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
-    const loadDelta = clampLoad(this.snapshot.rearSuspensionLoad - this.snapshot.frontSuspensionLoad);
+    const loadPresentation = resolveSuspensionLoadPresentation(this.snapshot.rearSuspensionLoad - this.snapshot.frontSuspensionLoad);
     this.vehicle.root.position.y = -Math.min(0.12, (this.snapshot.frontSuspensionLoad + this.snapshot.rearSuspensionLoad) / 500);
-    this.vehicle.root.rotation.x = loadDelta * 0.045;
+    this.vehicle.root.rotation.x = loadPresentation.rollRadians;
+    this.vehicle.root.rotation.z = loadPresentation.pitchRadians;
     this.inverseVehicleRootRotation.copy(this.vehicle.root.quaternion).invert();
     this.preloadOffset
       .set(0, -this.snapshot.preload * this.tuning.preloadCompression, 0)
@@ -409,8 +410,4 @@ export class RideLabRuntime {
       this.scene.add(ramp);
     }
   }
-}
-
-function clampLoad(value: number) {
-  return Math.max(-1, Math.min(1, value / 28));
 }

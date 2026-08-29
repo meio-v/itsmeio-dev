@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
 test("throttle acknowledges immediately but takes time to reach full drive", () => {
@@ -56,6 +56,11 @@ test("lean measurement stays upright regardless of heading", () => {
   assert.ok(Math.abs(signedLeanRadians({ x: 0, y: 1, z: 0, w: 0 })) < 1e-12);
   const halfLean = 0.1;
   assert.ok(Math.abs(Math.abs(signedLeanRadians({ x: Math.sin(halfLean), y: Math.cos(halfLean), z: 0, w: 0 })) - 0.2) < 1e-12);
+});
+
+test("suspension load communicates longitudinal pitch without adding sideways roll", () => {
+  assert.deepEqual(resolveSuspensionLoadPresentation(28), { pitchRadians: 0.045, rollRadians: 0 });
+  assert.deepEqual(resolveSuspensionLoadPresentation(-28), { pitchRadians: -0.045, rollRadians: 0 });
 });
 
 test("held ground action stores preload until release produces a bounded ollie", () => {
