@@ -81,7 +81,7 @@
 .rideNumber { top: 0.8rem; right: clamp(0.65rem, 3vw, 3.1rem); left: auto; transform: rotate(6deg); }
 .rideSticker { position: absolute; z-index: 6; height: auto; object-fit: contain; pointer-events: none; user-select: none; }
 .mopedSticker { top: clamp(1.25rem, 3vw, 2.75rem); right: clamp(5.8rem, 11vw, 10rem); width: clamp(6rem, 10vw, 9.5rem); filter: drop-shadow(0.32rem 0.38rem 0 var(--ink)); transform: rotate(-11deg); }
-.vendoSticker { bottom: clamp(0.9rem, 2.5vw, 2.2rem); left: clamp(0.35rem, 1.6vw, 1.65rem); width: clamp(4.35rem, 7.2vw, 6.5rem); filter: drop-shadow(0.28rem 0.34rem 0 var(--ink)); transform: rotate(7deg); }
+.vendoSticker { right: clamp(0.2rem, 1vw, 0.9rem); bottom: clamp(-2.9rem, -2.2vw, -1.7rem); width: clamp(5.75rem, 9vw, 8.25rem); filter: drop-shadow(0.32rem 0.4rem 0 var(--ink)); transform: rotate(6deg); }
 .rideSectionInner { position: relative; z-index: 1; max-width: 77.5rem; margin: 0 auto; }
 .rideSectionInner > h2 { margin: 0 0 clamp(1.15rem, 2.4vw, 1.9rem); color: var(--paper); font: 400 clamp(2.15rem, 4.4vw, 4.15rem)/0.92 "Anton", Impact, sans-serif; letter-spacing: 0.01em; text-transform: uppercase; }
 .rideSectionInner > h2 span { color: var(--ink); }
@@ -221,6 +221,7 @@
 .kioskServiceStrip { display: flex; justify-content: space-between; margin-left: clamp(2.5rem, 8vw, 7rem); padding: 0.4rem 0.25rem 0.65rem; color: var(--brown); font: 400 0.72rem "DotGothic16", monospace; letter-spacing: 0.08em; }
 .kioskServiceStrip span:last-child { padding: 0.18rem 0.4rem; color: var(--paper); background: var(--brown); }
 .kioskScreenStage { position: relative; }
+.playstationSticker { position: absolute; z-index: 4; top: clamp(-3.8rem, -3.2vw, -2.4rem); right: clamp(5.5rem, 12vw, 11rem); width: clamp(7.75rem, 13vw, 11rem); height: auto; filter: drop-shadow(0.38rem 0.44rem 0 var(--ink)); pointer-events: none; transform: rotate(-8deg); user-select: none; }
 .kioskScreen { position: relative; margin-left: clamp(1.4rem, 5vw, 5rem); padding: clamp(1.5rem, 3vw, 2.6rem); overflow: hidden; color: var(--ink); background: var(--tomato); box-shadow: 0.75rem 0.85rem 0 var(--ink); clip-path: polygon(0 1%, 99% 0, 100% 100%, 1% 98%); }
 .kioskScreen::before { position: absolute; top: 0; right: 0; width: 45%; height: 52%; content: ""; background-image: radial-gradient(circle, rgb(20 17 15 / 48%) 1.4px, transparent 1.7px); background-size: 0.7rem 0.7rem; clip-path: polygon(30% 0, 100% 0, 100% 100%); pointer-events: none; }
 .kanaRail { position: absolute; z-index: 2; top: clamp(1.2rem, 2vw, 2rem); right: clamp(0.7rem, 1.5vw, 1.4rem); color: rgb(20 17 15 / 72%); font: 400 clamp(0.85rem, 1.3vw, 1.1rem) "DotGothic16", monospace; letter-spacing: 0.3em; writing-mode: vertical-rl; }
@@ -250,7 +251,6 @@
 .completedGames time { color: var(--acid); white-space: nowrap; }
 .completedDisclosure { margin-top: 0.85rem; }
 .completedDisclosure summary { width: fit-content; color: var(--acid); font: 400 0.72rem "DotGothic16", monospace; cursor: pointer; }
-.playingSticker { position: absolute; z-index: 4; top: clamp(-2.25rem, -2vw, -1rem); right: clamp(-5.25rem, -4vw, -2.75rem); width: clamp(7.5rem, 13vw, 11.25rem); height: auto; filter: drop-shadow(0.38rem 0.44rem 0 var(--ink)); pointer-events: none; transform: rotate(-8deg); user-select: none; }
 .visitorNote { position: relative; display: grid; width: fit-content; margin: clamp(2rem, 4vw, 3.5rem) 0 0 auto; padding: 0.85rem 1.25rem; background: var(--pink); box-shadow: 0.42rem 0.48rem 0 var(--ink); font-family: "DotGothic16", monospace; transform: rotate(-1.6deg); }
 .visitorNote span { font-size: clamp(0.8rem, 1.4vw, 1.05rem); letter-spacing: 0.06em; }
 .visitorNote small { margin-top: 0.25rem; color: var(--brown); letter-spacing: 0.16em; }
@@ -331,7 +331,7 @@
   .playingContent,
   .dialog .playingContent,
   .loadingShell { grid-template-columns: 1fr; }
-  .playingSticker { top: -1.75rem; right: -1rem; width: clamp(6.5rem, 28vw, 8.75rem); }
+  .playstationSticker { top: -2.8rem; right: 5rem; width: clamp(6.5rem, 24vw, 8.25rem); }
   .kioskScreen { margin-left: 1.5rem; }
   .kioskHeading { align-items: flex-start; flex-direction: column; }
   .dialogHeader { align-items: flex-start; }

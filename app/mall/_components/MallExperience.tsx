@@ -355,6 +355,15 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
         <div className={styles.kioskInner}>
           <div className={styles.kioskServiceStrip} aria-hidden="true"><span>03 / POSTER WALL</span><span>CABINET 01</span></div>
           <div className={styles.kioskScreenStage}>
+            <Image
+              className={styles.playstationSticker}
+              src="/mall/stickers/playstation.png"
+              alt=""
+              width={768}
+              height={768}
+              aria-hidden="true"
+              draggable={false}
+            />
             <div className={styles.kioskScreen}>
               <span className={styles.kanaRail} aria-hidden="true">現在プレイ中</span>
               <div className={styles.kioskHeading}>

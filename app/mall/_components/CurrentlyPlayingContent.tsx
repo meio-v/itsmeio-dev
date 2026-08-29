@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 import {
   formatCompletionDate,
   formatCurrentStatus,
@@ -38,17 +36,6 @@ export function CurrentlyPlayingContent({
             <p className={styles.noDisc}>No disc inserted</p>
             <p className={styles.betweenGames}>{content.emptyMessage}</p>
           </>
-        )}
-        {compact && (
-          <Image
-            className={styles.playingSticker}
-            src="/mall/stickers/playstation.png"
-            alt=""
-            width={768}
-            height={768}
-            aria-hidden="true"
-            draggable={false}
-          />
         )}
       </div>
 
