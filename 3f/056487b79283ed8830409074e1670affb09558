@@ -1,0 +1,53 @@
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_d021e62a1d771a 53,97,114
+  s_918a32a48b13b9::t_ca2b41d9d332cd 270
+  s_918a32a48b13b9::t_852e03b43b85ac 245,252,259
+  s_918a32a48b13b9::t_8317e1574a62b7 84,100,233,238
+  s_918a32a48b13b9::t_b4ac36a760fadf 11,68,70,373-375,379
+  s_918a32a48b13b9::t_337e5225664056 67
+  s_918a32a48b13b9::t_144e78347d9f4f 69
+  s_918a32a48b13b9::t_63635aaca3ce7c 7,71,73
+  s_918a32a48b13b9::t_f9d1780dcbdfa2 12,30,39,52,54-55,79-80,82,89,115-117,121,127,138,169,211,214,217,221,228-229,234,241-242,248,256,261-262,264,268-269,277,338,347
+  s_918a32a48b13b9::t_7c25080fd857f1 376,378
+  s_918a32a48b13b9::t_ca8bf8b0af21c8 85,377,384
+  s_918a32a48b13b9::t_7aed260dbe6f5f 279-311
+  s_918a32a48b13b9::t_fbbae54f0a4d4d 278
+scripts/verify-mall-scope.mjs
+  s_918a32a48b13b9::t_d021e62a1d771a 44
+  s_918a32a48b13b9::t_f9d1780dcbdfa2 46
+app/mall/_components/MallExperience.tsx
+  s_918a32a48b13b9::t_ca2b41d9d332cd 232-233,235-236,409-410,412-413
+  s_918a32a48b13b9::t_8317e1574a62b7 231,234,237-239,276-284,381-389,408,411,414-416
+docs/assets/mall-asset-provenance.md
+  s_918a32a48b13b9::t_f9d1780dcbdfa2 31
+  s_918a32a48b13b9::t_d021e62a1d771a 30
+app/mall/page.tsx
+  s_918a32a48b13b9::t_f9d1780dcbdfa2 9
+  s_918a32a48b13b9::t_d021e62a1d771a 7
+scripts/cut-doodle-stickers.mjs
+  s_918a32a48b13b9::t_7aed260dbe6f5f 24
+app/mall/_components/CurrentlyPlayingContent.tsx
+  s_918a32a48b13b9::t_8317e1574a62b7 55,71
+scripts/verify-mall-restyle.mjs
+  s_918a32a48b13b9::t_b4ac36a760fadf 35,39
+package-lock.json
+  s_918a32a48b13b9::t_8650236c5ae34f 15,17,502-510,520-528
+package.json
+  s_918a32a48b13b9::t_bf07e550cbd909 18,20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "3f056487b79283ed8830409074e1670affb09558",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
