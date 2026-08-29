@@ -36,6 +36,18 @@ export function resolveSuspensionLoadPresentation(loadDifference: number) {
   };
 }
 
+export function resolveHeldAerialFeedback(state: {
+  grounded: boolean;
+  grinding: boolean;
+  aerialPhase: AerialMechanicPhase;
+}) {
+  if (state.grinding) return "grind";
+  if (state.grounded) return "preload";
+  if (state.aerialPhase === "depleted") return "depleted";
+  if (state.aerialPhase === "hover") return "hover";
+  return "idle";
+}
+
 export function longitudinalSpeed(
   velocity: { x: number; y: number; z: number },
   rotation: { x: number; y: number; z: number; w: number },

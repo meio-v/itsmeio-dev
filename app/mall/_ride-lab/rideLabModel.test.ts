@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
 test("throttle acknowledges immediately but takes time to reach full drive", () => {
@@ -61,6 +61,11 @@ test("lean measurement stays upright regardless of heading", () => {
 test("suspension load communicates longitudinal pitch without adding sideways roll", () => {
   assert.deepEqual(resolveSuspensionLoadPresentation(28), { pitchRadians: 0.045, rollRadians: 0 });
   assert.deepEqual(resolveSuspensionLoadPresentation(-28), { pitchRadians: -0.045, rollRadians: 0 });
+});
+
+test("blocked airborne input does not claim hover feedback", () => {
+  assert.equal(resolveHeldAerialFeedback({ grounded: false, grinding: false, aerialPhase: "airborne" }), "idle");
+  assert.equal(resolveHeldAerialFeedback({ grounded: false, grinding: false, aerialPhase: "hover" }), "hover");
 });
 
 test("held ground action stores preload until release produces a bounded ollie", () => {

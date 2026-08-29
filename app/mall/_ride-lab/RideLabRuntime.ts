@@ -4,7 +4,7 @@ import { InputController } from "../_runtime/inputController";
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
 import { RideLabActionController } from "./RideLabActionController";
-import { normalizedSpeed, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
+import { normalizedSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
 
@@ -312,7 +312,7 @@ export class RideLabRuntime {
     this.options.surface.style.setProperty("--ride-line-strength", lines.toFixed(3));
     const transition = this.snapshot.movementTransition !== "idle" || this.snapshot.eventPulse === "reset" || this.snapshot.eventPulse === "ollie";
     const feedback = this.presentationInput.reset ? "reset"
-      : this.presentationInput.aerialAction ? this.snapshot.grinding ? "grind" : this.snapshot.grounded ? "preload" : this.snapshot.aerialPhase === "depleted" ? "depleted" : "hover"
+      : this.presentationInput.aerialAction ? resolveHeldAerialFeedback(this.snapshot)
       : this.presentationInput.brake > 0 ? "brake"
         : this.presentationInput.throttle > 0 ? "throttle"
           : Math.abs(this.presentationInput.steer) > 0 ? "steer"
