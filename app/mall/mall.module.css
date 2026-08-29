@@ -63,9 +63,9 @@
 .navLink small { display: block; margin-top: 0.45rem; font: 400 0.73rem var(--font-system); letter-spacing: 0.04em; opacity: 0.88; }
 .navLink small { font-family: var(--font-japanese); }
 
-.hero { position: relative; padding: clamp(2.1rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3.5rem) clamp(2.75rem, 6vw, 5.5rem); overflow: hidden; background: var(--paper); border-bottom: 0.875rem solid var(--ink); }
+.hero { position: relative; padding: clamp(2.1rem, 5vw, 4.5rem) clamp(1rem, 4vw, 3.5rem) clamp(2.75rem, 6vw, 5.5rem); overflow: hidden; background: var(--paper); border-bottom: 0.875rem solid var(--ink); isolation: isolate; }
 .heroPolygon,
-.heroTone { position: absolute; top: clamp(1.9rem, 6vw, 5rem); right: 0; width: 44%; height: clamp(7.5rem, 16vw, 15rem); clip-path: polygon(6% 8%, 100% 0, 100% 100%, 0 92%); pointer-events: none; }
+.heroTone { position: absolute; z-index: -2; top: clamp(1.9rem, 6vw, 5rem); right: 0; width: 44%; height: clamp(7.5rem, 16vw, 15rem); clip-path: polygon(6% 8%, 100% 0, 100% 100%, 0 92%); pointer-events: none; }
 .heroPolygon { background: var(--cobalt); }
 .heroTone { background-image: radial-gradient(circle, rgb(20 17 15 / 42%) 1.4px, transparent 1.7px); background-size: 1rem 1rem; clip-path: polygon(46% 4%, 100% 0, 100% 100%, 20% 96%); }
 .sectionNumber { position: absolute; z-index: 5; top: clamp(0.65rem, 2vw, 1.9rem); left: clamp(0.5rem, 2vw, 2.5rem); display: inline-block; isolation: isolate; color: var(--acid); font: 400 clamp(4rem, 7vw, 7rem)/0.8 "Graffiti Xenoa", "Anton", Impact, sans-serif; font-kerning: none; letter-spacing: 0.12em; paint-order: stroke fill; pointer-events: none; transform: rotate(-7deg); -webkit-text-stroke: 0.42rem var(--ink); }
@@ -87,7 +87,7 @@
 .routeCue { display: inline-flex; align-items: center; gap: 0.75rem; margin: 0; font: 400 clamp(1.15rem, 1.8vw, 1.65rem) "Anton", Impact, sans-serif; letter-spacing: 0.04em; text-transform: uppercase; }
 .routeCue span { width: 2.75rem; height: 0.25rem; background: var(--tomato); }
 .entryPaths a { color: var(--cobalt); border-bottom: 2px solid currentColor; font: 400 0.84rem var(--font-system); text-decoration: none; }
-.routeMeta { position: absolute; z-index: 3; top: clamp(2rem, 5vw, 4.75rem); right: clamp(0.35rem, 1.5vw, 1.35rem); margin: 0; padding: 0.55rem 0.4rem; color: var(--paper); background: var(--ink); font: 400 clamp(0.62rem, 0.8vw, 0.76rem) var(--font-system); letter-spacing: 0.08em; line-height: 1.2; pointer-events: none; text-orientation: upright; writing-mode: vertical-lr; }
+.routeMeta { position: absolute; z-index: -1; top: clamp(2rem, 5vw, 4.75rem); right: clamp(0.35rem, 1.5vw, 1.35rem); margin: 0; padding: 0.55rem 0.4rem; color: var(--paper); background: var(--ink); font: 400 clamp(0.62rem, 0.8vw, 0.76rem) var(--font-system); letter-spacing: 0.08em; line-height: 1.2; pointer-events: none; text-orientation: upright; writing-mode: vertical-lr; }
 .routeJapanese { text-orientation: upright; }
 .routeJapanese { font-family: var(--font-japanese); }
 .routeRomaji { text-orientation: sideways; }
@@ -355,6 +355,7 @@
   .wordmark { margin-left: 1.8rem; }
   .hero > .sectionNumber { left: -0.35rem; }
   .welcomeStage { width: 100%; }
+  .routeMeta { right: 1.5rem; }
   .welcomeStage::before,
   .welcomeStage::after { right: 3.5rem; bottom: -6rem; height: 6.25rem; }
   .rideSectionInner > h2 { max-width: 10ch; }
