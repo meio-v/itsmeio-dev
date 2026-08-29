@@ -1,0 +1,101 @@
+.gitignore
+  s_918a32a48b13b9::t_f6d276a00bad63 42-44
+app/_components/CurrentlyPlaying.tsx
+  s_918a32a48b13b9::t_3c5d36f0175bc9 3,7-12,14-18,23,40,42,66,131,136,158-161,197,251,261,267-268,270,280,289
+app/_components/HomeClient.tsx
+  s_918a32a48b13b9::t_f0f10ccfbb92c3 14,205-211,309
+app/mall/_components/CurrentlyPlayingContent.tsx
+  s_918a32a48b13b9::t_186e0bde9d5caf 1-102
+app/mall/_components/CurrentlyPlayingDialog.tsx
+  s_918a32a48b13b9::t_0dfeb7b322be68 1-49
+app/mall/_components/MallExperience.tsx
+  s_918a32a48b13b9::t_48e11591480af0 1-382
+app/mall/_components/MallPoster.tsx
+  s_918a32a48b13b9::t_24e9842aa9c659 1-26
+app/mall/_components/MallSceneSlot.tsx
+  s_918a32a48b13b9::t_33370bf41c7666 1-163
+app/mall/_lib/experience-state.test.ts
+  s_918a32a48b13b9::t_288ac5374464fb 1-69
+app/mall/_lib/experience-state.ts
+  s_918a32a48b13b9::t_7ece2b569cbf4d 1-101
+app/mall/_lib/scene-contract.ts
+  s_918a32a48b13b9::t_6adc7658821d7e 1-28
+app/mall/_runtime/MallRideCanvas.tsx
+  s_918a32a48b13b9::t_487a122ac3f650 1-186
+app/mall/_runtime/MallRideRuntime.ts
+  s_918a32a48b13b9::t_c830474c1c6d21 1-506
+app/mall/_runtime/art/createMallArtScene.ts
+  s_918a32a48b13b9::t_20a6fa3d77979d 1-566
+app/mall/_runtime/art/index.ts
+  s_918a32a48b13b9::t_31197d1902e43c 1-12
+app/mall/_runtime/art/mallAssetLibrary.ts
+  s_918a32a48b13b9::t_bc3b8de25f965c 1-39
+app/mall/_runtime/art/mallMaterials.ts
+  s_918a32a48b13b9::t_0c7d19fb50938e 1-119
+app/mall/_runtime/inputController.ts
+  s_918a32a48b13b9::t_95f72241763157 1-89
+app/mall/_runtime/mallPhysics.ts
+  s_918a32a48b13b9::t_22544a85f31eaa 1-44
+app/mall/_runtime/rideTuning.ts
+  s_918a32a48b13b9::t_5874f3350cf589 1-43
+app/mall/_runtime/rideTypes.ts
+  s_918a32a48b13b9::t_3bbdc4faa13222 1-13
+app/mall/_runtime/vehicleVisual.ts
+  s_918a32a48b13b9::t_38cc0ad6c7c63f 1-218
+app/mall/error.tsx
+  s_918a32a48b13b9::t_ffd9f75a483e3b 1-28
+app/mall/loading.tsx
+  s_918a32a48b13b9::t_e638abc10b98e2 1-26
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_8f75c637657c63 1-372
+app/mall/page.tsx
+  s_918a32a48b13b9::t_312c67d09fdee3 1-26
+app/page.tsx
+  s_918a32a48b13b9::t_03fc17277649c6 2,7-12
+content/currently-playing.ts
+  s_918a32a48b13b9::t_8942ec6302a0f0 1-31
+docs/art/mall-benchmark-art-direction.md
+  s_918a32a48b13b9::t_6a0e76f27ea94b 1-85
+docs/assets/mall-asset-provenance.md
+  s_918a32a48b13b9::t_86c49c353718c0 1-50
+docs/design/mall-page-skeleton.json
+  s_918a32a48b13b9::t_846426282e008a 1-163
+docs/design/mall-restyle-brief.md
+  s_918a32a48b13b9::t_7666cfdc8eaecc 1-23
+docs/specs/mall-homepage-vertical-slice.md
+  s_918a32a48b13b9::t_715f35f1bd5151 1-205
+lib/currently-playing.test.ts
+  s_918a32a48b13b9::t_4ccbace82a313a 1-62
+lib/currently-playing.ts
+  s_918a32a48b13b9::t_eb397b04ac0bbe 1-106
+lib/mall-feature.test.ts
+  s_918a32a48b13b9::t_6096f5c0d9728d 1-37
+lib/mall-feature.ts
+  s_918a32a48b13b9::t_abd3e3ebf4070e 1-17
+package-lock.json
+  s_918a32a48b13b9::t_65908cb1b5543a 11-15,23-24,31,289-294,472-507,1689-1695,1804-1833,1840-1846,2400-2406,4085-4091,5940-5946,8093-8098
+package.json
+  s_918a32a48b13b9::t_ee4d73c89317e7 9-11,14-18,26-27,34
+proxy.ts
+  s_918a32a48b13b9::t_743603be262414 1-15
+scripts/verify-mall-restyle.mjs
+  s_918a32a48b13b9::t_28bf22ade447f7 1-66
+tsconfig.json
+  s_918a32a48b13b9::t_6a2a727f726db3 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "27646b120e61faf204acf7f1c4c8083a3b1bdf1a",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
