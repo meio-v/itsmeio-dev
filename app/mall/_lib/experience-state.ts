@@ -82,7 +82,9 @@ export function mallExperienceReducer(
       }
       return { ...state, controlMode: "attract" };
     case "open-poi": {
-      const poiReturnMode = action.restoreMode ?? state.controlMode;
+      const poiReturnMode =
+        action.restoreMode ??
+        (state.selectedPoi ? state.poiReturnMode ?? state.controlMode : state.controlMode);
       return {
         ...state,
         selectedPoi: action.id,

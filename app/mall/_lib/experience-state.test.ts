@@ -44,6 +44,21 @@ test("closing the arcade restores a deliberately paused attract ride", () => {
   assert.equal(closed.poiReturnMode, null);
 });
 
+test("repeated arcade opens preserve the original ride mode", () => {
+  const open = mallExperienceReducer(initialMallExperienceState, {
+    type: "open-poi",
+    id: "currently-playing",
+  });
+  const reopened = mallExperienceReducer(open, {
+    type: "open-poi",
+    id: "currently-playing",
+  });
+  const closed = mallExperienceReducer(reopened, { type: "close-poi" });
+
+  assert.equal(reopened.poiReturnMode, "attract");
+  assert.equal(closed.controlMode, "attract");
+});
+
 test("arriving at the arcade exits driving behind the dialog", () => {
   const driving = mallExperienceReducer(initialMallExperienceState, {
     type: "insert-token",

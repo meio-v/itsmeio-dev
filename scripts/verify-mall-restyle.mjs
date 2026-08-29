@@ -8,7 +8,7 @@ const expectedRuntimeHashes = {
   "app/mall/_runtime/mallPhysics.ts": "b2c9a349b02f661916cc81c94168a89d79a77e95d7da536e466a2a3659cdf835",
   "app/mall/_runtime/rideTuning.ts": "fb8984d22524e81af50d9f6a6f094db674dd8206d6a6ebe16f6effa00f98982e",
   "app/mall/_runtime/rideTypes.ts": "15027221f7a0d45882a788b72c668d6f31237056610c408cf5c0a57e6f7f3fa2",
-  "app/mall/_lib/experience-state.ts": "4e48b46f09db3c84f3814e572c2ba39115950fdaf0c051569d4bfca0aabff4e9",
+  "app/mall/_lib/experience-state.ts": "e8bd2416a3a78b102d4f34a501d78dfc865e5db47912afc89b02c57fdfdca6ab",
   "app/mall/_lib/scene-contract.ts": "98c6aa6ba2eddb654d5fbd65920ecded7d04f7604041b351fd9bf0cb498bea41",
   "app/mall/_components/MallSceneSlot.tsx": "0d6987264e936e2dfd1db6e61e51da0658a28053cd6857984e30a252f5b8a707"
 };
