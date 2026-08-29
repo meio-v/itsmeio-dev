@@ -1,0 +1,121 @@
+.gitignore
+  s_918a32a48b13b9::t_57ce21180f460e 42-44
+app/_components/CurrentlyPlaying.tsx
+  s_918a32a48b13b9::t_7d56932ca11673 3,7-12,14-18,23,40,42,66,131,136,158-161,197,251,261,267-268,270,280,289
+app/_components/HomeClient.tsx
+  s_918a32a48b13b9::t_4a254acd57bf76 14,205-211,309
+app/mall/_components/CurrentlyPlayingContent.tsx
+  s_918a32a48b13b9::t_ac251a54f20571 1-89
+app/mall/_components/CurrentlyPlayingDialog.tsx
+  s_918a32a48b13b9::t_d7a1fb46dcae5c 1-49
+app/mall/_components/MallExperience.tsx
+  s_918a32a48b13b9::t_9655553c22d091 1-473
+app/mall/_components/MallPoster.tsx
+  s_918a32a48b13b9::t_d670c832b44af7 1-26
+app/mall/_components/MallSceneSlot.tsx
+  s_918a32a48b13b9::t_59502174d695c3 1-184
+app/mall/_lib/experience-state.test.ts
+  s_918a32a48b13b9::t_bae3a8befa6d0b 1-119
+app/mall/_lib/experience-state.ts
+  s_918a32a48b13b9::t_162bec4f99ed6f 1-125
+app/mall/_lib/scene-contract.ts
+  s_918a32a48b13b9::t_09d6b846924e71 1-29
+app/mall/_runtime/MallRideCanvas.tsx
+  s_918a32a48b13b9::t_c5885dade0147e 1-191
+app/mall/_runtime/MallRideRuntime.ts
+  s_918a32a48b13b9::t_74590a2e2b3542 1-522
+app/mall/_runtime/art/createMallArtScene.ts
+  s_918a32a48b13b9::t_eda133a72694a4 1-566
+app/mall/_runtime/art/index.ts
+  s_918a32a48b13b9::t_182b8cac913822 1-12
+app/mall/_runtime/art/mallAssetLibrary.ts
+  s_918a32a48b13b9::t_5d932162961132 1-39
+app/mall/_runtime/art/mallMaterials.ts
+  s_918a32a48b13b9::t_14d45c28caeb0d 1-122
+app/mall/_runtime/inputController.ts
+  s_918a32a48b13b9::t_75c55091fa49ba 1-89
+app/mall/_runtime/mallPhysics.ts
+  s_918a32a48b13b9::t_750f1939d66737 1-44
+app/mall/_runtime/ridePhysics.test.ts
+  s_918a32a48b13b9::t_799abc00f960ce 1-128
+app/mall/_runtime/ridePhysics.ts
+  s_918a32a48b13b9::t_a5ffde0cd6fac6 1-220
+app/mall/_runtime/rideTuning.ts
+  s_918a32a48b13b9::t_857cc7b137f523 1-43
+app/mall/_runtime/rideTypes.ts
+  s_918a32a48b13b9::t_3d112042452974 1-13
+app/mall/_runtime/vehicleVisual.ts
+  s_918a32a48b13b9::t_e59a3f2b97c443 1-220
+app/mall/error.tsx
+  s_918a32a48b13b9::t_ae65d9c64cdf3a 1-28
+app/mall/loading.tsx
+  s_918a32a48b13b9::t_c63292b36a858b 1-26
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_0e2d8418d2bf60 1-401
+app/mall/page.tsx
+  s_918a32a48b13b9::t_02a2cd35553c6c 1-28
+app/page.tsx
+  s_918a32a48b13b9::t_57a23476716690 2,7-12
+content/currently-playing.ts
+  s_918a32a48b13b9::t_2b08a8463a31dd 1-31
+docs/art/mall-benchmark-art-direction.md
+  s_918a32a48b13b9::t_1cbc78e177f3c5 1-85
+docs/assets/mall-asset-provenance.md
+  s_918a32a48b13b9::t_528c21b8441756 1-55
+docs/design/mall-page-skeleton.json
+  s_918a32a48b13b9::t_bfb56daa9afcde 1-163
+docs/design/mall-restyle-brief.md
+  s_918a32a48b13b9::t_536bc20b3bd716 1-23
+docs/specs/mall-homepage-vertical-slice.md
+  s_918a32a48b13b9::t_427574f6901e33 1-205
+docs/testing/mall-hardening.md
+  s_918a32a48b13b9::t_c3e7518a97b78c 1-77
+lib/currently-playing.test.ts
+  s_918a32a48b13b9::t_c5827a8896181f 1-62
+lib/currently-playing.ts
+  s_918a32a48b13b9::t_51bab9bedbf670 1-106
+lib/mall-feature.test.ts
+  s_918a32a48b13b9::t_3e9ec8fe8ebad4 1-37
+lib/mall-feature.ts
+  s_918a32a48b13b9::t_b7dcd3a82e2ee5 1-17
+package-lock.json
+  s_918a32a48b13b9::t_5267acf97a7c23 11-17,25-26,33,36,292-297,475-528,1710-1716,1825-1854,1861-1867,2421-2427,4106-4112,4193-4207,5976-5982,7083-7114,8161-8166
+package.json
+  s_918a32a48b13b9::t_6d43ff4ce55c46 9-11,14-20,28-29,36,39
+proxy.ts
+  s_918a32a48b13b9::t_3106064f2a7c0b 1-15
+scripts/cut-doodle-stickers.mjs
+  s_918a32a48b13b9::t_a5facca931dc6a 1-85
+scripts/mall-server.mjs
+  s_918a32a48b13b9::t_aa1170775734cf 1-69
+scripts/run-mall-check.mjs
+  s_918a32a48b13b9::t_dccbfc3c9f4fbe 1-61
+scripts/verify-mall-browser.mjs
+  s_918a32a48b13b9::t_e1d5ba596fb5ec 1-293
+scripts/verify-mall-control-deck.mjs
+  s_918a32a48b13b9::t_a28dac334d8a78 1-43
+scripts/verify-mall-performance.mjs
+  s_918a32a48b13b9::t_7d7519ace612b8 1-53
+scripts/verify-mall-restyle.mjs
+  s_918a32a48b13b9::t_c7fb7e2965ecd7 1-66
+scripts/verify-mall-scope.mjs
+  s_918a32a48b13b9::t_514946e0392320 1-93
+tsconfig.json
+  s_918a32a48b13b9::t_137cbf0373568b 14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d49fb313a175606b53dcb614079f4b00454481a2",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
