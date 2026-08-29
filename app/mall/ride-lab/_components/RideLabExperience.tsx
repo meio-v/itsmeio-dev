@@ -10,7 +10,8 @@ import type { RideLabDebugSnapshot, RideLabLifecycle } from "../../_ride-lab/rid
 import { DEFAULT_RIDE_LAB_TUNING, getRideLabTuningLimits, parseRideLabTuning, RIDE_LAB_PRESETS, sanitizeRideLabTuning, serializeRideLabTuning, type RideLabPresetName, type RideLabTuning } from "../../_ride-lab/rideLabTuning";
 import styles from "../rideLab.module.css";
 
-const STORAGE_KEY = "itsmeio.rideLab.config.v1";
+const LEGACY_STORAGE_KEYS = ["itsmeio.rideLab.config.v1", "itsmeio.rideLab.config.v2", "itsmeio.rideLab.config.v3", "itsmeio.rideLab.config.v4", "itsmeio.rideLab.config.v5", "itsmeio.rideLab.config.v6", "itsmeio.rideLab.config.v7", "itsmeio.rideLab.config.v8", "itsmeio.rideLab.config.v9", "itsmeio.rideLab.config.v10", "itsmeio.rideLab.config.v11"] as const;
+const STORAGE_KEY = "itsmeio.rideLab.config.v12";
 const GROUPS: readonly RideLabTuningGroup[] = ["Drivetrain", "Braking", "Steering & assist", "Chassis & suspension", "Aerial & grind", "Camera & feedback", "Jolt advanced"];
 const TUNING_LIMITS = getRideLabTuningLimits();
 
@@ -32,6 +33,7 @@ export function RideLabExperience() {
 
   useEffect(() => {
     try {
+      for (const key of LEGACY_STORAGE_KEYS) window.localStorage.removeItem(key);
       const stored = window.localStorage.getItem(STORAGE_KEY);
       const parsed = stored ? parseRideLabTuning(stored) : null;
       if (parsed) queueMicrotask(() => setTuning(parsed));

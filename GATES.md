@@ -51,6 +51,11 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
   EXPECT: /# fail 0/
   EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=834f76328eaab1fd723364c997961d4578e71faa8d33de5e3333cb64981f4181; output-bytes=9838
 
+- [x] G9: sustained throttle plus steering remains bounded by the tuned lean and yaw-rate ceilings within solver tolerance while preserving a rightward path
+  CHECK: node --experimental-strip-types --test --test-reporter=tap --test-name-pattern='sustained throttle' app/mall/_ride-lab/JoltRidePhysics.test.ts
+  EXPECT: /# fail 0/
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=bb3f38468f2d44a91f68cf07a1329a2693969acdac67705864843bcaaff6be9c; output-bytes=875
+
 A human must approve subjective motorcycle handling, camera feel, visual feedback,
 and authored direction before any behavior is promoted into `/mall`. Automated
 completion of this development lab does not claim that approval.

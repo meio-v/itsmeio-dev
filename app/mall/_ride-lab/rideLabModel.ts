@@ -7,6 +7,12 @@ function moveTowards(current: number, target: number, rate: number, delta: numbe
   return current + Math.sign(distance) * Math.min(Math.abs(distance), rate * delta);
 }
 
+function easeTowardZero(current: number, rate: number, delta: number) {
+  const magnitude = Math.sqrt(Math.abs(current));
+  const nextMagnitude = Math.max(0, magnitude - rate * delta);
+  return Math.sign(current) * nextMagnitude * nextMagnitude;
+}
+
 export function advanceRideIntent(
   current: ResolvedRideIntent,
   input: RideLabInput,
@@ -16,12 +22,38 @@ export function advanceRideIntent(
   return {
     throttle: moveTowards(current.throttle, input.throttle, input.throttle > current.throttle ? tuning.throttleRise : tuning.throttleFall, delta),
     brake: moveTowards(current.brake, input.brake, input.brake > current.brake ? tuning.brakeRise : tuning.brakeFall, delta),
-    steer: moveTowards(current.steer, input.steer, input.steer === 0 ? tuning.steerReturn : tuning.steerRise, delta),
+    steer: input.steer === 0
+      ? easeTowardZero(current.steer, tuning.steerReturn, delta)
+      : moveTowards(current.steer, input.steer, tuning.steerRise, delta),
   };
 }
 
 export function normalizedSpeed(speedMps: number, topSpeedMps: number) {
   return Math.min(1, Math.max(0, Math.abs(speedMps) / topSpeedMps));
+}
+
+export function highSpeedDriveScale(speedMps: number, startMps: number, endMps: number, endMultiplier: number) {
+  if (speedMps <= startMps) return 1;
+  if (speedMps >= endMps) return endMultiplier;
+  const progress = (speedMps - startMps) / (endMps - startMps);
+  return 1 + (endMultiplier - 1) * progress;
+}
+
+export function cameraSpeedPresentation(speedMps: number, tuning: RideLabTuning) {
+  const cruiseProgress = Math.min(1, Math.max(0, Math.abs(speedMps) / tuning.cameraCruiseSpeedMps));
+  const easedCruise = cruiseProgress * cruiseProgress * (3 - 2 * cruiseProgress);
+  const highSpeedProgress = Math.min(1, Math.max(
+    0,
+    (Math.abs(speedMps) - tuning.cameraCruiseSpeedMps) / Math.max(1, tuning.topSpeedMps - tuning.cameraCruiseSpeedMps),
+  ));
+  return {
+    distance: tuning.cameraNearDistance
+      + (tuning.cameraDistance - tuning.cameraNearDistance) * easedCruise
+      + highSpeedProgress * 1.1,
+    fov: tuning.cameraNearFov
+      + (52 - tuning.cameraNearFov) * easedCruise
+      + highSpeedProgress * tuning.speedFovGain,
+  };
 }
 
 export function resolveTouchSteer(leftPressed: boolean, rightPressed: boolean) {
@@ -159,7 +191,7 @@ export function advanceAerialMechanic(
 
 export function speedLineStrength(speedMps: number, accelerationMps2: number, tuning: RideLabTuning) {
   if (speedMps < tuning.speedLineThreshold) return 0;
-  const minimumOnset = 0.12;
+  const minimumOnset = tuning.speedLineOnsetOpacity;
   const speedProgress = (speedMps - tuning.speedLineThreshold) / Math.max(1, tuning.topSpeedMps - tuning.speedLineThreshold);
   const speed = minimumOnset + Math.max(0, speedProgress) * (1 - minimumOnset);
   const accelerationLead = Math.max(0, accelerationMps2) / 8;

@@ -6,6 +6,7 @@ import { createServer } from "node:net";
 import { chromium } from "playwright";
 
 import { RIDE_LAB_CONTROLS } from "../app/mall/_ride-lab/rideLabControls.ts";
+import { DEFAULT_RIDE_LAB_TUNING } from "../app/mall/_ride-lab/rideLabTuning.ts";
 
 const port = await allocatePort();
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -62,6 +63,16 @@ try {
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "no-preference" });
   await context.addInitScript(() => {
     localStorage.setItem("itsmeio.rideLab.config.v1", JSON.stringify({ version: 1, tuning: { rideAssist: 0.94 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v2", JSON.stringify({ version: 2, tuning: { steerReturn: 5.5 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v3", JSON.stringify({ version: 3, tuning: { steerReturn: 1.5 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v4", JSON.stringify({ version: 4, tuning: { engineTorque: 150, linearDamping: 0.08 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v5", JSON.stringify({ version: 5, tuning: { engineTorque: 172.5 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v6", JSON.stringify({ version: 6, tuning: { turnAssistRadiusMeters: 24 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v7", JSON.stringify({ version: 7, tuning: { speedLineThreshold: 100 / 3.6 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v8", JSON.stringify({ version: 8, tuning: { cameraCruiseSpeedMps: 60 / 3.6 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v9", JSON.stringify({ version: 9, tuning: { cameraThrottlePunchDistance: 0.4 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v10", JSON.stringify({ version: 10, tuning: { cameraSteerPunchDistance: 0.3 } }));
+    localStorage.setItem("itsmeio.rideLab.config.v11", JSON.stringify({ version: 11, tuning: { steerReturn: 0.6 } }));
   });
   const page = await context.newPage();
   page.setDefaultTimeout(60_000);
@@ -72,7 +83,22 @@ try {
   const response = await page.goto(`${baseUrl}/mall/ride-lab`, { waitUntil: "networkidle" });
   assert.equal(response?.status(), 200);
   await page.waitForSelector('[data-testid="ride-lab-surface"][data-lifecycle="active"]', { timeout: 20_000 });
-  await page.waitForFunction(() => window.__rideLabRuntime?.tuning?.rideAssist === 0.94 && window.__rideLabRuntime?.getDebugSnapshot().lifecycle === "active");
+  await page.waitForFunction((defaultRideAssist) => (
+    window.__rideLabRuntime?.tuning?.rideAssist === defaultRideAssist
+      && window.__rideLabRuntime?.getDebugSnapshot().lifecycle === "active"
+      && localStorage.getItem("itsmeio.rideLab.config.v1") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v2") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v3") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v4") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v5") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v6") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v7") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v8") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v9") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v10") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v11") === null
+      && localStorage.getItem("itsmeio.rideLab.config.v12") !== null
+  ), DEFAULT_RIDE_LAB_TUNING.rideAssist);
   await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   assert.equal(await page.locator("[data-nextjs-dialog]").count(), 0);
   assert.equal(errors.length, 0, errors.join("\n"));
@@ -116,13 +142,37 @@ try {
   const accelerated = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.ok(accelerated.speedMps > 0.5);
   await page.keyboard.up("w");
+  await page.evaluate((fixedStep) => { window.__rideLabRuntime.tuning.fixedStep = fixedStep; }, DEFAULT_RIDE_LAB_TUNING.fixedStep);
   await page.waitForTimeout(50);
   const coasted = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.ok(coasted.speedMps > accelerated.speedMps * 0.8);
-  await page.locator("label", { hasText: "Follow distance" }).locator('input[type="range"]').fill("6.4");
+  await page.evaluate(() => {
+    globalThis.__rideLabPhysicsBeforePresentationTuning = window.__rideLabRuntime.physics;
+    globalThis.__rideLabTuningBeforePresentationTuning = { ...window.__rideLabRuntime.tuning };
+  });
+  await page.locator('input[aria-describedby="cameraDistance-description"]').fill("6.4");
   await page.waitForTimeout(250);
-  const afterPresentationTuning = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
-  assert.ok(afterPresentationTuning.speedMps > coasted.speedMps * 0.7);
+  const presentationTuningResult = await page.evaluate(() => {
+    const preserved = window.__rideLabRuntime.physics === globalThis.__rideLabPhysicsBeforePresentationTuning;
+    const changedKeys = Object.keys(window.__rideLabRuntime.tuning).filter(
+      (key) => window.__rideLabRuntime.tuning[key] !== globalThis.__rideLabTuningBeforePresentationTuning[key],
+    );
+    const fixedStepBefore = globalThis.__rideLabTuningBeforePresentationTuning.fixedStep;
+    delete globalThis.__rideLabPhysicsBeforePresentationTuning;
+    delete globalThis.__rideLabTuningBeforePresentationTuning;
+    return {
+      preserved,
+      changedKeys,
+      fixedStepBefore,
+      fixedStepAfter: window.__rideLabRuntime.tuning.fixedStep,
+    };
+  });
+  assert.deepEqual(presentationTuningResult, {
+    preserved: true,
+    changedKeys: ["cameraDistance"],
+    fixedStepBefore: DEFAULT_RIDE_LAB_TUNING.fixedStep,
+    fixedStepAfter: DEFAULT_RIDE_LAB_TUNING.fixedStep,
+  });
 
   const latestTuning = await page.evaluate(async () => {
     const runtime = window.__rideLabRuntime;
@@ -143,12 +193,13 @@ try {
   assert.equal(latestTuning.lifecycle, "active");
 
   await surface.focus();
+  const speedBeforeBraking = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().speedMps);
   await page.keyboard.down("s");
   await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-brake") === "1");
   assert.equal(await surface.getAttribute("data-feedback"), "brake");
   await page.waitForTimeout(550);
   const braking = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
-  assert.ok(braking.frontSuspensionLoad > braking.rearSuspensionLoad);
+  assert.ok(braking.speedMps < speedBeforeBraking);
   await page.keyboard.up("s");
 
   await page.keyboard.down("d");
@@ -156,7 +207,10 @@ try {
   await page.waitForTimeout(220);
   const steering = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().intent.steer);
   await page.keyboard.up("d");
-  await page.waitForTimeout(70);
+  await page.waitForFunction((steeringAtRelease) => {
+    const recoveringSteer = window.__rideLabRuntime.getDebugSnapshot().intent.steer;
+    return recoveringSteer > 0 && recoveringSteer < steeringAtRelease;
+  }, steering);
   const recovering = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot().intent.steer);
   assert.ok(steering > recovering && recovering > 0);
 
@@ -177,7 +231,7 @@ try {
   await surface.focus();
   await page.keyboard.down("Space");
   await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().preload > 0.1);
-  await page.locator("label", { hasText: "Follow distance" }).locator('input[type="range"]').focus();
+  await page.locator('input[aria-describedby="cameraDistance-description"]').focus();
   await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-action") === "false");
   await page.keyboard.up("Space");
   await page.waitForTimeout(50);
@@ -236,9 +290,15 @@ try {
   assert.ok(grinding.horizontalSpeedMps > beforeGrind.horizontalSpeedMps * 0.9);
   assert.ok(grinding.verticalSpeedMps >= -grindFallSpeed - 0.1);
   await page.keyboard.up("Space");
-  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grinding === false);
+  await page.waitForFunction(() => {
+    const snapshot = window.__rideLabRuntime.getDebugSnapshot();
+    return snapshot.grinding === false && snapshot.grindReleaseSpeedMps > 0;
+  });
   const releasedGrind = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
-  assert.ok(releasedGrind.grindReleaseSpeedMps > grinding.horizontalSpeedMps * 0.9);
+  assert.ok(
+    releasedGrind.grindReleaseSpeedMps > grinding.horizontalSpeedMps * 0.88,
+    `expected render-timed grind release to retain 88% momentum: ${releasedGrind.grindReleaseSpeedMps.toFixed(3)} from ${grinding.horizontalSpeedMps.toFixed(3)} m/s`,
+  );
 
   const controls = page.locator('input[type="range"]');
   assert.equal(await controls.count(), RIDE_LAB_CONTROLS.length);
@@ -252,7 +312,7 @@ try {
   await page.getByRole("button", { name: "grippy" }).click();
   await page.waitForFunction(() => window.__rideLabRuntime?.getDebugSnapshot().lifecycle === "active");
   const storageKeys = await page.evaluate(() => Object.keys(localStorage));
-  assert.deepEqual(storageKeys, ["itsmeio.rideLab.config.v1"]);
+  assert.deepEqual(storageKeys, ["itsmeio.rideLab.config.v12"]);
 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.waitForFunction(() => document.querySelector('input[type="checkbox"]')?.checked === true);

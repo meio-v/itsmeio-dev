@@ -4,8 +4,9 @@ import { InputController } from "../_runtime/inputController";
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
 import { RideLabActionController } from "./RideLabActionController";
+import { RIDE_LAB_ARENA_HALF_SIZE } from "./rideLabArena";
 import { acquireAndConstruct } from "./rideLabLifecycle";
-import { normalizedSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
+import { cameraSpeedPresentation, normalizedSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
 
@@ -41,6 +42,7 @@ export class RideLabRuntime {
   private readonly cameraTarget = new THREE.Vector3();
   private readonly cameraDesired = new THREE.Vector3();
   private readonly cameraForward = new THREE.Vector3();
+  private readonly cameraRight = new THREE.Vector3();
   private readonly preloadOffset = new THREE.Vector3();
   private readonly inverseVehicleRootRotation = new THREE.Quaternion();
   private physics: JoltRidePhysics | null;
@@ -64,6 +66,11 @@ export class RideLabRuntime {
   private reconfigureQueue: Promise<void> = Promise.resolve();
   private resetPending = false;
   private presentationInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false };
+  private previousThrottle = 0;
+  private previousVisualSpeedMps = 0;
+  private throttleCameraPunch = 0;
+  private steerCameraOrbit = 0;
+  private speedLineBurst = 0;
 
   private constructor(options: RideLabRuntimeOptions, physics: JoltRidePhysics, context: WebGL2RenderingContext) {
     this.options = options;
@@ -261,6 +268,10 @@ export class RideLabRuntime {
         reset: sampled.reset,
         aerialAction: sampled.reset ? false : this.actionInput.read(),
       };
+      if (this.presentationInput.throttle > 0 && this.previousThrottle === 0 && !this.reducedMotion) {
+        this.throttleCameraPunch = 1;
+      }
+      this.previousThrottle = this.presentationInput.throttle;
       this.resetPending ||= sampled.reset;
       this.accumulator += delta;
       let steps = 0;
@@ -304,16 +315,42 @@ export class RideLabRuntime {
       .applyQuaternion(this.inverseVehicleRootRotation);
     this.vehicle.body.position.copy(this.preloadOffset);
     const speedRatio = normalizedSpeed(this.snapshot.speedMps, this.tuning.topSpeedMps);
+    const cameraPresentation = cameraSpeedPresentation(this.snapshot.speedMps, this.tuning);
+    if (this.previousVisualSpeedMps < this.tuning.speedLineThreshold && this.snapshot.speedMps >= this.tuning.speedLineThreshold && !this.reducedMotion) {
+      this.speedLineBurst = this.tuning.speedLineBurstOpacity;
+    }
+    this.previousVisualSpeedMps = this.snapshot.speedMps;
+    if (this.reducedMotion) {
+      this.throttleCameraPunch = 0;
+      this.steerCameraOrbit = 0;
+      this.speedLineBurst = 0;
+    }
     const forward = this.cameraForward.set(0, 0, 1).applyQuaternion(this.vehiclePose.quaternion).normalize();
+    const right = this.cameraRight.set(forward.z, 0, -forward.x).normalize();
     this.cameraTarget.set(position.x, position.y + 0.72, position.z).addScaledVector(forward, 1.6 + speedRatio * 1.5);
-    this.cameraDesired.set(position.x, position.y + this.tuning.cameraHeight, position.z).addScaledVector(forward, -this.tuning.cameraDistance - speedRatio * 1.1);
+    const cameraDistance = cameraPresentation.distance + this.throttleCameraPunch * this.tuning.cameraThrottlePunchDistance;
+    const orbitTarget = this.reducedMotion ? 0 : this.presentationInput.steer * this.tuning.cameraSteerOrbitRadians;
+    this.steerCameraOrbit = damp(this.steerCameraOrbit, orbitTarget, this.tuning.cameraSteerOrbitResponse, delta);
+    this.cameraDesired
+      .set(position.x, position.y + this.tuning.cameraHeight, position.z)
+      .addScaledVector(forward, -Math.cos(this.steerCameraOrbit) * cameraDistance)
+      .addScaledVector(right, Math.sin(this.steerCameraOrbit) * cameraDistance);
     const sharpness = this.reducedMotion ? 20 : this.tuning.cameraLag;
     this.camera.position.lerp(this.cameraDesired, 1 - Math.exp(-sharpness * delta));
     this.camera.lookAt(this.cameraTarget);
-    this.camera.fov = this.reducedMotion ? 52 : damp(this.camera.fov, 52 + speedRatio * this.tuning.speedFovGain, 4, delta);
+    const cameraFov = cameraPresentation.fov + this.throttleCameraPunch * this.tuning.cameraThrottlePunchFov;
+    this.camera.fov = this.reducedMotion ? 52 : damp(this.camera.fov, cameraFov, 4, delta);
     this.camera.updateProjectionMatrix();
-    const lines = this.reducedMotion ? 0 : speedLineStrength(this.snapshot.speedMps, this.snapshot.accelerationMps2, this.tuning);
+    const lines = this.reducedMotion ? 0 : Math.min(
+      this.tuning.speedLineIntensity * this.tuning.feedbackIntensity,
+      speedLineStrength(this.snapshot.speedMps, this.snapshot.accelerationMps2, this.tuning) + this.speedLineBurst,
+    );
     this.options.surface.style.setProperty("--ride-line-strength", lines.toFixed(3));
+    this.options.surface.dataset.cameraPunch = this.throttleCameraPunch.toFixed(3);
+    this.options.surface.dataset.steerCameraOrbit = this.steerCameraOrbit.toFixed(3);
+    this.options.surface.dataset.speedLineBurst = this.speedLineBurst.toFixed(3);
+    this.throttleCameraPunch = damp(this.throttleCameraPunch, 0, this.tuning.cameraThrottlePunchDecay, delta);
+    this.speedLineBurst = damp(this.speedLineBurst, 0, this.tuning.speedLineBurstDecay, delta);
     const transition = this.snapshot.movementTransition !== "idle" || this.snapshot.eventPulse === "reset" || this.snapshot.eventPulse === "ollie";
     const feedback = this.presentationInput.reset ? "reset"
       : this.presentationInput.aerialAction ? resolveHeldAerialFeedback(this.snapshot)
@@ -392,15 +429,21 @@ export class RideLabRuntime {
     key.position.set(-12, 18, -8);
     key.castShadow = true;
     this.scene.add(hemi, key);
-    const floor = new THREE.Mesh(new THREE.BoxGeometry(48, 1, 48), new THREE.MeshToonMaterial({ color: 0x24213b }));
+    const arenaSize = RIDE_LAB_ARENA_HALF_SIZE * 2;
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(arenaSize, 1, arenaSize), new THREE.MeshToonMaterial({ color: 0x24213b }));
     floor.position.y = -0.5;
     floor.receiveShadow = true;
     this.scene.add(floor);
-    const grid = new THREE.GridHelper(48, 48, 0xff4f9a, 0x4f4970);
+    const grid = new THREE.GridHelper(arenaSize, arenaSize, 0xff4f9a, 0x4f4970);
     grid.position.y = 0.01;
     this.scene.add(grid);
     const wallMaterial = new THREE.MeshToonMaterial({ color: 0x3b315b });
-    for (const [x, y, z, sx, sy, sz] of [[0, 5.5, 24, 48, 12, 0.7], [0, 5.5, -24, 48, 12, 0.7], [24, 5.5, 0, 0.7, 12, 48], [-24, 5.5, 0, 0.7, 12, 48]] as const) {
+    for (const [x, y, z, sx, sy, sz] of [
+      [0, 5.5, RIDE_LAB_ARENA_HALF_SIZE, arenaSize, 12, 0.7],
+      [0, 5.5, -RIDE_LAB_ARENA_HALF_SIZE, arenaSize, 12, 0.7],
+      [RIDE_LAB_ARENA_HALF_SIZE, 5.5, 0, 0.7, 12, arenaSize],
+      [-RIDE_LAB_ARENA_HALF_SIZE, 5.5, 0, 0.7, 12, arenaSize],
+    ] as const) {
       const wall = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), wallMaterial.clone());
       wall.position.set(x, y, z);
       this.scene.add(wall);

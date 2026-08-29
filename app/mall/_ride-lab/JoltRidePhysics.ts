@@ -1,6 +1,7 @@
 import initJolt from "jolt-physics/wasm-compat";
 
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveSteeringBlend, signedLeanRadians, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
+import { RIDE_LAB_ARENA_HALF_SIZE } from "./rideLabArena.ts";
+import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, highSpeedDriveScale, longitudinalSpeed, resolveSteeringBlend, signedLeanRadians, type AerialMechanicEvent, type AerialMechanicState } from "./rideLabModel.ts";
 import type { RideLabInput, RideLabSnapshot, ResolvedRideIntent } from "./rideLabTypes.ts";
 import type { RideLabTuning } from "./rideLabTuning.ts";
 
@@ -9,7 +10,36 @@ type JoltModule = Awaited<ReturnType<typeof initJolt>>;
 const NON_MOVING = 0;
 const MOVING = 1;
 const ZERO_INTENT: ResolvedRideIntent = { throttle: 0, brake: 0, steer: 0 };
-const ARENA_HALF_SIZE = 24;
+
+function uprightQuaternionFromForward(forwardX: number, forwardY: number, forwardZ: number) {
+  const forwardLength = Math.hypot(forwardX, forwardY, forwardZ) || 1;
+  const fx = forwardX / forwardLength;
+  const fy = forwardY / forwardLength;
+  const fz = forwardZ / forwardLength;
+  const projectedUpLength = Math.hypot(-fx * fy, 1 - fy * fy, -fz * fy) || 1;
+  const ux = -fx * fy / projectedUpLength;
+  const uy = (1 - fy * fy) / projectedUpLength;
+  const uz = -fz * fy / projectedUpLength;
+  const rx = uy * fz - uz * fy;
+  const ry = uz * fx - ux * fz;
+  const rz = ux * fy - uy * fx;
+  const trace = rx + uy + fz;
+  if (trace > 0) {
+    const scale = Math.sqrt(trace + 1) * 2;
+    return { x: (uz - fy) / scale, y: (fx - rz) / scale, z: (ry - ux) / scale, w: scale / 4 };
+  }
+  if (rx > uy && rx > fz) {
+    const scale = Math.sqrt(1 + rx - uy - fz) * 2;
+    return { x: scale / 4, y: (ux + ry) / scale, z: (fx + rz) / scale, w: (uz - fy) / scale };
+  }
+  if (uy > fz) {
+    const scale = Math.sqrt(1 + uy - rx - fz) * 2;
+    return { x: (ux + ry) / scale, y: scale / 4, z: (fy + uz) / scale, w: (fx - rz) / scale };
+  }
+  const scale = Math.sqrt(1 + fz - rx - uy) * 2;
+  return { x: (fx + rz) / scale, y: (fy + uz) / scale, z: scale / 4, w: (ry - ux) / scale };
+}
+const ARENA_HALF_SIZE = RIDE_LAB_ARENA_HALF_SIZE;
 const MIN_GRIND_TANGENTIAL_SPEED = 2;
 
 type GrindWall = { axis: "x" | "z"; sign: -1 | 1 };
@@ -63,6 +93,7 @@ export class JoltRidePhysics {
   private lastGrindTangentialVelocity = 0;
   private grindReleaseSpeedMps = 0;
   private lastInput: RideLabInput = { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false };
+  private steeringRecoverySign = 0;
   private disposed = false;
 
   private constructor(Jolt: JoltModule, tuning: RideLabTuning, releaseInterfaceLease: () => void) {
@@ -157,6 +188,8 @@ export class JoltRidePhysics {
 
   step(input: RideLabInput): RideLabSnapshot {
     if (this.disposed) throw new Error("Cannot step disposed Jolt ride physics.");
+    if (Math.abs(input.steer) >= 0.01) this.steeringRecoverySign = Math.sign(input.steer);
+    else if (Math.abs(this.intent.steer) >= 0.01) this.steeringRecoverySign = Math.sign(this.intent.steer);
     this.lastInput = { ...input };
     if (input.reset) this.reset();
     this.intent = advanceRideIntent(this.intent, input, this.tuning, this.tuning.fixedStep);
@@ -186,9 +219,16 @@ export class JoltRidePhysics {
     this.applyLowSpeedUprightAssist();
     const steering = resolveSteeringBlend(this.intent.steer, this.tuning.riderWeightShiftRatio);
     this.applyRiderWeightShift(steering.weightShift);
+    this.applyReleasedSteeringUprightAssist();
     const topSpeedFactor = clamp(1 - Math.max(0, this.previousSpeed - this.tuning.topSpeedMps) / 2, 0, 1);
+    const highSpeedDrive = highSpeedDriveScale(
+      Math.abs(this.previousSpeed),
+      this.tuning.highSpeedTorqueStartMps,
+      this.tuning.highSpeedTorqueEndMps,
+      this.tuning.highSpeedTorqueMultiplier,
+    );
     this.controller.SetDriverInput(
-      this.intent.throttle * topSpeedFactor,
+      this.intent.throttle * topSpeedFactor * highSpeedDrive,
       steering.handlebar,
       this.intent.brake,
       this.intent.brake > 0.84 ? (this.intent.brake - 0.84) / 0.16 : 0,
@@ -196,7 +236,12 @@ export class JoltRidePhysics {
     if (this.intent.throttle || this.intent.brake || this.intent.steer) {
       this.bodyInterface.ActivateBody(this.motorcycleBody.GetID());
     }
+    this.bodyInterface.GetPositionAndRotation(this.motorcycleBody.GetID(), this.positionOut, this.rotationOut);
+    const headingBeforeStep = this.currentHeadingRadians();
     this.jolt.Step(this.tuning.fixedStep, 1);
+    const groundedAfterStep = this.hasGroundContact();
+    this.applyTurnCurvatureAssist(this.intent.steer, headingBeforeStep, groundedAfterStep);
+    this.applySteeringRecoveryOvershootGuard(groundedAfterStep);
     if (aerialStep.grinding && grindWall) {
       this.bodyInterface.GetLinearAndAngularVelocity(this.motorcycleBody.GetID(), this.linearVelocityOut, this.angularVelocityOut);
       this.applyWallGrind(grindWall);
@@ -291,6 +336,7 @@ export class JoltRidePhysics {
     this.grindTangentialVelocity = 0;
     this.lastGrindTangentialVelocity = 0;
     this.grindReleaseSpeedMps = 0;
+    this.steeringRecoverySign = 0;
     this.previousSpeed = 0;
     this.wasGrounded = false;
   }
@@ -335,11 +381,11 @@ export class JoltRidePhysics {
   }
 
   private createArena() {
-    this.createStaticBox(0, -0.5, 0, 24, 0.5, 24, 0);
-    this.createStaticBox(0, 5.5, 24, 24, 6, 0.35, 0);
-    this.createStaticBox(0, 5.5, -24, 24, 6, 0.35, 0);
-    this.createStaticBox(24, 5.5, 0, 0.35, 6, 24, 0);
-    this.createStaticBox(-24, 5.5, 0, 0.35, 6, 24, 0);
+    this.createStaticBox(0, -0.5, 0, ARENA_HALF_SIZE, 0.5, ARENA_HALF_SIZE, 0);
+    this.createStaticBox(0, 5.5, ARENA_HALF_SIZE, ARENA_HALF_SIZE, 6, 0.35, 0);
+    this.createStaticBox(0, 5.5, -ARENA_HALF_SIZE, ARENA_HALF_SIZE, 6, 0.35, 0);
+    this.createStaticBox(ARENA_HALF_SIZE, 5.5, 0, 0.35, 6, ARENA_HALF_SIZE, 0);
+    this.createStaticBox(-ARENA_HALF_SIZE, 5.5, 0, 0.35, 6, ARENA_HALF_SIZE, 0);
     this.createStaticBox(7, 0.35, 9, 3.5, 0.22, 5, -0.2);
     this.createStaticBox(-9, 0.7, -6, 4, 0.22, 6, 0.3);
   }
@@ -417,13 +463,14 @@ export class JoltRidePhysics {
     return wheel;
   }
 
-  setScenario(scenario: "start" | "wall-grind") {
+  setScenario(scenario: "start" | "ramp" | "wall-grind") {
     if (scenario === "start") {
       this.reset();
       return;
     }
     this.reset();
-    const position = new this.Jolt.RVec3(ARENA_HALF_SIZE - 0.8, 3, 0);
+    const rampApproach = scenario === "ramp";
+    const position = new this.Jolt.RVec3(rampApproach ? 7 : ARENA_HALF_SIZE - 0.8, rampApproach ? 1.1 : 3, rampApproach ? 1.5 : 0);
     const rotation = new this.Jolt.Quat(0, 0, 0, 1);
     const velocity = new this.Jolt.Vec3(0, 0, 8);
     const zero = new this.Jolt.Vec3(0, 0, 0);
@@ -434,14 +481,14 @@ export class JoltRidePhysics {
     this.Jolt.destroy(zero);
     this.intent = ZERO_INTENT;
     this.aerialState = createAerialMechanicState();
-    this.aerialState = { ...this.aerialState, phase: "airborne" };
+    this.aerialState = { ...this.aerialState, phase: rampApproach ? "grounded" : "airborne" };
     this.aerialEvent = "idle";
     this.grinding = false;
     this.activeGrindWall = null;
     this.grindTangentialVelocity = 0;
     this.lastGrindTangentialVelocity = 0;
     this.grindReleaseSpeedMps = 0;
-    this.wasGrounded = false;
+    this.wasGrounded = rampApproach;
     this.previousSpeed = 8;
     this.snapshot();
   }
@@ -475,7 +522,7 @@ export class JoltRidePhysics {
       + this.angularVelocityOut.GetY() * forwardY
       + this.angularVelocityOut.GetZ() * forwardZ;
     const speedBlend = 1 - horizontalSpeed / assistSpeedLimit;
-    const torqueAmount = (-lean * this.tuning.leanSpring * 4 - angularAlongForward * this.tuning.leanDamping * 4)
+    const torqueAmount = (-lean * this.tuning.leanSpring * 6 - angularAlongForward * this.tuning.leanDamping * 6)
       * this.tuning.rideAssist * speedBlend;
     const torque = new this.Jolt.Vec3(forwardX * torqueAmount, forwardY * torqueAmount, forwardZ * torqueAmount);
     this.bodyInterface.AddTorque(this.motorcycleBody.GetID(), torque, this.Jolt.EActivation_Activate);
@@ -499,6 +546,24 @@ export class JoltRidePhysics {
     this.Jolt.destroy(torque);
   }
 
+  private applyReleasedSteeringUprightAssist() {
+    if (!this.wasGrounded || Math.abs(this.lastInput.steer) >= 0.01) return;
+    const bodyId = this.motorcycleBody.GetID();
+    this.bodyInterface.GetPositionAndRotation(bodyId, this.positionOut, this.rotationOut);
+    this.bodyInterface.GetLinearAndAngularVelocity(bodyId, this.linearVelocityOut, this.angularVelocityOut);
+    const { rotationX, rotationY, rotationZ, rotationW, forwardX, forwardY, forwardZ } = this.currentForwardAxis();
+    const lean = signedLeanRadians({ x: rotationX, y: rotationY, z: rotationZ, w: rotationW });
+    const angularAlongForward = this.angularVelocityOut.GetX() * forwardX
+      + this.angularVelocityOut.GetY() * forwardY
+      + this.angularVelocityOut.GetZ() * forwardZ;
+    const targetLean = this.intent.steer * this.tuning.maxLeanRadians;
+    const torqueAmount = ((targetLean - lean) * this.tuning.leanSpring * 8 - angularAlongForward * this.tuning.leanDamping * 28)
+      * this.tuning.rideAssist;
+    const torque = new this.Jolt.Vec3(forwardX * torqueAmount, forwardY * torqueAmount, forwardZ * torqueAmount);
+    this.bodyInterface.AddTorque(bodyId, torque, this.Jolt.EActivation_Activate);
+    this.Jolt.destroy(torque);
+  }
+
   private currentForwardAxis() {
     const rotationX = this.rotationOut.GetX();
     const rotationY = this.rotationOut.GetY();
@@ -513,6 +578,132 @@ export class JoltRidePhysics {
       forwardY: 2 * (rotationY * rotationZ - rotationW * rotationX),
       forwardZ: 1 - 2 * (rotationX * rotationX + rotationY * rotationY),
     };
+  }
+
+  private applySteeringRecoveryOvershootGuard(grounded: boolean) {
+    if (Math.abs(this.lastInput.steer) >= 0.01 || this.steeringRecoverySign === 0) return;
+    if (!grounded) {
+      this.steeringRecoverySign = 0;
+      return;
+    }
+    const bodyId = this.motorcycleBody.GetID();
+    this.bodyInterface.GetPositionAndRotation(bodyId, this.positionOut, this.rotationOut);
+    this.bodyInterface.GetLinearAndAngularVelocity(bodyId, this.linearVelocityOut, this.angularVelocityOut);
+    const { rotationX, rotationY, rotationZ, rotationW, forwardX, forwardY, forwardZ } = this.currentForwardAxis();
+    const lean = signedLeanRadians({ x: rotationX, y: rotationY, z: rotationZ, w: rotationW });
+    const angularAlongForward = this.angularVelocityOut.GetX() * forwardX
+      + this.angularVelocityOut.GetY() * forwardY
+      + this.angularVelocityOut.GetZ() * forwardZ;
+    if (lean * this.steeringRecoverySign >= 0) {
+      const settled = Math.abs(this.intent.steer) < 0.01
+        && Math.abs(lean) < 0.5 * Math.PI / 180
+        && Math.abs(angularAlongForward) < 0.01;
+      if (settled) this.steeringRecoverySign = 0;
+      return;
+    }
+
+    const angularVelocity = new this.Jolt.Vec3(
+      this.angularVelocityOut.GetX() - forwardX * angularAlongForward,
+      this.angularVelocityOut.GetY() - forwardY * angularAlongForward,
+      this.angularVelocityOut.GetZ() - forwardZ * angularAlongForward,
+    );
+    const upright = uprightQuaternionFromForward(forwardX, forwardY, forwardZ);
+    const rotation = new this.Jolt.Quat(upright.x, upright.y, upright.z, upright.w);
+    this.bodyInterface.SetPositionRotationAndVelocity(
+      bodyId,
+      this.positionOut,
+      rotation,
+      this.linearVelocityOut,
+      angularVelocity,
+    );
+    this.steeringRecoverySign = 0;
+    this.Jolt.destroy(rotation);
+    this.Jolt.destroy(angularVelocity);
+  }
+
+  private applyTurnCurvatureAssist(steer: number, headingBeforeStep: number, grounded: boolean) {
+    if (!grounded || this.tuning.turnAssist === 0) return;
+    const bodyId = this.motorcycleBody.GetID();
+    this.bodyInterface.GetPositionAndRotation(bodyId, this.positionOut, this.rotationOut);
+    this.bodyInterface.GetLinearAndAngularVelocity(bodyId, this.linearVelocityOut, this.angularVelocityOut);
+    const velocityX = this.linearVelocityOut.GetX();
+    const velocityZ = this.linearVelocityOut.GetZ();
+    const horizontalSpeed = Math.hypot(velocityX, velocityZ);
+    if (horizontalSpeed < 2) return;
+
+    if (Math.abs(steer) < 0.01) {
+      const yawDamping = Math.exp(-this.tuning.turnAssist * 3 * this.tuning.fixedStep);
+      const angularVelocity = new this.Jolt.Vec3(
+        this.angularVelocityOut.GetX(),
+        this.angularVelocityOut.GetY() * yawDamping,
+        this.angularVelocityOut.GetZ(),
+      );
+      this.bodyInterface.SetPositionRotationAndVelocity(
+        bodyId,
+        this.positionOut,
+        this.rotationOut,
+        this.linearVelocityOut,
+        angularVelocity,
+      );
+      this.Jolt.destroy(angularVelocity);
+      return;
+    }
+
+    const targetYawRate = -steer * Math.min(
+      horizontalSpeed / this.tuning.turnAssistRadiusMeters,
+      this.tuning.turnAssistMaxYawRate,
+    );
+    const naturalHeadingDelta = Math.atan2(
+      Math.sin(this.currentHeadingRadians() - headingBeforeStep),
+      Math.cos(this.currentHeadingRadians() - headingBeforeStep),
+    );
+    const minimumCurvatureDelta = targetYawRate * this.tuning.fixedStep;
+    const sameDirection = Math.sign(naturalHeadingDelta) === Math.sign(minimumCurvatureDelta);
+    const desiredHeadingDelta = sameDirection && Math.abs(naturalHeadingDelta) > Math.abs(minimumCurvatureDelta)
+      ? Math.sign(naturalHeadingDelta) * Math.min(
+        Math.abs(naturalHeadingDelta),
+        this.tuning.turnAssistMaxYawRate * this.tuning.fixedStep,
+      )
+      : minimumCurvatureDelta;
+    const blendedHeadingDelta = naturalHeadingDelta
+      + (desiredHeadingDelta - naturalHeadingDelta) * this.tuning.turnAssist;
+    const finalHeadingDelta = clamp(
+      blendedHeadingDelta,
+      -this.tuning.turnAssistMaxYawRate * this.tuning.fixedStep,
+      this.tuning.turnAssistMaxYawRate * this.tuning.fixedStep,
+    );
+    const headingCorrection = finalHeadingDelta - naturalHeadingDelta;
+    const cos = Math.cos(headingCorrection);
+    const sin = Math.sin(headingCorrection);
+    const velocity = new this.Jolt.Vec3(
+      velocityX * cos + velocityZ * sin,
+      this.linearVelocityOut.GetY(),
+      -velocityX * sin + velocityZ * cos,
+    );
+    const currentYawRate = this.angularVelocityOut.GetY();
+    const assistedYawRate = currentYawRate + (targetYawRate - currentYawRate) * this.tuning.turnAssist;
+    const angularVelocity = new this.Jolt.Vec3(
+      this.angularVelocityOut.GetX(),
+      clamp(assistedYawRate, -this.tuning.turnAssistMaxYawRate, this.tuning.turnAssistMaxYawRate),
+      this.angularVelocityOut.GetZ(),
+    );
+    const up = new this.Jolt.Vec3(0, 1, 0);
+    const yaw = this.Jolt.Quat.prototype.sRotation(up, headingCorrection);
+    const rotation = yaw.MulQuat(this.rotationOut);
+    this.bodyInterface.SetPositionRotationAndVelocity(bodyId, this.positionOut, rotation, velocity, angularVelocity);
+    this.Jolt.destroy(rotation);
+    this.Jolt.destroy(yaw);
+    this.Jolt.destroy(up);
+    this.Jolt.destroy(velocity);
+    this.Jolt.destroy(angularVelocity);
+  }
+
+  private currentHeadingRadians() {
+    const x = this.rotationOut.GetX();
+    const y = this.rotationOut.GetY();
+    const z = this.rotationOut.GetZ();
+    const w = this.rotationOut.GetW();
+    return Math.atan2(2 * (w * y + x * z), 1 - 2 * (y * y + x * x));
   }
 
   private findGrindWall(actionHeld: boolean): GrindWall | null {
@@ -543,6 +734,11 @@ export class JoltRidePhysics {
 
   private isGroundContact(wheel: InstanceType<JoltModule["Wheel"]>) {
     return wheel.HasContact() && wheel.GetContactNormal().GetY() > 0.5;
+  }
+
+  private hasGroundContact() {
+    return this.isGroundContact(this.constraint.GetWheel(0))
+      || this.isGroundContact(this.constraint.GetWheel(1));
   }
 
   private applyWallGrind(wall: GrindWall) {

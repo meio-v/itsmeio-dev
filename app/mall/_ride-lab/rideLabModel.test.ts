@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { acquireAndConstruct } from "./rideLabLifecycle.ts";
-import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveHeldAerialFeedback, resolveSteeringBlend, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
+import { advanceAerialMechanic, advanceRideIntent, cameraSpeedPresentation, createAerialMechanicState, highSpeedDriveScale, longitudinalSpeed, resolveHeldAerialFeedback, resolveSteeringBlend, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
 test("throttle acknowledges immediately but takes time to reach full drive", () => {
@@ -15,24 +15,62 @@ test("throttle acknowledges immediately but takes time to reach full drive", () 
   assert.ok(next.throttle < 0.1);
 });
 
-test("released steering physically recovers over multiple fixed steps", () => {
-  const next = advanceRideIntent(
-    { throttle: 0, brake: 0, steer: 1 },
-    { throttle: 0, brake: 0, steer: 0, reset: false, aerialAction: false },
+test("drive stays full through 40 km/h then progressively falls to forty-five percent at 80", () => {
+  const start = 40 / 3.6;
+  const end = 80 / 3.6;
+  assert.equal(highSpeedDriveScale(39 / 3.6, start, end, 0.45), 1);
+  assert.ok(Math.abs(highSpeedDriveScale(60 / 3.6, start, end, 0.45) - 0.725) < 1e-12);
+  assert.equal(highSpeedDriveScale(80 / 3.6, start, end, 0.45), 0.45);
+});
+
+test("released steering slowly recentres and can be interrupted by fresh input", () => {
+  let intent = { throttle: 1, brake: 0, steer: 1 };
+  const released = { throttle: 1, brake: 0, steer: 0, reset: false, aerialAction: false };
+
+  for (let step = 0; step < 30; step += 1) {
+    intent = advanceRideIntent(intent, released, DEFAULT_RIDE_LAB_TUNING, 1 / 60);
+  }
+
+  assert.ok(intent.steer > 0.4, "weight shift should still be visibly unwinding after half a second");
+  assert.ok(intent.steer < 0.6, "weight shift should begin recovering during the first half second");
+  assert.equal(intent.throttle, 1, "steering recovery must not erase forward intent");
+
+  const reapplied = advanceRideIntent(
+    intent,
+    { ...released, steer: 1 },
     DEFAULT_RIDE_LAB_TUNING,
     1 / 60,
   );
-  assert.ok(next.steer > 0.8);
-  assert.ok(next.steer < 1);
+  assert.ok(reapplied.steer > intent.steer, "fresh steering should immediately interrupt recovery");
+
+  for (let step = 0; step < 90; step += 1) {
+    intent = advanceRideIntent(intent, released, DEFAULT_RIDE_LAB_TUNING, 1 / 60);
+  }
+  assert.equal(intent.steer, 0);
 });
 
-test("speed lines stay off below 100 km/h and acceleration leads once above it", () => {
-  assert.equal(speedLineStrength(99 / 3.6, 20, DEFAULT_RIDE_LAB_TUNING), 0);
-  assert.ok(speedLineStrength(100 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING) > 0);
-  const steady = speedLineStrength(105 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING);
-  const accelerating = speedLineStrength(105 / 3.6, 4, DEFAULT_RIDE_LAB_TUNING);
-  assert.ok(steady > 0);
+test("speed lines fade in subtly at 40 km/h and acceleration leads above it", () => {
+  assert.equal(speedLineStrength(39 / 3.6, 20, DEFAULT_RIDE_LAB_TUNING), 0);
+  const onset = speedLineStrength(40 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING);
+  assert.ok(onset > 0);
+  assert.ok(onset <= 0.05);
+  const steady = speedLineStrength(80 / 3.6, 0, DEFAULT_RIDE_LAB_TUNING);
+  const accelerating = speedLineStrength(80 / 3.6, 4, DEFAULT_RIDE_LAB_TUNING);
+  assert.ok(steady > onset);
   assert.ok(accelerating > steady);
+});
+
+test("camera reaches its normal composition by 30 km/h before high-speed escalation", () => {
+  const rest = cameraSpeedPresentation(0, DEFAULT_RIDE_LAB_TUNING);
+  const midway = cameraSpeedPresentation(15 / 3.6, DEFAULT_RIDE_LAB_TUNING);
+  const cruise = cameraSpeedPresentation(30 / 3.6, DEFAULT_RIDE_LAB_TUNING);
+  const top = cameraSpeedPresentation(DEFAULT_RIDE_LAB_TUNING.topSpeedMps, DEFAULT_RIDE_LAB_TUNING);
+  assert.deepEqual(rest, { distance: 4.4, fov: 48 });
+  assert.ok(midway.distance > rest.distance && midway.distance < cruise.distance);
+  assert.ok(midway.fov > rest.fov && midway.fov < cruise.fov);
+  assert.deepEqual(cruise, { distance: 5.6, fov: 52 });
+  assert.ok(Math.abs(top.distance - 6.7) < 1e-12);
+  assert.equal(top.fov, 65);
 });
 
 test("turn intent blends eighty percent rider weight shift with twenty percent handlebar", () => {

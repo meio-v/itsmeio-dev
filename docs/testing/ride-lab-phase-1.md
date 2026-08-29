@@ -17,7 +17,8 @@
   presets, sanitation, and import/export format.
 - `RideLabExperience.tsx` owns the development UI, categorized controls,
   tooltips/descriptions, telemetry, reduced-motion override, and the single
-  `itsmeio.rideLab.config.v1` storage key.
+  `itsmeio.rideLab.config.v12` storage key. Older configuration keys are removed
+  so obsolete handling defaults cannot silently override the current lab.
 - The existing Rapier `/mall` runtime, authored scene, copy, and route gate are
   unchanged. `proxy.ts` adds only the independent nested-lab boundary.
 
