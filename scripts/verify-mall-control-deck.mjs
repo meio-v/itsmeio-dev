@@ -25,7 +25,7 @@ assert.doesNotMatch(component, /memory-card|memoryCardSticker/);
 
 assert.match(styles, /\.controlHardware \{[^}]*grid-template-columns: minmax\(8rem, 24%\) minmax\(0, 1fr\)/);
 assert.match(styles, /\.controlDeckMount \{[^}]*aspect-ratio: 148 \/ 62/);
-assert.match(styles, /\.controlDeckMount \{[^}]*rotateX\(-7deg\)/);
+assert.match(styles, /\.controlDeckMount \{[^}]*rotateX\(-4deg\) scale\(0\.99\)/);
 assert.match(styles, /\.controlDeckMount \{[^}]*background: transparent/);
 assert.doesNotMatch(styles, /\.controlDeckMount \{[^}]*clip-path:/);
 assert.match(styles, /\.screenGlassTexture \{[^}]*opacity: 0\.18/);
