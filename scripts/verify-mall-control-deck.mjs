@@ -11,10 +11,13 @@ assert.match(component, /src="\/mall\/textures\/coin-door\.png"/);
 assert.match(component, /className=\{styles\.coinUnit\}/);
 assert.match(component, /aria-label="Add token"/);
 assert.match(component, /dispatch\(\{ type: "insert-token" \}\)/);
+assert.match(component, /state\.runtimeStatus === "ready" && showAttractControls && !state\.selectedPoi/);
 assert.match(component, /<b>FREE<\/b>/);
 assert.match(component, /<small>1 PLAY<\/small>/);
 assert.match(component, /className=\{styles\.controlDeckMount\}/);
 assert.match(component, /className=\{styles\.serviceRail\}/);
+assert.match(component, /id="ride-controls-help" className=\{styles\.visuallyHidden\}/);
+assert.doesNotMatch(component, /id="ride-controls-help" className=\{styles\.controlPlate\}/);
 assert.match(component, /DO NOT SIT ON CABINET \/ 遊技中の飲食はご遠慮ください/);
 assert.doesNotMatch(component, /coinDoorBezel|coinAperture|coinReturnButton/);
 
@@ -26,6 +29,8 @@ assert.match(styles, /data-control-mode="attract"[^\n]*\.coinUnit[^\n]*coinSlotB
 assert.match(styles, /data-control-mode="driving"[^\n]*\.coinDoorAssembly[^\n]*coinHardwareAccepted/);
 assert.match(styles, /prefers-reduced-motion:[\s\S]*\.coinDoorAssembly,[\s\S]*animation: none/);
 assert.match(styles, /@media \(max-width: 760px\)[\s\S]*\.controlPlate \{ display: none; \}/);
+assert.match(styles, /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*\.pauseButton[\s\S]*min-height: 2\.75rem/);
+assert.match(styles, /@media \(max-width: 430px\)[\s\S]*\.hardwareLabels \{ display: none; \}/);
 
 assert.equal(coinDoor.subarray(1, 4).toString(), "PNG");
 assert.equal(coinDoor.readUInt32BE(16), 800);

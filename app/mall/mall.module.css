@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Graffiti Xenoa";
+  src: url("/mall/fonts/graffiti-xenoa-regular.otf") format("opentype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 400;
+}
+
 .page {
   --ink: #14110f;
   --paper: #f0e9d8;
@@ -59,7 +67,8 @@
 .heroTone { position: absolute; top: clamp(1.9rem, 6vw, 5rem); right: 0; width: 44%; height: clamp(7.5rem, 16vw, 15rem); clip-path: polygon(6% 8%, 100% 0, 100% 100%, 0 92%); pointer-events: none; }
 .heroPolygon { background: var(--cobalt); }
 .heroTone { background-image: radial-gradient(circle, rgb(20 17 15 / 42%) 1.4px, transparent 1.7px); background-size: 1rem 1rem; clip-path: polygon(46% 4%, 100% 0, 100% 100%, 20% 96%); }
-.sectionNumber { position: absolute; z-index: 5; top: clamp(0.65rem, 2vw, 1.9rem); left: clamp(0.5rem, 2vw, 2.5rem); color: var(--acid); font: 400 clamp(4rem, 7vw, 7rem)/0.8 "Anton", Impact, sans-serif; letter-spacing: -0.04em; paint-order: stroke fill; pointer-events: none; transform: rotate(-7deg); -webkit-text-stroke: 0.48rem var(--ink); }
+.sectionNumber { position: absolute; z-index: 5; top: clamp(0.65rem, 2vw, 1.9rem); left: clamp(0.5rem, 2vw, 2.5rem); display: inline-block; isolation: isolate; color: var(--acid); font: 400 clamp(4rem, 7vw, 7rem)/0.8 "Graffiti Xenoa", "Anton", Impact, sans-serif; font-kerning: none; letter-spacing: 0.12em; paint-order: stroke fill; pointer-events: none; transform: rotate(-7deg); -webkit-text-stroke: 0.42rem var(--ink); }
+.sectionNumber::before { position: absolute; z-index: -1; inset: 0; color: var(--ink); content: attr(data-number); transform: translate(0.14em, 0.13em); -webkit-text-stroke-color: var(--ink); }
 .wordmark { position: relative; z-index: 1; margin: 0 0 0 clamp(2.5rem, 7vw, 7.5rem); padding-left: 0.12em; font-family: "Redaction 20", Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; line-height: 0.84; }
 .wordmark span { display: block; font-size: clamp(4rem, 12.5vw, 12.25rem); }
 .wordmark span:last-child { margin-left: clamp(1.5rem, 9vw, 11.25rem); }
@@ -117,9 +126,9 @@
 .cabinetMarquee small { font-family: var(--font-japanese); }
 .cabinetStatusBar { position: relative; z-index: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1.15rem; padding: 0.7rem 1rem; color: var(--paper); background: var(--ink); border-bottom: 4px solid var(--acid); font: 400 clamp(0.76rem, 1.3vw, 1rem) var(--font-system); letter-spacing: 0.1em; }
 .cabinetStatusBar > div { display: flex; align-items: center; gap: 0.85rem; }
-.rideStatus { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.72rem; }
+.rideStatus { display: inline-flex; align-items: center; gap: 0.5rem; margin: 0; font-size: 0.8125rem; }
 .rideStatus > span { width: 0.68rem; height: 0.68rem; background: var(--acid); animation: statusBlink 2s steps(1) infinite; }
-.pauseButton { min-height: 2.1rem; padding: 0.45rem 1rem; color: var(--ink); background: var(--paper); border: 0; font: 400 0.72rem var(--font-system); cursor: pointer; }
+.pauseButton { min-height: 2.1rem; padding: 0.45rem 1rem; color: var(--ink); background: var(--paper); border: 0; font: 400 0.8125rem var(--font-system); cursor: pointer; }
 .cabinetScreenRow { position: relative; z-index: 2; display: grid; grid-template-columns: clamp(1.15rem, 2.2vw, 2.1rem) minmax(0, 1fr) clamp(1.15rem, 2.2vw, 2.1rem); }
 .cabinetSidePanel { position: relative; min-width: 0; overflow: hidden; background: repeating-linear-gradient(to bottom, var(--acid) 0 3px, var(--ink) 3px 1.35rem); }
 .cabinetSideLeft { border-right: 3px solid var(--acid); }
@@ -351,7 +360,10 @@
   .kioskHeading { align-items: flex-start; flex-direction: column; }
   .dialogHeader { align-items: flex-start; }
 }
-@media (hover: none) and (pointer: coarse) { :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) { display: flex; } }
+@media (hover: none) and (pointer: coarse) {
+  .pauseButton { min-width: 2.75rem; min-height: 2.75rem; }
+  :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) { display: flex; }
+}
 @media (max-width: 760px) and (hover: none) and (pointer: coarse) { :global(.mall-ride-surface[data-control-mode="driving"] .mall-touch-controls) { top: 5.5rem; bottom: auto; } }
 @media (max-width: 430px) {
   .navLink { min-height: 6.7rem; }
@@ -366,7 +378,7 @@
   .controlHardware { grid-template-columns: minmax(5.5rem, 24%) minmax(0, 1fr); gap: 0.45rem; }
   .controlDeckArt { opacity: 0.9; }
   .serviceRail { padding-right: 0.25rem; padding-left: 0.25rem; }
-  .hardwareLabels { overflow: hidden; font-size: 0.38rem; text-overflow: ellipsis; }
+  .hardwareLabels { display: none; }
   .kiosk { padding-right: 0.65rem; padding-left: 0.65rem; }
   .kioskScreen { margin-left: 0.7rem; padding: 1.15rem; }
   .kioskHeading,

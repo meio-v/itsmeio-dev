@@ -208,7 +208,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
       <section className={styles.hero} aria-labelledby="mall-heading">
         <span className={styles.heroPolygon} aria-hidden="true" />
         <span className={styles.heroTone} aria-hidden="true" />
-        <span className={styles.sectionNumber} aria-hidden="true">01</span>
+        <span className={styles.sectionNumber} data-number="01" aria-hidden="true">01</span>
         <h1 id="mall-heading" className={styles.wordmark}>
           <span>It&apos;s Meio.</span>
           <span>(The)<b>Dev</b></span>
@@ -251,7 +251,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
       </div>
 
       <section className={styles.rideSection} aria-label="Playable mall wing">
-        <span className={`${styles.sectionNumber} ${styles.rideNumber}`} aria-hidden="true">02</span>
+        <span className={`${styles.sectionNumber} ${styles.rideNumber}`} data-number="02" aria-hidden="true">02</span>
         <Image
           className={`${styles.rideSticker} ${styles.mopedSticker}`}
           src="/mall/stickers/moped.png"
@@ -332,7 +332,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
                     onPortReady={setScenePort}
                   />
                   <span className={`${styles.cabinetTexture} ${styles.screenGlassTexture}`} aria-hidden="true" />
-                  {state.runtimeStatus === "ready" && !state.selectedPoi && (
+                  {state.runtimeStatus === "ready" && showAttractControls && !state.selectedPoi && (
                     <span className={styles.insertCoin} aria-hidden="true">Insert coin</span>
                   )}
                 </div>
@@ -383,8 +383,13 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
                       />
                     </div>
                   </div>
+                  <p id="ride-controls-help" className={styles.visuallyHidden}>
+                    Activate the coin slot to start the ride. Use the arrow keys or WASD to steer,
+                    S or the down arrow to brake, R to reset, and Tab or Escape to exit. On a
+                    touchscreen, ride controls appear over the game screen.
+                  </p>
                   <div className={styles.serviceRail}>
-                    <p id="ride-controls-help" className={styles.controlPlate}>
+                    <p className={styles.controlPlate}>
                       <span><b>← → / WASD</b> — STEER</span>
                       <i aria-hidden="true">·</i>
                       <span><b>S / ↓</b> — BRAKE</span>
@@ -405,7 +410,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
       </section>
 
       <section id="currently-playing" className={styles.kiosk} tabIndex={-1} aria-labelledby="currently-playing-title">
-        <span className={`${styles.sectionNumber} ${styles.kioskNumber}`} aria-hidden="true">03</span>
+        <span className={`${styles.sectionNumber} ${styles.kioskNumber}`} data-number="03" aria-hidden="true">03</span>
         <div className={styles.kioskInner}>
           <div className={styles.kioskServiceStrip} aria-hidden="true"><span>03 / POSTER WALL</span><span>CABINET 01</span></div>
           <div className={styles.kioskScreenStage}>
