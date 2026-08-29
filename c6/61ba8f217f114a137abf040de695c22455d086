@@ -1,0 +1,22 @@
+app/mall/_ride-lab/rideLabVehicleVisual.ts
+  s_fc8a0c8160e8ba::t_ecf063024d6d44 491,493
+app/mall/_ride-lab/rideLabVehicleVisual.test.ts
+  s_fc8a0c8160e8ba::t_ecf063024d6d44 4,17-20
+  s_fc8a0c8160e8ba::t_c3861cea628296 21-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c661ba8f217f114a137abf040de695c22455d086",
+  "prompts": {},
+  "sessions": {
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
