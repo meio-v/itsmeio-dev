@@ -1,0 +1,29 @@
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_0e8363ebb261b2 94-97,106-107,111-113,136-143,150-152,165,180-182,205,237,357-361
+  s_918a32a48b13b9::t_ae2aba492b01bb 163-164
+scripts/verify-mall-control-deck.mjs
+  s_918a32a48b13b9::t_ef854f4b467a67 24,32-37,50
+  s_918a32a48b13b9::t_ae2aba492b01bb 28-29
+  s_918a32a48b13b9::t_0e8363ebb261b2 7,18,31
+  s_918a32a48b13b9::t_3f9da25f37be6d 30
+app/mall/_components/MallExperience.tsx
+  s_918a32a48b13b9::t_0e8363ebb261b2 378
+docs/assets/mall-asset-provenance.md
+  s_918a32a48b13b9::t_0e8363ebb261b2 33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "ac2a9665395b0b727dad725c268a26dbb2020d3a",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
