@@ -4,6 +4,7 @@ import { InputController } from "../_runtime/inputController";
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
 import { RideLabActionController } from "./RideLabActionController";
+import { acquireAndConstruct } from "./rideLabLifecycle";
 import { normalizedSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
@@ -105,8 +106,10 @@ export class RideLabRuntime {
     const started = performance.now();
     const context = options.canvas.getContext("webgl2", { antialias: true, powerPreference: "high-performance" });
     if (!context) throw new Error("rideLab requires WebGL 2.");
-    const physics = await JoltRidePhysics.create(options.tuning);
-    const runtime = new RideLabRuntime(options, physics, context);
+    const runtime = await acquireAndConstruct(
+      () => JoltRidePhysics.create(options.tuning),
+      (physics) => new RideLabRuntime(options, physics, context),
+    );
     runtime.startTime = started;
     runtime.startupMs = performance.now() - started;
     return runtime;
@@ -159,12 +162,13 @@ export class RideLabRuntime {
 
   async reconfigure(tuning: RideLabTuning) {
     if (this.disposed) return;
-    if (!requiresRideLabPhysicsRebuild(this.tuning, tuning)) {
+    const generation = ++this.reconfigureGeneration;
+    if (this.physics && !requiresRideLabPhysicsRebuild(this.tuning, tuning)) {
       this.tuning = tuning;
+      if (this.lifecycle === "loading") this.resume();
       this.publishSnapshot(performance.now(), true);
       return;
     }
-    const generation = ++this.reconfigureGeneration;
     this.setLifecycle("loading");
     this.input.setEnabled(false);
     this.actionInput.setEnabled(false);

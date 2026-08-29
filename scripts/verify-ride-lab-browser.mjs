@@ -122,6 +122,24 @@ try {
   const afterPresentationTuning = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.ok(afterPresentationTuning.speedMps > coasted.speedMps * 0.7);
 
+  const latestTuning = await page.evaluate(async () => {
+    const runtime = window.__rideLabRuntime;
+    const initial = { ...runtime.tuning };
+    const stale = runtime.reconfigure({ ...initial, massKg: initial.massKg + 1 });
+    const latest = runtime.reconfigure({ ...initial, cameraDistance: initial.cameraDistance + 0.1 });
+    await Promise.all([stale, latest]);
+    return {
+      massKg: runtime.tuning.massKg,
+      cameraDistance: runtime.tuning.cameraDistance,
+      expectedMassKg: initial.massKg,
+      expectedCameraDistance: initial.cameraDistance + 0.1,
+      lifecycle: runtime.getDebugSnapshot().lifecycle,
+    };
+  });
+  assert.equal(latestTuning.massKg, latestTuning.expectedMassKg);
+  assert.equal(latestTuning.cameraDistance, latestTuning.expectedCameraDistance);
+  assert.equal(latestTuning.lifecycle, "active");
+
   await surface.focus();
   await page.keyboard.down("s");
   await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-accepted-brake") === "1");

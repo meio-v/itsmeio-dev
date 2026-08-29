@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { acquireAndConstruct } from "./rideLabLifecycle.ts";
 import { advanceAerialMechanic, advanceRideIntent, createAerialMechanicState, longitudinalSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, resolveTouchSteer, retainTransitionPulse, signedLeanRadians, speedLineStrength } from "./rideLabModel.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "./rideLabTuning.ts";
 
@@ -66,6 +67,19 @@ test("suspension load communicates longitudinal pitch without adding sideways ro
 test("blocked airborne input does not claim hover feedback", () => {
   assert.equal(resolveHeldAerialFeedback({ grounded: false, grinding: false, aerialPhase: "airborne" }), "idle");
   assert.equal(resolveHeldAerialFeedback({ grounded: false, grinding: false, aerialPhase: "hover" }), "hover");
+});
+
+test("failed runtime construction releases its acquired physics lease", async () => {
+  let disposeCalls = 0;
+  const failure = new Error("renderer construction failed");
+  await assert.rejects(
+    acquireAndConstruct(
+      async () => ({ dispose: () => { disposeCalls += 1; } }),
+      () => { throw failure; },
+    ),
+    failure,
+  );
+  assert.equal(disposeCalls, 1);
 });
 
 test("held ground action stores preload until release produces a bounded ollie", () => {
