@@ -19,10 +19,6 @@ const cuts = {
     left: 490, top: 24, width: 318, height: 340,
     mask: '<ellipse cx="160" cy="165" rx="151" ry="151" />',
   },
-  "memory-card": {
-    left: 835, top: 8, width: 326, height: 462,
-    mask: "M55 15 280 30 310 365 240 440 70 440 22 400 15 315 25 65Z",
-  },
   "food-court-receipt": {
     left: 1134, top: 2, width: 384, height: 552,
     mask: "M40 10 360 50 335 525 25 515Z",

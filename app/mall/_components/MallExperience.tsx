@@ -375,7 +375,7 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
                     <div className={styles.controlDeckMount} aria-hidden="true">
                       <Image
                         className={styles.controlDeckArt}
-                        src="/mall/textures/control-deck.png"
+                        src="/mall/textures/control-deck-panel.png"
                         alt=""
                         width={1480}
                         height={620}
@@ -414,15 +414,6 @@ export function MallExperience({ content }: { content: CurrentlyPlayingContentTy
         <div className={styles.kioskInner}>
           <div className={styles.kioskServiceStrip} aria-hidden="true"><span>03 / POSTER WALL</span><span>CABINET 01</span></div>
           <div className={styles.kioskScreenStage}>
-            <Image
-              className={`${styles.pageSticker} ${styles.memoryCardSticker}`}
-              src="/mall/stickers/doodles/memory-card.png"
-              alt=""
-              width={299}
-              height={443}
-              aria-hidden="true"
-              draggable={false}
-            />
             <Image
               className={styles.playstationSticker}
               src="/mall/stickers/playstation.png"
