@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "lint:ride-lab": "eslint app/mall/ride-lab app/mall/_ride-lab lib/ride-lab-feature.ts lib/ride-lab-feature.test.ts proxy.ts scripts/verify-ride-lab-browser.mjs scripts/verify-ride-lab-production-gate.mjs scripts/verify-ride-lab-evidence.mjs",
+    "lint:ride-lab": "eslint app/mall/ride-lab app/mall/_ride-lab lib/ride-lab-feature.ts lib/ride-lab-feature.test.ts proxy.ts scripts/verify-ride-lab-assets.mjs scripts/verify-ride-lab-browser.mjs scripts/verify-ride-lab-production-gate.mjs scripts/verify-ride-lab-evidence.mjs",
     "test:mall": "node --experimental-strip-types --test --test-reporter=tap lib/currently-playing.test.ts lib/mall-feature.test.ts app/mall/_lib/experience-state.test.ts app/mall/_runtime/ridePhysics.test.ts",
-    "test:ride-lab": "node --experimental-strip-types --test --test-reporter=tap lib/ride-lab-feature.test.ts app/mall/_ride-lab/rideLabModel.test.ts app/mall/_ride-lab/rideLabTuning.test.ts app/mall/_ride-lab/JoltRidePhysics.test.ts",
+    "test:ride-lab": "node --experimental-strip-types --test --test-reporter=tap lib/ride-lab-feature.test.ts app/mall/_ride-lab/rideLabModel.test.ts app/mall/_ride-lab/rideLabTuning.test.ts app/mall/_ride-lab/rideLabVehicleVisual.test.ts app/mall/_ride-lab/JoltRidePhysics.test.ts",
+    "verify:ride-lab:assets": "node scripts/verify-ride-lab-assets.mjs",
     "verify:ride-lab": "node scripts/verify-ride-lab-browser.mjs",
     "verify:ride-lab:production": "node scripts/verify-ride-lab-production-gate.mjs",
     "typecheck": "tsc --noEmit"
