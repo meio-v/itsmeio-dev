@@ -1,0 +1,61 @@
+app/mall/_components/MallExperience.tsx
+  s_918a32a48b13b9::t_c22a735c01eba6 81-83,159-161
+app/mall/_runtime/vehicleVisual.ts
+  s_918a32a48b13b9::t_c22a735c01eba6 216-217
+app/mall/_lib/experience-state.ts
+  s_918a32a48b13b9::t_c22a735c01eba6 3-7,20,52-65
+app/mall/mall.module.css
+  s_918a32a48b13b9::t_c22a735c01eba6 340
+scripts/verify-mall-restyle.mjs
+  s_918a32a48b13b9::t_1cb1221775b83f 5-6,9,11-13
+app/mall/_runtime/MallRideCanvas.tsx
+  s_918a32a48b13b9::t_c22a735c01eba6 23-26,58,69,77-79,82
+app/mall/_runtime/MallRideRuntime.ts
+  s_918a32a48b13b9::t_c22a735c01eba6 11,31,35-40,54,62-66,81-88,94,118,129,133-136,141,150,162,168,182-184,199,201-204,208-209,211-215,219-229,233-238,241-244,250-253,256,258,261,266-267,287-295,302-313,322,326-327,336,344-360,370-371,375-379,384-389,404-409,413,428,483-484,486-500
+app/mall/_runtime/art/mallMaterials.ts
+  s_918a32a48b13b9::t_c22a735c01eba6 108-111
+app/mall/_lib/experience-state.test.ts
+  s_918a32a48b13b9::t_c22a735c01eba6 101-119
+app/mall/_components/MallSceneSlot.tsx
+  s_918a32a48b13b9::t_3885b759254114 6,96-99,113,128-137,165-170,174,179
+app/mall/_lib/scene-contract.ts
+  s_918a32a48b13b9::t_e4a79539e4929d 7
+app/mall/_runtime/ridePhysics.test.ts
+  s_918a32a48b13b9::t_f35cad5cabfd54 1-128
+app/mall/_runtime/ridePhysics.ts
+  s_918a32a48b13b9::t_b6a1ce2d9fb58d 1-220
+app/mall/_runtime/rideTuning.ts
+  s_918a32a48b13b9::t_7434681b25f217 35
+docs/testing/mall-hardening.md
+  s_918a32a48b13b9::t_ffb36af3496bf4 1-77
+package-lock.json
+  s_918a32a48b13b9::t_6f4db25d8a7ccc 34,4173-4187,7063-7094
+package.json
+  s_918a32a48b13b9::t_a5511ec5cdf5a4 10,37
+scripts/mall-server.mjs
+  s_918a32a48b13b9::t_8aedfb90ca79ac 1-69
+scripts/run-mall-check.mjs
+  s_918a32a48b13b9::t_fdd00b7fbdf2a0 1-61
+scripts/verify-mall-browser.mjs
+  s_918a32a48b13b9::t_9eb82736bb57bf 1-292
+scripts/verify-mall-performance.mjs
+  s_918a32a48b13b9::t_0cee9b0872fc32 1-53
+scripts/verify-mall-scope.mjs
+  s_918a32a48b13b9::t_10ce21fdb48ddc 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "a5c8d688056eca1dcd49eb874daf6831430e5767",
+  "prompts": {},
+  "sessions": {
+    "s_918a32a48b13b9": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0427f-95af-7150-a338-e42aa89f069c",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
