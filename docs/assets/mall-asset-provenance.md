@@ -4,6 +4,12 @@ Audit date: 2026-08-28
 
 ## Runtime policy
 
+Production rider and scooter authoring follows
+[ADR 0001](../adr/0001-blender-mcp-native-asset-authoring.md): the reviewed
+Blender scene edited through Blender MCP is the source of truth, while runtime
+code owns bounded presentation and validation rather than primary modeling or
+the canonical seated pose.
+
 The mall now ships a curated 1.4 MB GLB set under `public/mall/assets`. Third-
 party meshes are geometry donors: source palettes, PBR textures, unused clips,
 and pack-level scene assembly are not shipped. Runtime code supplies the toon
