@@ -100,6 +100,48 @@ test("scooter palette normalizes exported and runtime mesh names", () => {
   assert.equal(shouldOutlineScooterMesh("petitelumiererouge002"), false);
 });
 
+test("Blender-authored steering package keeps exact runtime material roles", () => {
+  const productionRoles = [
+    ["SM_Scooter_SteeringNeck_LowerAdapter", "cream"],
+    ["SM_Scooter_SteeringNeck_RootGasket", "ink"],
+    ["SM_Scooter_SteeringNeck_FixedBearingHousing", "cream"],
+    ["SM_Scooter_SteeringNeck_RotatingStem", "ink"],
+    ["SM_Scooter_SteeringNeck_RotatingCollar", "ink"],
+    ["SM_Scooter_SteeringNeck_UpperMount", "cream"],
+    ["SM_Scooter_BrakeLever_R", "ink"],
+    ["SM_Scooter_Handlebar_AccentRing_L", "cyan"],
+    ["SM_Scooter_Handlebar_AccentRing_R", "cyan"],
+    ["SM_Scooter_Handlebar_Bar_L", "mechanical"],
+    ["SM_Scooter_Handlebar_Bar_R", "mechanical"],
+    ["SM_Scooter_Handlebar_ControlPodSleeve_L", "ink"],
+    ["SM_Scooter_Handlebar_ControlPodSleeve_R", "ink"],
+    ["SM_Scooter_Handlebar_Grip_L", "ink"],
+    ["SM_Scooter_Handlebar_Grip_R", "ink"],
+    ["SM_Scooter_Handlebar_Sleeve_L", "ink"],
+    ["SM_Scooter_Handlebar_Sleeve_R", "ink"],
+    ["SM_Scooter_Headlamp_Bezel", "ink"],
+    ["SM_Scooter_Headlamp_Cross", "chrome"],
+    ["SM_Scooter_Headlamp_Lens", "headlight"],
+    ["SM_Scooter_Headlamp_Reflector", "chrome"],
+    ["SM_Scooter_SteeringNacelle_Pod_L", "cream"],
+    ["SM_Scooter_SteeringNacelle_Pod_R", "cream"],
+    ["SM_Scooter_SteeringNacelle_RearFastener_L_Hi", "chrome"],
+    ["SM_Scooter_SteeringNacelle_RearFastener_L_Lo", "chrome"],
+    ["SM_Scooter_SteeringNacelle_RearFastener_R_Hi", "chrome"],
+    ["SM_Scooter_SteeringNacelle_RearFastener_R_Lo", "chrome"],
+    ["SM_Scooter_SteeringNacelle_RearServiceCavity", "mechanical"],
+    ["SM_Scooter_SteeringNacelle_RearServiceCover", "cream"],
+    ["SM_Scooter_SteeringNacelle_RearServiceFrame", "ink"],
+    ["SM_Scooter_SteeringNacelle_RearServiceRib", "ink"],
+    ["SM_Scooter_SteeringNacelle_Shell", "cream"],
+    ["SM_Scooter_SteeringNacelle_Throat", "cream"],
+  ] as const;
+
+  for (const [name, role] of productionRoles) {
+    assert.equal(resolveScooterMaterialRole(name), role, name);
+  }
+});
+
 test("curated wheel islands isolate tire, rim, axle, and hub by exact mesh name", () => {
   const tire = { vertexCount: 45, localYCenter: 0, localYSpan: 0.275, maximumLocalXZRadius: 0.4352 };
   const rim = { vertexCount: 6, localYCenter: 0.0015, localYSpan: 0.067, maximumLocalXZRadius: 0.3001 };
