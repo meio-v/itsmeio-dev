@@ -1,14 +1,13 @@
 import * as THREE from "three";
 
 import { InputController } from "../_runtime/inputController";
-import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual";
 import { JoltRidePhysics } from "./JoltRidePhysics";
 import { RideLabActionController } from "./RideLabActionController";
 import { RIDE_LAB_ARENA_HALF_SIZE } from "./rideLabArena";
-import { acquireAndConstruct } from "./rideLabLifecycle";
 import { cameraSpeedPresentation, normalizedSpeed, resolveHeldAerialFeedback, resolveSuspensionLoadPresentation, retainTransitionPulse, speedLineStrength } from "./rideLabModel";
 import type { RideLabDebugSnapshot, RideLabInput, RideLabLifecycle, RideLabSnapshot } from "./rideLabTypes";
 import { requiresRideLabPhysicsRebuild, type RideLabTuning } from "./rideLabTuning";
+import { createRideLabVehicleVisual, type RideLabVehicleVisual } from "./rideLabVehicleVisual";
 
 type RideLabRuntimeOptions = {
   canvas: HTMLCanvasElement;
@@ -35,7 +34,7 @@ export class RideLabRuntime {
   private readonly renderer: THREE.WebGLRenderer;
   private readonly input: InputController;
   private readonly actionInput: RideLabActionController;
-  private readonly vehicle: VehicleVisual;
+  private readonly vehicle: RideLabVehicleVisual;
   private readonly vehiclePose = new THREE.Group();
   private readonly resizeObserver: ResizeObserver;
   private readonly motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -72,7 +71,7 @@ export class RideLabRuntime {
   private steerCameraOrbit = 0;
   private speedLineBurst = 0;
 
-  private constructor(options: RideLabRuntimeOptions, physics: JoltRidePhysics, context: WebGL2RenderingContext) {
+  private constructor(options: RideLabRuntimeOptions, physics: JoltRidePhysics, context: WebGL2RenderingContext, vehicle: RideLabVehicleVisual) {
     this.options = options;
     this.physics = physics;
     this.tuning = options.tuning;
@@ -82,12 +81,12 @@ export class RideLabRuntime {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.BasicShadowMap;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.scene.background = new THREE.Color(0x11101d);
     this.scene.fog = new THREE.Fog(0x11101d, 34, 82);
     this.createArenaVisuals();
-    this.vehicle = createVehicleVisual();
-    this.vehicle.root.rotation.y = -Math.PI / 2;
+    this.vehicle = vehicle;
     this.vehiclePose.add(this.vehicle.root);
     this.scene.add(this.vehiclePose);
     this.input = new InputController(options.surface);
@@ -113,10 +112,30 @@ export class RideLabRuntime {
     const started = performance.now();
     const context = options.canvas.getContext("webgl2", { antialias: true, powerPreference: "high-performance" });
     if (!context) throw new Error("rideLab requires WebGL 2.");
-    const runtime = await acquireAndConstruct(
-      () => JoltRidePhysics.create(options.tuning),
-      (physics) => new RideLabRuntime(options, physics, context),
-    );
+    const resources = await Promise.allSettled([
+      JoltRidePhysics.create(options.tuning),
+      createRideLabVehicleVisual(),
+    ]);
+    if (resources[0].status === "rejected" || resources[1].status === "rejected") {
+      if (resources[0].status === "fulfilled") resources[0].value.dispose();
+      if (resources[1].status === "fulfilled") resources[1].value.dispose();
+      throw resources.find((resource) => resource.status === "rejected")?.reason;
+    }
+    const [physics, vehicle] = [resources[0].value, resources[1].value] as const;
+    let runtime: RideLabRuntime | undefined;
+    try {
+      runtime = new RideLabRuntime(options, physics, context, vehicle);
+      runtime.updateVisuals(0);
+      await runtime.renderer.compileAsync(runtime.scene, runtime.camera);
+      runtime.renderer.render(runtime.scene, runtime.camera);
+    } catch (error) {
+      if (runtime) runtime.dispose();
+      else {
+        physics.dispose();
+        vehicle.dispose();
+      }
+      throw error;
+    }
     runtime.startTime = started;
     runtime.startupMs = performance.now() - started;
     return runtime;
@@ -314,6 +333,25 @@ export class RideLabRuntime {
       .set(0, -this.snapshot.preload * this.tuning.preloadCompression, 0)
       .applyQuaternion(this.inverseVehicleRootRotation);
     this.vehicle.body.position.copy(this.preloadOffset);
+    const vehicleMetrics = this.vehicle.update(this.snapshot, delta);
+    this.options.surface.dataset.vehicleAsset = vehicleMetrics.asset;
+    this.options.surface.dataset.frontWheelSteer = vehicleMetrics.frontSteerRadians.toFixed(3);
+    this.options.surface.dataset.handlebarSteer = vehicleMetrics.handlebarSteerRadians.toFixed(3);
+    this.options.surface.dataset.wheelSpin = vehicleMetrics.wheelSpinRadians.toFixed(3);
+    this.options.surface.dataset.leftElbow = vehicleMetrics.leftElbowRadians.toFixed(3);
+    this.options.surface.dataset.rightElbow = vehicleMetrics.rightElbowRadians.toFixed(3);
+    this.options.surface.dataset.elbowFlare = vehicleMetrics.elbowFlareRadians.toFixed(3);
+    this.options.surface.dataset.leftElbowFlare = vehicleMetrics.leftElbowFlareRadians.toFixed(3);
+    this.options.surface.dataset.rightElbowFlare = vehicleMetrics.rightElbowFlareRadians.toFixed(3);
+    this.options.surface.dataset.shoulderYaw = vehicleMetrics.shoulderYawRadians.toFixed(3);
+    this.options.surface.dataset.headCounterLean = vehicleMetrics.headCounterLeanRadians.toFixed(3);
+    this.options.surface.dataset.headTuck = vehicleMetrics.headTuckRadians.toFixed(3);
+    this.options.surface.dataset.celShading = vehicleMetrics.asset === "curated" ? "three-band-outlined" : "fallback";
+    this.options.surface.dataset.seatError = vehicleMetrics.seatErrorMeters.toFixed(3);
+    this.options.surface.dataset.leftHandError = vehicleMetrics.leftHandErrorMeters.toFixed(3);
+    this.options.surface.dataset.rightHandError = vehicleMetrics.rightHandErrorMeters.toFixed(3);
+    this.options.surface.dataset.leftHandPosition = `${vehicleMetrics.leftHandPosition.x.toFixed(3)},${vehicleMetrics.leftHandPosition.y.toFixed(3)},${vehicleMetrics.leftHandPosition.z.toFixed(3)}`;
+    this.options.surface.dataset.rightHandPosition = `${vehicleMetrics.rightHandPosition.x.toFixed(3)},${vehicleMetrics.rightHandPosition.y.toFixed(3)},${vehicleMetrics.rightHandPosition.z.toFixed(3)}`;
     const speedRatio = normalizedSpeed(this.snapshot.speedMps, this.tuning.topSpeedMps);
     const cameraPresentation = cameraSpeedPresentation(this.snapshot.speedMps, this.tuning);
     if (this.previousVisualSpeedMps < this.tuning.speedLineThreshold && this.snapshot.speedMps >= this.tuning.speedLineThreshold && !this.reducedMotion) {
@@ -428,6 +466,9 @@ export class RideLabRuntime {
     const key = new THREE.DirectionalLight(0xffd4ac, 3.1);
     key.position.set(-12, 18, -8);
     key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.radius = 0;
+    key.shadow.blurSamples = 0;
     this.scene.add(hemi, key);
     const arenaSize = RIDE_LAB_ARENA_HALF_SIZE * 2;
     const floor = new THREE.Mesh(new THREE.BoxGeometry(arenaSize, 1, arenaSize), new THREE.MeshToonMaterial({ color: 0x24213b }));

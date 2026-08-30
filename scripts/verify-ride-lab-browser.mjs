@@ -7,6 +7,7 @@ import { chromium } from "playwright";
 
 import { RIDE_LAB_CONTROLS } from "../app/mall/_ride-lab/rideLabControls.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "../app/mall/_ride-lab/rideLabTuning.ts";
+import { RIDE_LAB_VEHICLE_ALIGNMENT } from "../app/mall/_ride-lab/rideLabVehicleVisual.ts";
 
 const port = await allocatePort();
 const baseUrl = `http://127.0.0.1:${port}`;
@@ -54,6 +55,13 @@ async function waitForServer() {
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
   throw new Error(`rideLab dev server did not become ready:\n${serverOutput.slice(-2000)}`);
+}
+
+function requiredNonNegativeMetric(value, label) {
+  assert.notEqual(value, null, `${label} telemetry is missing`);
+  const metric = Number(value);
+  assert.ok(Number.isFinite(metric) && metric >= 0, `${label} telemetry must be a finite nonnegative number, received ${value}`);
+  return metric;
 }
 
 let browser;
@@ -104,6 +112,33 @@ try {
   assert.equal(errors.length, 0, errors.join("\n"));
 
   const surface = page.locator('[data-testid="ride-lab-surface"]');
+  const initialVehicleTelemetry = await surface.evaluate((rideSurface) => ({
+    asset: rideSurface.getAttribute("data-vehicle-asset"),
+    wheelSpin: rideSurface.getAttribute("data-wheel-spin"),
+    seatError: rideSurface.getAttribute("data-seat-error"),
+    leftHandError: rideSurface.getAttribute("data-left-hand-error"),
+    rightHandError: rideSurface.getAttribute("data-right-hand-error"),
+    leftHandPosition: rideSurface.getAttribute("data-left-hand-position"),
+    rightHandPosition: rideSurface.getAttribute("data-right-hand-position"),
+    leftElbow: rideSurface.getAttribute("data-left-elbow"),
+    rightElbow: rideSurface.getAttribute("data-right-elbow"),
+    celShading: rideSurface.getAttribute("data-cel-shading"),
+  }));
+  const initialVehicle = {
+    ...initialVehicleTelemetry,
+    wheelSpin: requiredNonNegativeMetric(initialVehicleTelemetry.wheelSpin, "wheel spin"),
+    seatError: requiredNonNegativeMetric(initialVehicleTelemetry.seatError, "seat error"),
+    leftHandError: requiredNonNegativeMetric(initialVehicleTelemetry.leftHandError, "left hand error"),
+    rightHandError: requiredNonNegativeMetric(initialVehicleTelemetry.rightHandError, "right hand error"),
+    leftElbow: requiredNonNegativeMetric(initialVehicleTelemetry.leftElbow, "left elbow"),
+    rightElbow: requiredNonNegativeMetric(initialVehicleTelemetry.rightElbow, "right elbow"),
+  };
+  assert.equal(initialVehicle.asset, "curated");
+  assert.equal(initialVehicle.celShading, "three-band-outlined");
+  assert.ok(initialVehicle.seatError < 0.01, `rider seat contact drifted by ${initialVehicle.seatError} m`);
+  assert.ok(initialVehicle.leftHandError < 0.08, `left hand at ${initialVehicle.leftHandPosition} missed the grip by ${initialVehicle.leftHandError} m`);
+  assert.ok(initialVehicle.rightHandError < 0.08, `right hand at ${initialVehicle.rightHandPosition} missed the grip by ${initialVehicle.rightHandError} m`);
+  assert.ok(Math.abs(initialVehicle.leftElbow - initialVehicle.rightElbow) < 0.001);
   const accelerateButton = page.getByRole("button", { name: "Accelerate" });
   await accelerateButton.hover();
   await page.mouse.down();
@@ -116,10 +151,54 @@ try {
     window.__rideLabRuntime.setVirtualInput({ throttle: 1 });
     window.__rideLabRuntime.setVirtualInput({ steer: 1 });
   });
-  await page.waitForFunction(() => {
+  await page.waitForFunction((maxVisualSteerRadians) => {
     const rideSurface = document.querySelector('[data-testid="ride-lab-surface"]');
-    return rideSurface?.getAttribute("data-accepted-throttle") === "1" && rideSurface?.getAttribute("data-accepted-steer") === "1";
-  });
+    return rideSurface?.getAttribute("data-accepted-throttle") === "1"
+      && rideSurface?.getAttribute("data-accepted-steer") === "1"
+      && Math.abs(Number(rideSurface?.getAttribute("data-front-wheel-steer")) + maxVisualSteerRadians) < 0.001
+      && Number(rideSurface?.getAttribute("data-head-tuck")) > 0.1;
+  }, RIDE_LAB_VEHICLE_ALIGNMENT.maxVisualSteerRadians);
+  const articulatedTurn = await surface.evaluate((rideSurface) => ({
+    frontWheelSteer: Number(rideSurface.getAttribute("data-front-wheel-steer")),
+    leftElbow: Number(rideSurface.getAttribute("data-left-elbow")),
+    rightElbow: Number(rideSurface.getAttribute("data-right-elbow")),
+    elbowFlare: Number(rideSurface.getAttribute("data-elbow-flare")),
+    leftElbowFlare: Number(rideSurface.getAttribute("data-left-elbow-flare")),
+    rightElbowFlare: Number(rideSurface.getAttribute("data-right-elbow-flare")),
+    shoulderYaw: Number(rideSurface.getAttribute("data-shoulder-yaw")),
+    headCounterLean: Number(rideSurface.getAttribute("data-head-counter-lean")),
+    headTuck: Number(rideSurface.getAttribute("data-head-tuck")),
+    handlebarSteer: Number(rideSurface.getAttribute("data-handlebar-steer")),
+    leftHandError: Number(rideSurface.getAttribute("data-left-hand-error")),
+    rightHandError: Number(rideSurface.getAttribute("data-right-hand-error")),
+  }));
+  assert.ok(articulatedTurn.frontWheelSteer < -0.2);
+  assert.equal(articulatedTurn.handlebarSteer, articulatedTurn.frontWheelSteer);
+  assert.ok(articulatedTurn.elbowFlare > 0.45);
+  assert.ok(articulatedTurn.leftElbowFlare > articulatedTurn.rightElbowFlare);
+  assert.ok(articulatedTurn.shoulderYaw < 0 && articulatedTurn.shoulderYaw > -0.1);
+  assert.ok(articulatedTurn.headCounterLean > 0 && articulatedTurn.headCounterLean < 0.07);
+  assert.ok(articulatedTurn.headTuck > 0.1);
+  assert.ok(articulatedTurn.leftElbow > articulatedTurn.rightElbow);
+  assert.ok(articulatedTurn.leftHandError < 0.08, `turning left hand missed its moving grip by ${articulatedTurn.leftHandError} m`);
+  assert.ok(articulatedTurn.rightHandError < 0.08, `turning right hand missed its moving grip by ${articulatedTurn.rightHandError} m`);
+  await page.waitForFunction(() => (
+    Number(document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-shoulder-yaw")) < -0.1
+  ));
+  await page.evaluate(() => { window.__rideLabRuntime.setVirtualInput({ steer: -1 }); });
+  await page.waitForFunction((maxVisualSteerRadians) => {
+    const rideSurface = document.querySelector('[data-testid="ride-lab-surface"]');
+    return rideSurface?.getAttribute("data-accepted-steer") === "-1"
+      && Math.abs(Number(rideSurface?.getAttribute("data-front-wheel-steer")) - maxVisualSteerRadians) < 0.001;
+  }, RIDE_LAB_VEHICLE_ALIGNMENT.maxVisualSteerRadians);
+  const mirroredTurn = await surface.evaluate((rideSurface) => ({
+    frontWheelSteer: Number(rideSurface.getAttribute("data-front-wheel-steer")),
+    leftElbow: Number(rideSurface.getAttribute("data-left-elbow")),
+    rightElbow: Number(rideSurface.getAttribute("data-right-elbow")),
+  }));
+  assert.ok(mirroredTurn.frontWheelSteer > 0.2);
+  assert.ok(mirroredTurn.leftElbow < mirroredTurn.rightElbow);
+  assert.ok(Math.abs(mirroredTurn.frontWheelSteer + articulatedTurn.frontWheelSteer) < 0.01);
   await page.evaluate(() => {
     window.__rideLabRuntime.setVirtualInput({ throttle: 0 });
     window.__rideLabRuntime.setVirtualInput({ steer: 0 });
@@ -128,6 +207,16 @@ try {
     const rideSurface = document.querySelector('[data-testid="ride-lab-surface"]');
     return rideSurface?.getAttribute("data-accepted-throttle") === "0" && rideSurface?.getAttribute("data-accepted-steer") === "0";
   });
+  await page.waitForFunction(() => {
+    const flare = Number(document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-right-elbow-flare"));
+    return flare > 0.02 && flare < 0.37;
+  });
+  const recoveringPose = await surface.evaluate((rideSurface) => ({
+    outsideFlare: Number(rideSurface.getAttribute("data-right-elbow-flare")),
+    shoulderYaw: Number(rideSurface.getAttribute("data-shoulder-yaw")),
+  }));
+  assert.ok(recoveringPose.outsideFlare > 0.02 && recoveringPose.outsideFlare < 0.37);
+  assert.ok(recoveringPose.shoulderYaw > 0 && recoveringPose.shoulderYaw < 0.12);
   await surface.focus();
   await page.evaluate(() => { window.__rideLabRuntime.tuning.fixedStep = 1 / 30; });
   await page.keyboard.down("w");
@@ -141,6 +230,8 @@ try {
   await page.waitForTimeout(900);
   const accelerated = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.ok(accelerated.speedMps > 0.5);
+  const acceleratedWheelSpin = Number(await surface.getAttribute("data-wheel-spin"));
+  assert.ok(Math.abs(acceleratedWheelSpin - initialVehicle.wheelSpin) > 0.1, "wheel spin must follow vehicle travel");
   await page.keyboard.up("w");
   await page.evaluate((fixedStep) => { window.__rideLabRuntime.tuning.fixedStep = fixedStep; }, DEFAULT_RIDE_LAB_TUNING.fixedStep);
   await page.waitForTimeout(50);
@@ -151,7 +242,7 @@ try {
     globalThis.__rideLabTuningBeforePresentationTuning = { ...window.__rideLabRuntime.tuning };
   });
   await page.locator('input[aria-describedby="cameraDistance-description"]').fill("6.4");
-  await page.waitForTimeout(250);
+  await page.waitForFunction(() => window.__rideLabRuntime.tuning.cameraDistance === 6.4);
   const presentationTuningResult = await page.evaluate(() => {
     const preserved = window.__rideLabRuntime.physics === globalThis.__rideLabPhysicsBeforePresentationTuning;
     const changedKeys = Object.keys(window.__rideLabRuntime.tuning).filter(
@@ -261,8 +352,11 @@ try {
   assert.equal(hovering.aerialPhase, "hover");
   assert.ok(hovering.hoverEnergy < energyBeforeHover);
   assert.ok(Number(await page.getByRole("meter", { name: "Hover energy" }).getAttribute("value")) < 1);
-  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().hoverEnergy === 0, undefined, { timeout: 5_000 });
-  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-feedback") === "depleted");
+  await page.waitForFunction(() => {
+    const snapshot = window.__rideLabRuntime.getDebugSnapshot();
+    return snapshot.hoverEnergy <= 0.001 && snapshot.aerialPhase === "depleted";
+  }, undefined, { timeout: 10_000 });
+  assert.equal(await surface.getAttribute("data-feedback"), "depleted");
   const depleted = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.ok(depleted.position.y > 12);
   assert.ok(depleted.cameraPosition.y > 8);
@@ -280,16 +374,20 @@ try {
   });
   const beforeGrind = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   const grindFallSpeed = await page.evaluate(() => window.__rideLabRuntime.tuning.grindFallSpeed);
-  await surface.focus();
-  await page.keyboard.down("Space");
-  await page.waitForFunction(() => window.__rideLabRuntime.getDebugSnapshot().grinding === true);
-  await page.waitForTimeout(80);
+  await page.evaluate(() => window.__rideLabRuntime.setVirtualInput({ aerialAction: true }));
+  await page.waitForFunction(() => {
+    const snapshot = window.__rideLabRuntime.getDebugSnapshot();
+    return snapshot.grinding === true && snapshot.aerialPhase === "grind";
+  });
   const grinding = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
   assert.equal(grinding.aerialPhase, "grind");
   assert.ok(grinding.hoverEnergy < beforeGrind.hoverEnergy);
-  assert.ok(grinding.horizontalSpeedMps > beforeGrind.horizontalSpeedMps * 0.9);
+  assert.ok(
+    grinding.horizontalSpeedMps > beforeGrind.horizontalSpeedMps * 0.9,
+    `grind capture retained ${grinding.horizontalSpeedMps} m/s from ${beforeGrind.horizontalSpeedMps} m/s`,
+  );
   assert.ok(grinding.verticalSpeedMps >= -grindFallSpeed - 0.1);
-  await page.keyboard.up("Space");
+  await page.evaluate(() => window.__rideLabRuntime.setVirtualInput({ aerialAction: false }));
   await page.waitForFunction(() => {
     const snapshot = window.__rideLabRuntime.getDebugSnapshot();
     return snapshot.grinding === false && snapshot.grindReleaseSpeedMps > 0;
@@ -363,6 +461,7 @@ try {
     const counts = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
     assert.equal(counts.liveRuntimes, 1);
     assert.equal(counts.animationLoops, 1);
+    assert.equal(await surface.getAttribute("data-vehicle-asset"), "curated");
   }
 
   const mallHtml = await (await fetch(`${baseUrl}/mall`)).text();
@@ -385,6 +484,18 @@ try {
   await page.waitForSelector('[data-lifecycle="active"]');
   await page.waitForTimeout(1200);
   const debug = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
+  const vehicleEvidenceTelemetry = await surface.evaluate((rideSurface) => ({
+    asset: rideSurface.getAttribute("data-vehicle-asset"),
+    seatErrorMeters: rideSurface.getAttribute("data-seat-error"),
+    leftHandErrorMeters: rideSurface.getAttribute("data-left-hand-error"),
+    rightHandErrorMeters: rideSurface.getAttribute("data-right-hand-error"),
+  }));
+  const vehicleEvidence = {
+    asset: vehicleEvidenceTelemetry.asset,
+    seatErrorMeters: requiredNonNegativeMetric(vehicleEvidenceTelemetry.seatErrorMeters, "seat error"),
+    leftHandErrorMeters: requiredNonNegativeMetric(vehicleEvidenceTelemetry.leftHandErrorMeters, "left hand error"),
+    rightHandErrorMeters: requiredNonNegativeMetric(vehicleEvidenceTelemetry.rightHandErrorMeters, "right hand error"),
+  };
   const transferBytes = await page.evaluate(() => performance.getEntriesByType("resource").reduce((total, resource) => total + (resource.transferSize || resource.encodedBodySize || 0), 0));
   const measurements = {
     measuredAt: new Date().toISOString(),
@@ -396,6 +507,10 @@ try {
     drawCalls: debug.drawCalls,
     triangles: debug.triangles,
     transferBytes,
+    vehicleAsset: vehicleEvidence.asset,
+    seatErrorMeters: vehicleEvidence.seatErrorMeters,
+    leftHandErrorMeters: vehicleEvidence.leftHandErrorMeters,
+    rightHandErrorMeters: vehicleEvidence.rightHandErrorMeters,
     liveRuntimes: debug.liveRuntimes,
     animationLoops: debug.animationLoops,
   };

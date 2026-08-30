@@ -1,18 +1,18 @@
 # Gates: Jolt rideLab phases 1–2
 
-OWNS: app/mall/ride-lab/**, app/mall/_ride-lab/**, app/mall/_runtime/vehicleVisual.ts, lib/ride-lab-feature.ts, lib/ride-lab-feature.test.ts, proxy.ts, docs/design/ride-feedback-points.md, docs/testing/ride-lab-phase-1.md, docs/testing/ride-lab-aerial.md, docs/testing/ride-lab-measurements.json, scripts/verify-ride-lab-browser.mjs, scripts/verify-ride-lab-production-gate.mjs, scripts/verify-ride-lab-evidence.mjs, package.json, package-lock.json
+OWNS: app/mall/ride-lab/**, app/mall/_ride-lab/**, app/mall/_runtime/vehicleVisual.ts, public/mall/ride-lab/**, lib/ride-lab-feature.ts, lib/ride-lab-feature.test.ts, proxy.ts, docs/assets/mall-asset-provenance.md, docs/design/ride-feedback-points.md, docs/testing/ride-lab-phase-1.md, docs/testing/ride-lab-aerial.md, docs/testing/ride-lab-measurements.json, scripts/verify-ride-lab-assets.mjs, scripts/verify-ride-lab-browser.mjs, scripts/verify-ride-lab-production-gate.mjs, scripts/verify-ride-lab-evidence.mjs, package.json, package-lock.json
 
 Scope: deliver a development-only Jolt motorcycle test arena that leaves the authored Rapier mall ride unchanged and makes foundational handling plus the agreed preload/ollie/hover/grind sequence measurable and tunable.
 
 - [x] G0: this ledger states outcome checks that can fail
   CHECK: node /Users/jeromeiovelarde/.agents/skills/unlazy/scripts/gate-lint.mjs GATES.md
   EXPECT: LINT OK
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=48630b7361dd44ee870917b12c3d19b9d7bdea738aaca16bb04d4cab83b772d2; output-bytes=8
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=1b7cccd68f673aaa14281c0be39203ce0431ecda493d90298a0312619aad548a; output-bytes=151
 
 - [x] G1: native Jolt handling plus preload release, ollie, hover depletion, ground recharge, and wall-grind state behave deterministically under focused tests
   CHECK: npm run test:ride-lab
   EXPECT: /# fail 0/
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=23dc30ebe153440a16fa761ec7d1e5fdffdde03f1cff4ffa76aeb7acc9ca336c; output-bytes=8962
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=ebb96d4f5aa4f3a7d729f7a6213ceacb2e4d3017b240f99c94a9a716ca058295; output-bytes=13641
 
 - [x] G2: the mall and rideLab TypeScript surfaces are type-safe
   CHECK: npm run typecheck
@@ -22,17 +22,17 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
 - [x] G3: targeted lint accepts every rideLab and adjacent mall file changed by this task
   CHECK: npm run lint:ride-lab
   EXPECT: /eslint app\/mall\/ride-lab app\/mall\/_ride-lab lib\/ride-lab-feature.ts/
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=fb1adfef026df7d3cd79c0fd1a3b5453c602ecedafbbfe2664cfc25e5fb5f0d2; output-bytes=261
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=662faa2a5340ff578c1fd3c860e9659679ead666212df853dc374f6cea282713; output-bytes=296
 
 - [x] G4: existing mall tests and a production build pass while both optional routes remain closed
   CHECK: npm run test:mall && npm run build && npm run verify:ride-lab:production
   EXPECT: rideLab production gate verification passed
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=e85d944b324c35bac0deed4e7fd5f1edba16717bee69b56fd578fa143b63ece8; output-bytes=7901
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=6c1b2efefd42ff9a0a3dee0f5a94ef11fb9649909a89374412c9b2b8e2ea1af0; output-bytes=8235
 
 - [x] G5: browser verification covers the complete preload-to-ollie-to-hover-to-recharge journey, wall grind, first-frame feedback, tuning, reload, context loss, reduced motion, and mobile layout
   CHECK: npm run verify:ride-lab
   EXPECT: rideLab browser verification passed
-  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=a30587e71ad935bcfe67b21d1d316fb5c2121ae037152148558d947a197d5c1a; output-bytes=117
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=f9444836223a035943a060ec88e727bc59a97d8ac5c27b8774e6282faddb6a34; output-bytes=618
 
 - [x] G6: measured startup, render, geometry, transfer, and lifecycle evidence stays within named budgets
   CHECK: node scripts/verify-ride-lab-evidence.mjs
@@ -59,3 +59,38 @@ Scope: deliver a development-only Jolt motorcycle test arena that leaves the aut
 A human must approve subjective motorcycle handling, camera feel, visual feedback,
 and authored direction before any behavior is promoted into `/mall`. Automated
 completion of this development lab does not claim that approval.
+
+## Curated moped and articulated rider slice
+
+- [x] G10: only curated CC0 scooter and skater-male rider runtime assets ship, with exact source provenance, stable named nodes, bounded geometry, and no source archive or uncurated texture payload
+  CHECK: node scripts/verify-ride-lab-assets.mjs
+  EXPECT: curated rideLab vehicle asset verification passed
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=ede50eac2aea6bb57fbd1696f5ffae66b3d24baa752aa475ee3689fb8c31d29e; output-bytes=50
+
+- [x] G11: the Ride Lab visual adapter exposes independently disposable scooter, rider, outlined materials, steering assemblies, and rider-bone ownership with deterministic seated and asymmetric steering poses
+  CHECK: node --experimental-strip-types --test --test-reporter=tap app/mall/_ride-lab/rideLabVehicleVisual.test.ts
+  EXPECT: /# fail 0/
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=4890fc7c18e3e0ef88a376d028de6e4b0bd6567fee2b824445ce74397281d4d0; output-bytes=1441
+
+- [x] G12: focused Ride Lab tests, TypeScript, and targeted lint accept the curated vehicle integration without changing physics behavior
+  CHECK: npm run test:ride-lab && npm run typecheck && npm run lint:ride-lab
+  EXPECT: /eslint app\/mall\/ride-lab app\/mall\/_ride-lab/
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=188e87e37d852b1b7b214c4813fbd4ef5fae950869e56a4796462abbddf6b38d; output-bytes=13980
+
+- [x] G13: browser verification observes the curated scooter/rider, three-band palette, seated and moving-grip contact, outside-elbow/shoulder/head response, gradual mirrored recovery, aligned handlebar/front-wheel steering, wheel spin, repeat reload, reduced motion, and teardown with one live runtime
+  CHECK: npm run verify:ride-lab
+  EXPECT: rideLab browser verification passed
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=551026d0ba9a07b272c7b8f87be4a4422285e3627796922f576033e0ddafa944; output-bytes=618
+
+- [x] G14: the production build and disabled-by-default route gate pass with curated assets remaining inside the optional Ride Lab boundary
+  CHECK: npm run build && npm run verify:ride-lab:production
+  EXPECT: rideLab production gate verification passed
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=3f1351cc094c95e9cbb89dd72605267a21888db1a08c2491198d11ab5d160c49; output-bytes=2273
+
+- [x] G15: refreshed startup, render, geometry, transfer, and lifecycle measurements remain within the named Ride Lab budgets
+  CHECK: node scripts/verify-ride-lab-evidence.mjs
+  EXPECT: rideLab evidence verification passed
+  EVIDENCE: exit=0; shell=/bin/sh; cwd=/Users/jeromeiovelarde/Dev/itsmeio-dev-jolt-ridelab; path=cf8a55d24f3a/23 entries; EXPECT=matched; output-sha256=428a602ea8d1dabf353bfdd44de237c3134dcf4ece54be1650b84e6ba481a223; output-bytes=37
+
+- [ ] G16: the user approves the scooter scale and orientation, seated rider contact points, steering pose, wheel motion, rematerialized art direction, and overall silhouette in the live Ride Lab
+  EVIDENCE: pending
