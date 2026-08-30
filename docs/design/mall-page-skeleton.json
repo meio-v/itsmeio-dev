@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": "1.0",
+  "name": "itsmeio.dev mall homepage",
+  "route": "/mall",
+  "purpose": "A playful front door to Meio's corner of the internet. The site should remain useful without playing the ride.",
+  "designIntent": {
+    "mood": [
+      "after-hours shopping mall",
+      "punk editorial",
+      "Suda51 and Jet Set Radio energy",
+      "retro Toyota rally graphics",
+      "maximal but legible"
+    ],
+    "principles": [
+      "hospitality before self-promotion",
+      "game-like framing with normal web UX",
+      "authored asymmetry rather than generic comic UI",
+      "WebGL is optional enhancement, never a content gate"
+    ]
+  },
+  "visualSystem": {
+    "baseColors": {
+      "ink": "#161219",
+      "paper": "#eee6d6",
+      "screen": "#171125",
+      "violet": "#4d367f",
+      "statusLime": "#d9f35a"
+    },
+    "rallyStripe": {
+      "orientation": "three parallel horizontal bands",
+      "colors": [
+        { "name": "brown", "value": "#563328" },
+        { "name": "red", "value": "#b84432" },
+        { "name": "yellow", "value": "#e7b83e" }
+      ],
+      "usage": ["masthead seam", "welcome caption tabs", "ride-frame trim", "arcade display seam"]
+    },
+    "typeRoles": {
+      "wordmark": "Redaction 20 Italic; huge, pixelated serif display",
+      "hostCopy": "bold condensed sans-serif",
+      "systemUI": "IBM Plex Mono",
+      "gameDisplay": "heavy compressed display sans-serif"
+    },
+    "surfaceRules": [
+      "cream and black remain the dominant page field",
+      "hard black outlines and underplates provide depth",
+      "avoid dither, fake tape, sticker piles, and colored offset-shadow slop",
+      "use the rally stripe only at structural seams"
+    ]
+  },
+  "pageTree": {
+    "component": "MallPage",
+    "children": [
+      {
+        "component": "Header",
+        "children": [
+          { "component": "Wordmark", "copy": ["It's Meio.", "(The)Dev"], "href": "/" },
+          {
+            "component": "SiteNavigation",
+            "links": [
+              { "label": "Work", "href": "/" },
+              { "label": "Playing", "href": "#currently-playing" },
+              { "label": "Résumé", "href": "https://www.linkedin.com/in/meio/" },
+              { "label": "GitHub", "href": "https://github.com/meio-v" }
+            ]
+          },
+          {
+            "component": "MastheadRail",
+            "copy": ["Games / tech / music / personal detours", "Mall wing 01 — after hours"]
+          }
+        ]
+      },
+      {
+        "component": "HeroFrontDoor",
+        "children": [
+          { "component": "SectionIndex", "number": "01", "label": "Front door / come through" },
+          {
+            "component": "HostCaption",
+            "copy": "Hey! How are you? I hope you're having a great day. Welcome to my website. It has things I like—mostly games, tech, passing hobbies, and personal stuff. If you like those things, I recommend looking around.",
+            "treatment": "yellow editorial caption, heavy black underplate, rally-stripe registration tabs"
+          },
+          { "component": "RouteCue", "copy": "Take the long way in" },
+          {
+            "component": "RideFrame",
+            "ariaLabel": "Playable mall wing",
+            "children": [
+              {
+                "component": "MallSceneSlot",
+                "enhancement": "WebGL2 Three.js mall ride",
+                "fallback": "MallPoster",
+                "capabilityStates": ["checking", "available", "unavailable", "deferred by data saver"]
+              },
+              { "component": "PauseButton", "states": ["Pause", "Resume"], "visibility": "attract mode only" },
+              {
+                "component": "RideHUD",
+                "children": [
+                  { "component": "RideStatus", "states": ["loading", "attract", "paused", "driving", "unavailable"] },
+                  {
+                    "component": "TokenConsole",
+                    "primaryAction": "Add token",
+                    "controls": ["Arrow keys or WASD steer", "S or down brakes", "R resets", "Tab or Escape exits"]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "CurrentlyPlayingKiosk",
+        "id": "currently-playing",
+        "children": [
+          { "component": "ServiceStrip", "copy": ["02 / demo unit", "Cabinet 01"] },
+          {
+            "component": "KioskScreen",
+            "children": [
+              { "component": "KioskHeading", "copy": "Currently Playing", "action": "Open display" },
+              {
+                "component": "CurrentlyPlayingContent",
+                "currentState": "no game currently active",
+                "emptyMessage": "My attention span cannot finish a game at the moment. Check back later.",
+                "children": ["CurrentGameSlot", "RecentlyCompletedList", "FullLogDisclosure"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "component": "CurrentlyPlayingDialog",
+        "trigger": ["Playing navigation link", "Open display link", "ride enters arcade point of interest"],
+        "children": ["DialogHeader", "CloseButton", "CurrentlyPlayingContent"]
+      }
+    ]
+  },
+  "experienceState": {
+    "runtimeStatus": ["loading", "ready", "unavailable"],
+    "controlMode": ["attract", "paused", "driving"],
+    "selectedPointOfInterest": [null, "currently-playing"],
+    "flow": [
+      "Page opens in autonomous attract mode",
+      "Add token switches to third-person driving",
+      "Entering the arcade opens the currently-playing dialog",
+      "Closing the dialog restores the previous ride mode",
+      "All core links and currently-playing content remain normal HTML"
+    ]
+  },
+  "supportingComponents": [
+    { "component": "MallPoster", "role": "illustrated fallback while WebGL checks, loads, or fails" },
+    { "component": "MallLoading", "role": "route-level loading state" },
+    { "component": "MallError", "role": "recoverable route-level error state with main-site escape" },
+    { "component": "MallRideCanvas", "role": "React boundary that owns the Three.js runtime" },
+    { "component": "MallRideRuntime", "role": "scene, physics, camera, input, attract path, and point-of-interest orchestration" }
+  ],
+  "responsiveAndAccess": [
+    "header and currently-playing columns stack below 760px",
+    "touch driving controls appear on coarse pointers",
+    "keyboard users can skip the ride and exit driving",
+    "reduced-motion preference is forwarded to the runtime",
+    "data-saver users explicitly opt in before downloading the ride",
+    "the HTML kiosk remains available when WebGL is unsupported"
+  ]
+}

@@ -2,7 +2,10 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
-import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual.ts";
+import {
+  createProceduralVehicleVisual,
+  type VehicleVisual,
+} from "../_runtime/vehicleVisual.ts";
 import type { RideLabSnapshot } from "./rideLabTypes.ts";
 
 const SCOOTER_URL = "/mall/ride-lab/styloo-simple-scooter.glb";
@@ -1246,7 +1249,7 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
 }
 
 export function createFallbackVehicleVisual(): RideLabVehicleVisual {
-  const fallback = createVehicleVisual();
+  const fallback = createProceduralVehicleVisual();
   fallback.root.rotation.y = -Math.PI / 2;
   let wheelSpinRadians = 0;
   return {

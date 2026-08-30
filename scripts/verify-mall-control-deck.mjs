@@ -1,0 +1,64 @@
+import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+
+const component = await readFile("app/mall/_components/MallExperience.tsx", "utf8");
+const styles = await readFile("app/mall/mall.module.css", "utf8");
+const coinDoor = await readFile("public/mall/textures/coin-door.png");
+const controlDeck = await readFile("public/mall/textures/control-deck-panel-full.png");
+
+assert.match(component, /className=\{styles\.coinDoorAssembly\}/);
+assert.match(component, /src="\/mall\/textures\/coin-door\.png"/);
+assert.match(component, /className=\{styles\.coinUnit\}/);
+assert.match(component, /aria-label="Add token"/);
+assert.match(component, /dispatch\(\{ type: "insert-token" \}\)/);
+assert.match(component, /state\.runtimeStatus === "ready" && showAttractControls && !state\.selectedPoi/);
+assert.match(component, /<b>FREE<\/b>/);
+assert.match(component, /<small>1 PLAY<\/small>/);
+assert.match(component, /className=\{styles\.controlDeckMount\}/);
+assert.match(component, /src="\/mall\/textures\/control-deck-panel-full\.png"/);
+assert.match(component, /<Link href="\/">It&apos;s Meio\.\(The\)Dev<\/Link>/);
+assert.match(component, /className=\{styles\.serviceRail\}/);
+assert.match(component, /id="ride-controls-help" className=\{styles\.visuallyHidden\}/);
+assert.doesNotMatch(component, /id="ride-controls-help" className=\{styles\.controlPlate\}/);
+assert.match(component, /DO NOT SIT ON CABINET \/ 遊技中の飲食はご遠慮ください/);
+assert.doesNotMatch(component, /coinDoorBezel|coinAperture|coinReturnButton/);
+assert.match(component, /src="\/mall\/stickers\/doodles\/memory-card\.png"/);
+assert.match(component, /className=\{`\$\{styles\.pageSticker\} \$\{styles\.memoryCardSticker\}`\}/);
+
+assert.match(styles, /\.controlHardware \{[^}]*grid-template-columns: minmax\(8rem, 24%\) minmax\(0, 1fr\)/);
+assert.match(styles, /\.controlDeckMount \{[^}]*aspect-ratio: 1563 \/ 631/);
+assert.match(styles, /\.controlDeckMount \{[^}]*rotateX\(-4deg\) scale\(0\.99\)/);
+assert.match(styles, /\.controlDeckMount \{[^}]*background: transparent/);
+assert.doesNotMatch(styles, /\.controlDeckMount \{[^}]*clip-path:/);
+assert.match(styles, /\.screenGlassTexture \{[^}]*opacity: 0\.18/);
+assert.match(styles, /\.screenViewport \{[^}]*aspect-ratio: 2 \/ 1/);
+assert.match(styles, /\.cabinetStage::before \{[^}]*border-bottom: 0\.24rem solid var\(--acid\)/);
+assert.match(styles, /\.cabinetSideLeft \{[^}]*clip-path: polygon\(0 0, 78% 0, 100% 100%, 0 100%\)/);
+assert.match(styles, /\.controlPanel \{[^}]*background: color-mix\(in srgb, var\(--paper\) 88%, white\)/);
+assert.match(component, /<feMorphology in="SourceAlpha" operator="dilate" radius="2\.5"/);
+assert.match(component, /<feOffset in="outlineMask" dx="6" dy="7"/);
+assert.doesNotMatch(component, /feGaussianBlur/);
+assert.match(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{ filter: url\("#mall-sticker-cutout"\); \}/);
+assert.doesNotMatch(styles, /\.pageSticker,[\s\S]*\.playstationSticker \{[^}]*drop-shadow/);
+assert.match(styles, /\.memoryCardSticker \{[^}]*transform: rotate\(7deg\)/);
+assert.match(styles, /\.memoryCardSticker \{[^}]*filter: drop-shadow\(0\.38rem 0\.44rem 0 var\(--ink\)\)/);
+assert.doesNotMatch(styles, /mask-image: linear-gradient\(to right/);
+assert.match(styles, /\.coinUnit::before \{[^}]*width: 30%/);
+assert.match(styles, /data-control-mode="attract"[^\n]*\.coinUnit::before[^\n]*coinSlotBlink/);
+assert.match(styles, /data-control-mode="driving"[^\n]*\.coinDoorAssembly[^\n]*coinHardwareAccepted/);
+assert.match(styles, /prefers-reduced-motion:[\s\S]*\.coinDoorAssembly,[\s\S]*animation: none/);
+assert.match(styles, /\.utilityRail a \{[^}]*"Redaction 20"/);
+assert.match(styles, /\.footer > span \{[^}]*"Redaction 20"/);
+assert.match(styles, /@media \(max-width: 760px\)[\s\S]*\.controlPlate \{ display: none; \}/);
+assert.match(styles, /@media \(hover: none\) and \(pointer: coarse\)[\s\S]*\.pauseButton[\s\S]*min-height: 2\.75rem/);
+assert.match(styles, /@media \(max-width: 430px\)[\s\S]*\.hardwareLabels \{ display: none; \}/);
+
+assert.equal(coinDoor.subarray(1, 4).toString(), "PNG");
+assert.equal(coinDoor.readUInt32BE(16), 800);
+assert.equal(coinDoor.readUInt32BE(20), 1000);
+assert.ok([4, 6].includes(coinDoor[25]), "coin-door.png must retain an alpha channel");
+assert.ok(controlDeck.length > 100_000, "control-deck-panel-full.png should contain the supplied illustrated deck");
+assert.equal(controlDeck.readUInt32BE(16), 1563);
+assert.equal(controlDeck.readUInt32BE(20), 631);
+
+console.log("mall control deck verification passed");

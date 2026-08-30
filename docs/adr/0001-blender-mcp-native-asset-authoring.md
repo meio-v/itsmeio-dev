@@ -6,18 +6,15 @@
 
 ## Context
 
-The first Ride Lab rider prototype was reconstructed by
-`scripts/build-streetwear-rider.py` in background Blender. That made geometry
-repeatable, but it also made generated Python coordinates the practical source
-of truth. Agents consequently optimized endpoint metrics and regenerated meshes
-without continuously judging the actual Blender scene. The rider could report a
-correct ankle position while its knee, sole, clothing, or silhouette remained
-visually wrong.
+The first Ride Lab experiments used generated Blender Python geometry and
+Three.js runtime posing to iterate quickly. Those approaches made numeric
+outputs repeatable, but they split visual ownership across Python, Blender, and
+Three.js. An endpoint could report correct contact while the visible knee,
+sole, clothing, grip, or silhouette remained wrong.
 
-The scooter also accumulated reversible Three.js procedural prototypes while
-the intended production workflow was Blender authoring. Continuing either
-pattern would split visual ownership across Python, Blender, and Three.js and
-make direct art correction unnecessarily difficult.
+The scooter also accumulated procedural runtime prototypes while the intended
+production workflow was native Blender authoring. Continuing either pattern
+would make direct visual correction and review unnecessarily difficult.
 
 ## Decision
 
@@ -78,9 +75,8 @@ palms on grips—is the acceptance criterion.
 - Visual iteration becomes slower to automate but substantially easier to
   inspect, correct, and teach.
 - Blender MCP availability is a prerequisite for production asset changes.
-- The legacy headless rider builder remains only as migration history until the
-  first approved MCP-native `.blend` and GLB supersede it; production gates may
-  not invoke it.
+- Existing headless asset builders are migration history only; production
+  gates may not invoke them as the authoring source.
 - Existing headless browser checks remain valid because they test the web
   runtime rather than authoring 3D assets.
 - Any future agent that cannot access Blender MCP must stop at analysis,
@@ -89,7 +85,7 @@ palms on grips—is the acceptance criterion.
 
 ## Superseded guidance
 
-This decision supersedes repository language that treats
-`scripts/build-streetwear-rider.py` as the production source of truth or asks
-Three.js to construct the canonical rider pose. Historical provenance remains
-accurate for the current generated GLB until it is replaced.
+This decision supersedes repository language that treats generated Python
+geometry as the production source of truth or asks Three.js to construct the
+canonical rider pose. Historical provenance remains accurate for artifacts
+created before this decision.

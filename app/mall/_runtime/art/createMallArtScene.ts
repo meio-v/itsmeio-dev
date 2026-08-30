@@ -6,6 +6,7 @@ import {
   type MallMaterialRegistry,
   type MallMaterialRole,
 } from "./mallMaterials";
+import { cloneMallAsset, type MallAssetLibrary } from "./mallAssetLibrary";
 
 export type MallArtScene = {
   root: THREE.Group;
@@ -18,6 +19,13 @@ type BoxOptions = {
   material: MallMaterialRole;
   rotationY?: number;
   name?: string;
+};
+
+type AssetPlacement = {
+  position: [number, number, number];
+  scale: number | [number, number, number];
+  rotationY?: number;
+  material?: MallMaterialRole;
 };
 
 const FLOOR_Y = 0.012;
@@ -73,9 +81,67 @@ function addOutlinedBox(
   return group;
 }
 
+function assetMaterialRole(
+  source: THREE.Material,
+  fallback: MallMaterialRole,
+): MallMaterialRole {
+  const name = source.name.toLowerCase();
+  if (name.includes("screen")) return "unlit.screen";
+  if (name.includes("black") || name.includes("dark")) {
+    return "toon.environment.dark";
+  }
+  if (name.includes("button") || name.includes("accept")) {
+    return "toon.interactive.acid";
+  }
+  if (name.includes("decline") || name.includes("red")) {
+    return "toon.hero.coral";
+  }
+  return fallback;
+}
+
+function addAsset(
+  parent: THREE.Object3D,
+  materials: MallMaterialRegistry,
+  source: THREE.Group,
+  name: string,
+  placement: AssetPlacement,
+) {
+  const asset = cloneMallAsset(source, name);
+  asset.position.set(...placement.position);
+  asset.rotation.y = placement.rotationY ?? 0;
+  if (typeof placement.scale === "number") {
+    asset.scale.setScalar(placement.scale);
+  } else {
+    asset.scale.set(...placement.scale);
+  }
+  asset.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return;
+    const sourceMaterials = Array.isArray(object.material)
+      ? object.material
+      : [object.material];
+    const replacements = sourceMaterials.map(
+      (material) =>
+        materials[
+          assetMaterialRole(
+            material,
+            placement.material ?? "toon.environment.light",
+          )
+        ],
+    );
+    object.material = Array.isArray(object.material)
+      ? replacements
+      : replacements[0];
+    object.castShadow = true;
+    object.receiveShadow = true;
+  });
+  parent.add(asset);
+  return asset;
+}
+
 function addBoundaryArchitecture(
   root: THREE.Group,
   materials: MallMaterialRegistry,
+  assets: MallAssetLibrary,
 ) {
   const boundaryBoxes = STATIC_BOXES.slice(1, 8);
   boundaryBoxes.forEach((box, index) => {
@@ -121,6 +187,22 @@ function addBoundaryArchitecture(
       name: "ceiling-rib",
     });
   }
+
+  // A few curated kit pieces break up the procedural shell without taking
+  // ownership of the collision route.
+  for (const [index, x] of [-11.5, -2.5, 6.5].entries()) {
+    addAsset(root, materials, assets.wallPanel, `aged-store-panel-${index + 1}`, {
+      position: [x, 1.18, 8.74],
+      rotationY: Math.PI,
+      scale: [2.45, 1.2, 0.62],
+      material: "toon.environment.light",
+    });
+  }
+  addAsset(root, materials, assets.wallDoorway, "shuttered-retail-doorway", {
+    position: [5.8, 0.02, -8.78],
+    scale: [2.1, 1.65, 0.72],
+    material: "toon.environment.dark",
+  });
 }
 
 function addFloorAndRoute(
@@ -220,6 +302,7 @@ function addFloorAndRoute(
 function addSlalomAndAtrium(
   root: THREE.Group,
   materials: MallMaterialRegistry,
+  assets: MallAssetLibrary,
 ) {
   const obstacles = STATIC_BOXES.slice(8, 13);
   obstacles.forEach((box, index) => {
@@ -235,13 +318,18 @@ function addSlalomAndAtrium(
       name: isPlanter ? "slalom-planter" : "slalom-kiosk",
     });
     if (isPlanter) {
-      const leaves = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(index === 4 ? 1.28 : 0.48, 0),
-        materials["toon.interactive.acid"],
+      addAsset(
+        root,
+        materials,
+        assets.pottedPlant,
+        index === 4 ? "atrium-hero-plant" : "slalom-potted-plant",
+        {
+          position: [x, y + hy, z],
+          scale: index === 4 ? 1.55 : 0.62,
+          rotationY: index * 0.73,
+          material: "toon.interactive.acid",
+        },
       );
-      leaves.name = "graphic-planter-canopy";
-      leaves.position.set(x, y + hy + (index === 4 ? 0.82 : 0.32), z);
-      root.add(leaves);
     } else {
       addBox(root, materials, {
         position: [x, y + hy * 0.65, z],
@@ -257,11 +345,38 @@ function addSlalomAndAtrium(
       });
     }
   });
+
+  for (const [index, position] of [
+    [-13.9, 0, -7.9],
+    [-4.9, 0, 7.85],
+    [7.8, 0, 7.85],
+  ].entries()) {
+    addAsset(root, materials, assets.trashcan, `mall-bin-${index + 1}`, {
+      position: position as [number, number, number],
+      scale: 0.72,
+      rotationY: index * 0.55,
+      material: "toon.environment.dark",
+    });
+  }
+
+  addAsset(root, materials, assets.cardboardBoxClosed, "maintenance-box-closed", {
+    position: [-5.25, 0, -7.55],
+    scale: 0.72,
+    rotationY: 0.18,
+    material: "toon.environment.light",
+  });
+  addAsset(root, materials, assets.cardboardBoxOpen, "maintenance-box-open", {
+    position: [-4.55, 0, -7.72],
+    scale: 0.56,
+    rotationY: -0.25,
+    material: "toon.environment.light",
+  });
 }
 
 function addCameraPinchAndImpactCorner(
   root: THREE.Group,
   materials: MallMaterialRegistry,
+  assets: MallAssetLibrary,
 ) {
   STATIC_BOXES.slice(13, 15).forEach((box, index) => {
     const [x, y, z] = box.center;
@@ -277,6 +392,12 @@ function addCameraPinchAndImpactCorner(
       size: [1.25, 0.42, 1.25],
       material: "toon.environment.dark",
       name: "camera-pinch-soffit",
+    });
+    addAsset(root, materials, assets.column, `kit-column-${index + 1}`, {
+      position: [x, 0, z],
+      scale: [1.02, 1.42, 1.02],
+      rotationY: index * (Math.PI / 2),
+      material: "toon.environment.light",
     });
   });
 
@@ -308,6 +429,7 @@ function addCameraPinchAndImpactCorner(
 function addArcadeArrival(
   root: THREE.Group,
   materials: MallMaterialRegistry,
+  assets: MallAssetLibrary,
 ) {
   const arcade = new THREE.Group();
   arcade.name = "arcade-arrival";
@@ -333,30 +455,24 @@ function addArcadeArrival(
     name: "arcade-marquee",
   });
 
-  for (const x of [11.1, 13.0, 14.9]) {
-    const cabinet = new THREE.Group();
-    cabinet.position.set(x, 0, -7.15);
-    cabinet.rotation.y = Math.PI / 2;
-    addBox(cabinet, materials, {
-      position: [0, 0.7, 0],
-      size: [0.78, 1.4, 0.72],
-      material: "toon.environment.dark",
-      name: "arcade-cabinet",
-    });
-    addBox(cabinet, materials, {
-      position: [-0.38, 0.91, 0],
-      size: [0.035, 0.46, 0.5],
-      material: "unlit.screen",
-      name: "arcade-screen",
-    });
-    addBox(cabinet, materials, {
-      position: [-0.43, 0.54, 0],
-      size: [0.22, 0.08, 0.58],
-      material: "toon.hero.coral",
-      name: "arcade-control-deck",
-    });
-    arcade.add(cabinet);
-  }
+  addAsset(arcade, materials, assets.arcadeMachine, "arcade-cabinet-01", {
+    position: [11.05, 0, -7.18],
+    scale: 0.92,
+    rotationY: Math.PI / 2,
+    material: "toon.hero.coral",
+  });
+  addAsset(arcade, materials, assets.clawMachine, "arcade-claw-machine", {
+    position: [13.0, 0, -7.16],
+    scale: 0.84,
+    rotationY: Math.PI / 2,
+    material: "toon.interactive.acid",
+  });
+  addAsset(arcade, materials, assets.vendingMachine, "arcade-vending-machine", {
+    position: [14.9, 0, -7.18],
+    scale: 0.95,
+    rotationY: Math.PI / 2,
+    material: "toon.environment.dark",
+  });
 
   addFloorPrint(
     arcade,
@@ -369,17 +485,36 @@ function addArcadeArrival(
   root.add(arcade);
 }
 
+function addEntranceAssets(
+  root: THREE.Group,
+  materials: MallMaterialRegistry,
+  assets: MallAssetLibrary,
+) {
+  for (const [index, x] of [-14.1, -12.95, -11.8].entries()) {
+    addAsset(root, materials, assets.atm, `atm-bank-${index + 1}`, {
+      position: [x, 0.69, 7.78],
+      scale: 0.55,
+      rotationY: Math.PI,
+      material: "toon.environment.light",
+    });
+  }
+}
+
 function addLighting(root: THREE.Group) {
-  const fill = new THREE.HemisphereLight(0xf4edda, 0x28243e, 1.65);
+  const fill = new THREE.HemisphereLight(0xdce1c5, 0x171813, 0.34);
   fill.name = "mall-hemisphere-fill";
   root.add(fill);
 
-  const key = new THREE.DirectionalLight(0xfff0d2, 2.55);
+  const key = new THREE.DirectionalLight(0xe8efd5, 1.45);
   key.name = "mall-directional-key";
-  key.position.set(-9, 14, 8);
+  key.position.set(-10, 13, 7);
   key.target.position.set(3, 0, -1);
-  key.castShadow = false;
   root.add(key, key.target);
+
+  const arcadeSpill = new THREE.PointLight(0xff8b49, 13, 12, 2.1);
+  arcadeSpill.name = "arcade-warm-spill";
+  arcadeSpill.position.set(13.2, 2.1, -6.6);
+  root.add(arcadeSpill);
 }
 
 /**
@@ -387,17 +522,18 @@ function addLighting(root: THREE.Group) {
  * interaction remain owned by the parent runtime; this group shares its world
  * coordinates and can be mounted or disposed independently.
  */
-export function createMallArtScene(): MallArtScene {
+export function createMallArtScene(assets: MallAssetLibrary): MallArtScene {
   const root = new THREE.Group();
   root.name = "mall-art-scene";
   const materials = createMallMaterialRegistry();
 
   addLighting(root);
   addFloorAndRoute(root, materials);
-  addBoundaryArchitecture(root, materials);
-  addSlalomAndAtrium(root, materials);
-  addCameraPinchAndImpactCorner(root, materials);
-  addArcadeArrival(root, materials);
+  addBoundaryArchitecture(root, materials, assets);
+  addEntranceAssets(root, materials, assets);
+  addSlalomAndAtrium(root, materials, assets);
+  addCameraPinchAndImpactCorner(root, materials, assets);
+  addArcadeArrival(root, materials, assets);
 
   root.userData.route = {
     dimensions: [35, 18],

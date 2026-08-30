@@ -11,7 +11,12 @@ import { BENCHMARK, RIDE_TUNING } from "./rideTuning";
 import { RidePhysics } from "./ridePhysics";
 import { createVehicleVisual, type VehicleVisual } from "./vehicleVisual";
 import type { RideInput } from "./rideTypes";
-import { createMallArtScene, type MallArtScene } from "./art";
+import {
+  createMallArtScene,
+  loadMallAssetLibrary,
+  type MallArtScene,
+  type MallAssetLibrary,
+} from "./art";
 
 type MallRideRuntimeOptions = {
   canvas: HTMLCanvasElement;
@@ -85,6 +90,7 @@ export class MallRideRuntime {
   private constructor(
     private readonly options: MallRideRuntimeOptions,
     context: WebGL2RenderingContext,
+    assets: MallAssetLibrary,
     private readonly createStartedAt: number,
   ) {
     this.renderer = new THREE.WebGLRenderer({
@@ -96,9 +102,8 @@ export class MallRideRuntime {
     });
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.05;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.toneMappingExposure = 0.9;
+    this.renderer.shadowMap.enabled = false;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     this.outline = new OutlineEffect(this.renderer, {
       defaultThickness: 0.0045,
@@ -107,18 +112,20 @@ export class MallRideRuntime {
       defaultKeepAlive: false,
     });
 
-    this.scene.background = new THREE.Color(0x171126);
-    this.scene.fog = new THREE.Fog(0x171126, 26, 58);
+    this.scene.background = new THREE.Color(0x22231f);
+    this.scene.fog = new THREE.Fog(0x22231f, 38, 64);
 
     this.physics = new RidePhysics(BENCHMARK.start);
 
-    this.visual = createVehicleVisual();
-    this.mallArt = createMallArtScene();
+    this.visual = createVehicleVisual(assets);
+    this.mallArt = createMallArtScene(assets);
     this.scene.add(this.mallArt.root);
     this.scene.add(this.visual.root);
 
     this.input = new InputController(options.controlSurface);
     this.input.setEnabled(false);
+    options.controlSurface.tabIndex = -1;
+    options.controlSurface.style.pointerEvents = "none";
     options.controlSurface.dataset.controlMode = this.mode;
     this.resizeObserver = new ResizeObserver(this.resize);
     this.resizeObserver.observe(options.canvas);
@@ -127,6 +134,7 @@ export class MallRideRuntime {
       "webglcontextrestored",
       this.onContextRestored,
     );
+    options.controlSurface.addEventListener("keydown", this.onControlSurfaceKeyDown);
     options.controlSurface.addEventListener("blur", this.onControlSurfaceBlur);
     document.addEventListener("visibilitychange", this.onVisibilityChange);
 
@@ -141,14 +149,17 @@ export class MallRideRuntime {
   static async create(options: MallRideRuntimeOptions) {
     const createStartedAt = performance.now();
     performance.mark("mall:runtime-import-start");
-    await RAPIER.init();
+    const [, assets] = await Promise.all([
+      RAPIER.init(),
+      loadMallAssetLibrary(),
+    ]);
     const context = options.canvas.getContext("webgl2", {
       antialias: true,
       alpha: false,
       powerPreference: "high-performance",
     });
     if (!context) throw new Error("This browser does not provide WebGL 2.");
-    return new MallRideRuntime(options, context, createStartedAt);
+    return new MallRideRuntime(options, context, assets, createStartedAt);
   }
 
   start() {
@@ -240,6 +251,7 @@ export class MallRideRuntime {
       "webglcontextrestored",
       this.onContextRestored,
     );
+    this.options.controlSurface.removeEventListener("keydown", this.onControlSurfaceKeyDown);
     this.options.controlSurface.removeEventListener("blur", this.onControlSurfaceBlur);
     delete this.options.controlSurface.dataset.controlMode;
     document.removeEventListener("visibilitychange", this.onVisibilityChange);
@@ -400,6 +412,9 @@ export class MallRideRuntime {
     this.mode = mode;
     this.options.controlSurface.dataset.controlMode = mode;
     this.input.setEnabled(mode === "driving");
+    this.options.controlSurface.dataset.controlMode = mode;
+    this.options.controlSurface.tabIndex = mode === "driving" ? 0 : -1;
+    this.options.controlSurface.style.pointerEvents = mode === "driving" ? "auto" : "none";
     if (mode === "driving") this.options.controlSurface.focus({ preventScroll: true });
     if (mode !== "driving") this.accumulator = 0;
     if (changed) {
@@ -453,8 +468,12 @@ export class MallRideRuntime {
   private readonly resize = () => {
     const rect = this.options.canvas.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
-    this.renderer.setSize(rect.width, rect.height, false);
     this.outline.setSize(rect.width, rect.height);
+    // OutlineEffect writes pixel dimensions back as CSS dimensions. Restore the
+    // canvas to the responsive frame while keeping the backing buffer explicit.
+    this.renderer.setSize(rect.width, rect.height, false);
+    this.options.canvas.style.width = "100%";
+    this.options.canvas.style.height = "100%";
     this.camera.aspect = rect.width / rect.height;
     this.camera.updateProjectionMatrix();
   };
@@ -482,7 +501,13 @@ export class MallRideRuntime {
   };
 
   private readonly onVisibilityChange = () => {
-    if (document.hidden && this.mode === "driving") this.setMode("paused");
+    if (document.hidden && this.mode === "driving") this.setMode("attract");
+  };
+
+  private readonly onControlSurfaceKeyDown = (event: KeyboardEvent) => {
+    if (event.code !== "Escape" || this.mode !== "driving") return;
+    event.preventDefault();
+    this.setMode("attract");
   };
 
   private readonly onControlSurfaceBlur = (event: FocusEvent) => {
@@ -492,6 +517,6 @@ export class MallRideRuntime {
     ) {
       return;
     }
-    if (this.mode === "driving") this.setMode("paused");
+    if (this.mode === "driving") this.setMode("attract");
   };
 }

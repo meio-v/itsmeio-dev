@@ -2,60 +2,60 @@
 
 Audit date: 2026-08-28
 
-## Runtime contents in this slice
+## Runtime policy
 
-The authored `/mall` vertical slice still ships **authored procedural Three.js
-geometry only** for its architecture, arcade props, signage, route marks, and
-moped/rider. No third-party mesh or texture is loaded by that route. The
-development-only `/mall/ride-lab` route has a separately curated CC0 vehicle
-payload under `public/mall/ride-lab`; it is not imported by the mall runtime.
+Production rider and scooter authoring follows
+[ADR 0001](../adr/0001-blender-mcp-native-asset-authoring.md): the reviewed
+Blender scene edited through Blender MCP is the source of truth, while runtime
+code owns bounded presentation and validation rather than primary modeling or
+the canonical seated pose.
 
-The procedural environment is original project code. Its material replacement,
-world scale, pivots, geometry construction, and disposal rules live in
-`app/mall/_runtime/art`. The moving low-poly moped/rider is likewise authored in
-the runtime by the vehicle slice. Render geometry is not used as collision
-geometry; `mallPhysics.ts` remains the collider source of truth.
+The development-only `/mall/ride-lab` route has a separately curated vehicle
+payload under `public/mall/ride-lab`; it is documented independently below.
 
-## Approved CC0 foundations retained for later curation
+The mall now ships a curated 1.4 MB GLB set under `public/mall/assets`. Third-
+party meshes are geometry donors: source palettes, PBR textures, unused clips,
+and pack-level scene assembly are not shipped. Runtime code supplies the toon
+palette, hard shadows, selective outlines, placement, and animation pivots.
 
-| Asset | Creator/source | Inspected archive SHA-256 | License | Runtime status |
-| --- | --- | --- | --- | --- |
-| [Simple Scooter](https://styloo.itch.io/scooter) | Styloo | `10b41fbe6d7ee337806272a10d42c3c013213d892006f237fce55bc624b88ef4` | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Curated red GLB ships only in Ride Lab |
-| [Animated Characters 1.0](https://kenney.nl/assets/animated-characters) | Kenney | `ec3787de70fa2200256848d74201b10f6b6c3126594e9857bf989753312c2b84` | CC0 1.0, bundled `License.txt` | Curated `characterMedium` rig and `skaterMaleA` skin ship only in Ride Lab |
-| [Building Kit 1.0](https://kenney.nl/assets/building-kit) | Kenney | `2740ef5772fb5fb3d7aab881db22d129f6b68afe711b1a79e6d5e9e19cf3eec6` | CC0 1.0, bundled `License.txt` | Approved source; replaced by authored procedural shell for this slice |
-| [Mini Arcade 1.2](https://kenney.nl/assets/mini-arcade) | Kenney; additional contributors Fleur Keijsers and Guus Vermeulen | `2acfe5cb44d392e834f77cf5488528c7cd45427cdf5fb941ce99856276158c19` | CC0 1.0, bundled `License.txt` | Approved source; replaced by authored procedural cabinets for this slice |
-| [Redaction 20 Italic](https://usemodify.com/fonts/redaction/) | Forest Young and Jeremy Mickel | Fontsource package `@fontsource/redaction-20@5.3.0` | SIL Open Font License 1.1 | Self-hosted through the application bundle; used only for the mall header wordmark |
+The original procedural layer remains the source of truth for the 35×18 m
+driving benchmark and invisible Rapier colliders. Imported geometry is visual
+only, so asset iteration cannot silently change braking distance, lane width,
+camera collision, safe reset anchors, or the arcade trigger.
 
-Attribution is not required by CC0. The project retains these credits
-voluntarily. Checksums identify the exact archives inspected in issue #13; they
-are evidence, not build inputs.
+All third-party sources below are CC0. Attribution is retained voluntarily.
 
-## Required modification before any approved pack enters runtime
+## Sources and transformations
 
-- Curate individual source files; never commit or serve whole pack archives.
-- Normalize Y-up, metre-like scale and ground-aligned placement origins.
-- Preserve explicit movable pivots and replace generated node names with stable
-  runtime names.
-- Replace embedded PBR/palette materials with the semantic toon registry.
-- Reduce the scooter from three embedded 2048² maps to at most one authored
-  1024² base/mask texture, if any texture detail survives the art pass.
-- Merge or instance repeated static architecture while keeping moving parts
-  separate.
-- Validate curated GLBs and record source file, tool versions, commands,
-  modifications, output checksum, scale, axes, named nodes, clips, material
-  roles, and collision source here before commit.
+| Runtime files | Creator/source | Inspected source SHA-256 | Changes |
+| --- | --- | --- | --- |
+| `scooter.glb` | [Styloo Simple Scooter](https://styloo.itch.io/scooter) | `10b41fbe6d7ee337806272a10d42c3c013213d892006f237fce55bc624b88ef4` | Selected black GLB; removed three embedded 2048² PBR textures; removed unused skin metadata; deduplicated and pruned. Runtime supplies pink toon body, black wheels/seat, headlight, wheel pivots, and hard shadows. |
+| `rider.glb` | [Quaternius Ultimate Modular Men Pack](https://quaternius.com/packs/ultimatemodularcharacters.html), Beach character | `76e001ea131fd76a1bd938a7862606cb8037f7049b632783580b9bf4da2371a8` | Removed 24 unused clips and orphaned accessors; retained rig and flat material roles. Runtime compresses the proportions, poses the rig on the scooter, recolors the clothes, and adds oversized glasses. |
+| `arcade-machine.glb`, `claw-machine.glb`, `vending-machine.glb` | [Kenney Mini Arcade 1.2](https://kenney.nl/assets/mini-arcade) | `2acfe5cb44d392e834f77cf5488528c7cd45427cdf5fb941ce99856276158c19` | Selected three destination props; removed shared source colormap and unused UV accessors; replaced materials at runtime. |
+| `column.glb`, `wall-doorway.glb`, `wall-panel.glb` | [Kenney Building Kit 1.0](https://kenney.nl/assets/building-kit) | `2740ef5772fb5fb3d7aab881db22d129f6b68afe711b1a79e6d5e9e19cf3eec6` | Selected three shell-breakup pieces; removed shared colormap and unused UV accessors; scaled and placed against the existing procedural architecture. |
+| `potted-plant.glb`, `trashcan.glb`, `cardboard-box-closed.glb`, `cardboard-box-open.glb` | [Kenney Furniture Kit](https://kenney.nl/assets/furniture-kit) | `e67652d0932cee41683f74711c03d3e192a2af9979ef8e6b237711f5482d46b0` | Selected four mundane props; pruned unused accessors; recolored and clustered away from the driving line. |
+| `atm.glb` | [pixelmannen Low-Poly ATMs](https://opengameart.org/content/low-poly-atms) | `fc1a7cb87067516269e095617077e8fa5df542a9715e575d5299a26aa66c523f` | Selected `ATM_NORMAL.obj`; converted to binary glTF with `obj2gltf`; retained material names so screens, controls, and body can receive semantic runtime materials. |
+| Redaction 20 Italic font bundle | [Forest Young and Jeremy Mickel](https://usemodify.com/fonts/redaction/) via `@fontsource/redaction-20@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted and used for the mall wordmark. |
+| Goldman font bundle | [Jaikishan Patel / MagicType](https://github.com/magictype/goldman) via `@fontsource/goldman@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for mall display labels; the slant is an intentional CSS oblique because the family ships Regular and Bold only. |
+| WDXL Lubrifont JP N font bundle | [Google Fonts](https://fonts.google.com/specimen/WDXL+Lubrifont+JP+N) via `@fontsource/wdxl-lubrifont-jp-n@5.3.0` | Package lock is the build input | SIL Open Font License 1.1. Self-hosted for Japanese signage, with DotGothic16 retained as the rollback fallback. |
+| `public/mall/fonts/graffiti-xenoa-regular.otf` | Nirmana Visual, user-provided Graffiti Xenoa demo bundle | `dd2d027019fd2b8a2c5687f3698b24ab752280b7e0c38d92499598d110effc68` | Personal-use demo license. Self-hosted only for the decorative `01`–`03` section numerals; CSS tracking is widened to compensate for the display face's naturally tight spacing. |
+| `public/mall/textures/control-deck-panel-full.png` | User-provided original illustration | `d5b337a59b54e83d9a006c2438bf31595e7f1530bd7069b70ba82beae6c22208` | Rebuilt from the untouched source alpha bounds with transparent safety padding around the complete casing, then given a cache-safe asset URL. The real ride controls and semantics remain separate HTML. |
+| `public/mall/textures/coin-door.png` | User-provided original illustration | `61da7713a511acd640bfd796cd20c3549fe7dfe79f80c45bdfb5db28abf609e8` | Cropped nondestructively from the supplied transparent source. The `FREE / 1 PLAY` denomination plate and interactive aperture are layered in HTML so state and accessibility remain intact. |
+| `public/mall/stickers/doodles/memory-card.png` | User-provided original illustration | `6f380d81839be51e92d1f047695ee096676b22b3b8d72db36180c3799f647113` | Shipped unchanged as a decorative sticker in the Currently Playing poster wall. |
+
+## Ride Lab curated vehicle outputs
 
 The complete source inspection and rationale are preserved in
 [issue #13](https://github.com/meio-v/itsmeio-dev/issues/13) and the
 [approved CC0 asset audit](https://gist.github.com/meio-v/238bf922a60a12471a40007eb6c4c3b5).
 
-## Ride Lab curated vehicle outputs
-
 The source archives are local audit inputs and are not committed. The exact
-Simple Scooter archive above supplied
+Styloo Simple Scooter archive above supplied
 `StylooSimpleScooterAssetPack_GLTF/StylooSimpleScooterAssetPack/scooterred.glb`.
-The exact Kenney archive above supplied `Model/characterMedium.fbx` and
-`Skins/skaterMaleA.png`.
+The [Kenney Animated Characters 1.0](https://kenney.nl/assets/animated-characters)
+archive supplied `Model/characterMedium.fbx` and `Skins/skaterMaleA.png`; its
+inspected SHA-256 is
+`ec3787de70fa2200256848d74201b10f6b6c3126594e9857bf989753312c2b84`.
 
 The former Kenney authoring reference was converted with `fbx2gltf@0.9.7-p1` using its documented Node API:
 `convert("Model/characterMedium.fbx", "kenney-skater-male.glb", [])`. The
@@ -148,3 +148,24 @@ marking; no third-party source asset is embedded. Its SHA-256 is
 The full-resolution Character Reference Factory sheets are retained as
 authoring-only files under `assets/authoring/ride-lab/scooter-reference/` and
 are not loaded by the application.
+
+## Mall shipped file checksums
+
+| File | SHA-256 |
+| --- | --- |
+| `arcade-machine.glb` | `c9ecd0d8a0ded997e9e6a4847f13ef012e2af1193db52713b3365d89ec4eb16e` |
+| `atm.glb` | `eef829040259b75022535c65adcd328fdbbf2be67a28a836b9b35d298ecd8e69` |
+| `cardboard-box-closed.glb` | `f2c019f2988de7960440207e245750fb45185d01ff93e2f1bf018db7f475bfc4` |
+| `cardboard-box-open.glb` | `fe41f4bf62bf0fe7846ea3624b165e1d5d827c3f2080957fead5f0dea79488d2` |
+| `claw-machine.glb` | `245ae420398f639d6f0271de1a37fe5423468956e704aafd229a0ce4a9bb6d59` |
+| `column.glb` | `6e2d1bf801cfcfecb47848214767e6898108bd5e8dc9edb91312066f00aac6f5` |
+| `potted-plant.glb` | `db4a1ae8413b4f4a2807ae6dfe44f46eb8260a422608c3e4e801af38429921fa` |
+| `rider.glb` | `65f9166e848b17bc33ab6fc7d5c52cb37d00b90394055bad13391da1fa87b25b` |
+| `scooter.glb` | `d793962749d9b02301f542b59478562e93daafb19d77bb8cf8e034b42b556c92` |
+| `trashcan.glb` | `8049bd11d4344b88372a60ae04c09b03d98d5422e815ae9181cd97ad0f49dc4d` |
+| `vending-machine.glb` | `2a343347d019b1063e59f4326c99a71aed9fb7bb0adcc4e1b22809d648dde334` |
+| `wall-doorway.glb` | `5a00fbbc246cb99f270d4b5c2dda8b381b6578edef736105830577b75c503bae` |
+| `wall-panel.glb` | `e6738f4ba4ecd6b986ca6c2c5988b653e1307dbd62cc98b050453d2d86c4a5a2` |
+
+The broader source inspection remains in [issue #13](https://github.com/meio-v/itsmeio-dev/issues/13)
+and the [approved CC0 asset audit](https://gist.github.com/meio-v/238bf922a60a12471a40007eb6c4c3b5).

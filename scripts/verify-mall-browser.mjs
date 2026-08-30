@@ -16,7 +16,7 @@ async function waitForRuntime(page) {
     undefined,
     { timeout: 20_000 },
   );
-  await page.getByRole("button", { name: "Take control" }).waitFor({
+  await page.getByRole("button", { name: "Add token" }).waitFor({
     state: "visible",
   });
   await page.waitForFunction(
@@ -54,8 +54,8 @@ try {
   await page.goto(`${server.origin}/mall?rideDebug`, {
     waitUntil: "networkidle",
   });
-  await page.getByRole("heading", { name: "Take the long way in." }).waitFor();
-  await page.getByText("The website still works.").waitFor();
+  await page.getByRole("heading", { name: /Come explore with me/i }).waitFor();
+  await page.getByRole("heading", { name: "Currently Playing" }).waitFor();
   await waitForRuntime(page);
   if (screenshotDirectory) {
     await page.screenshot({
@@ -64,8 +64,10 @@ try {
     });
   }
 
-  await page.getByRole("button", { name: "Take control" }).click();
-  await page.getByRole("button", { name: "Pause ride" }).waitFor();
+  await page.getByRole("button", { name: "Add token" }).click();
+  await page.waitForFunction(
+    () => window.__mallRideRuntime.getDebugSnapshot().mode === "driving",
+  );
   await page.keyboard.down("ArrowUp");
   await page.waitForTimeout(700);
   await page.keyboard.up("ArrowUp");
@@ -82,7 +84,7 @@ try {
     });
   }
 
-  await page.getByRole("link", { name: "Enter arcade" }).click();
+  await page.getByRole("link", { name: /Open display/i }).click();
   const dialog = page.getByRole("dialog", { name: "Currently playing" });
   await dialog.waitFor();
   assert.equal(
@@ -92,7 +94,6 @@ try {
     "paused",
   );
   await dialog.getByRole("button", { name: "Close" }).click();
-  await page.getByRole("button", { name: "Pause ride" }).waitFor();
   assert.equal(
     await page.evaluate(
       () => window.__mallRideRuntime.getDebugSnapshot().mode,
@@ -118,8 +119,9 @@ try {
     () =>
       window.__mallRideRuntime.getDebugSnapshot().contextStatus === "active",
   );
-  await page.getByRole("button", { name: "Resume ride" }).click();
-  await page.getByRole("button", { name: "Pause ride" }).waitFor();
+  await page.waitForFunction(
+    () => window.__mallRideRuntime.getDebugSnapshot().mode === "driving",
+  );
 
   assert.equal(
     await page.evaluate(() => {
@@ -173,8 +175,8 @@ try {
   attachErrorCapture(fallbackPage, errors);
   await fallbackPage.goto(`${server.origin}/mall`, { waitUntil: "networkidle" });
   await fallbackPage.getByText(/cannot run the ride/i).waitFor();
-  await fallbackPage.getByText("The website still works.").waitFor();
-  assert.equal(await fallbackPage.getByRole("button", { name: "Take control" }).isDisabled(), true);
+  await fallbackPage.getByRole("heading", { name: "Currently Playing" }).waitFor();
+  assert.equal(await fallbackPage.getByRole("button", { name: "Add token" }).isDisabled(), true);
   await fallback.close();
 
   const failedRuntime = await browser.newContext({
@@ -197,9 +199,9 @@ try {
   await failedRuntimePage
     .getByText("The ride is unavailable. The rest of the mall is still open.")
     .waitFor();
-  await failedRuntimePage.getByText("The website still works.").waitFor();
+  await failedRuntimePage.getByRole("heading", { name: "Currently Playing" }).waitFor();
   assert.equal(
-    await failedRuntimePage.getByRole("button", { name: "Take control" }).isDisabled(),
+    await failedRuntimePage.getByRole("button", { name: "Add token" }).isDisabled(),
     true,
   );
   await failedRuntime.close();
@@ -214,13 +216,14 @@ try {
     waitUntil: "networkidle",
   });
   await waitForRuntime(mobilePage);
-  await mobilePage.getByRole("button", { name: "Take control" }).click();
-  await mobilePage.getByRole("button", { name: "Pause ride" }).waitFor();
+  await mobilePage.getByRole("button", { name: "Add token" }).click();
+  await mobilePage.waitForFunction(
+    () => window.__mallRideRuntime.getDebugSnapshot().mode === "driving",
+  );
   const mobileLayout = await mobilePage.evaluate(() => {
     const buttons = [...document.querySelectorAll(".mall-touch-controls button")];
-    const rideActions = document.querySelector(".mall-touch-controls")
-      ?.closest("section")
-      ?.querySelector('[class*="rideActions"]')
+    const rideSurface = document
+      .querySelector(".mall-ride-surface")
       ?.getBoundingClientRect();
     const diagnostics = document
       .querySelector(".mall-ride-debug")
@@ -230,14 +233,12 @@ try {
       display: getComputedStyle(document.querySelector(".mall-touch-controls")).display,
       touchTargets: buttons.map((button) => {
         const rect = button.getBoundingClientRect();
-        const overlapsHud = rideActions
-          ? !(
-              rect.right <= rideActions.left ||
-              rect.left >= rideActions.right ||
-              rect.bottom <= rideActions.top ||
-              rect.top >= rideActions.bottom
-            )
-          : true;
+        const containedByRide = rideSurface
+          ? rect.left >= rideSurface.left &&
+            rect.right <= rideSurface.right &&
+            rect.top >= rideSurface.top &&
+            rect.bottom <= rideSurface.bottom
+          : false;
         const overlapsDiagnostics = diagnostics
           ? !(
               rect.right <= diagnostics.left ||
@@ -249,7 +250,7 @@ try {
         return {
           width: rect.width,
           height: rect.height,
-          overlapsHud,
+          containedByRide,
           overlapsDiagnostics,
         };
       }),
@@ -264,7 +265,7 @@ try {
     JSON.stringify(mobileLayout),
   );
   assert.ok(
-    mobileLayout.touchTargets.every(({ overlapsHud }) => !overlapsHud),
+    mobileLayout.touchTargets.every(({ containedByRide }) => containedByRide),
     JSON.stringify(mobileLayout),
   );
   assert.ok(
