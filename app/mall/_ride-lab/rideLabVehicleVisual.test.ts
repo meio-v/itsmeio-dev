@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { RideLabSnapshot } from "./rideLabTypes.ts";
-import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveScooterMaterialRole, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
+import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveScooterIsolatedPartRole, resolveScooterMaterialRole, SCOOTER_ISOLATED_MESHES, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
 
 test("curated scooter alignment matches the Jolt wheelbase and bounded visual steering", () => {
   assert.ok(Math.abs(RIDE_LAB_VEHICLE_ALIGNMENT.scooterScale * 2.6811 - 1.56) < 1e-12);
@@ -95,6 +95,41 @@ test("scooter palette normalizes exported and runtime mesh names", () => {
   assert.equal(shouldOutlineScooterMesh("echaplowpoly002"), true);
   assert.equal(shouldOutlineScooterMesh("trucderrirerelowpoly002"), true);
   assert.equal(shouldOutlineScooterMesh("petitelumiererouge002"), false);
+});
+
+test("curated wheel islands isolate tire, rim, axle, and hub by exact mesh name", () => {
+  const tire = { vertexCount: 45, localYCenter: 0, localYSpan: 0.275, maximumLocalXZRadius: 0.4352 };
+  const rim = { vertexCount: 6, localYCenter: 0.0015, localYSpan: 0.067, maximumLocalXZRadius: 0.3001 };
+  const axle = { vertexCount: 57, localYCenter: 0.0874, localYSpan: 0.0364, maximumLocalXZRadius: 0.1157 };
+  const hub = { vertexCount: 112, localYCenter: 0, localYSpan: 0.1888, maximumLocalXZRadius: 0.1157 };
+  const unknownFastener = { vertexCount: 8, localYCenter: 0.08, localYSpan: 0.02, maximumLocalXZRadius: 0.30 };
+
+  assert.deepEqual(SCOOTER_ISOLATED_MESHES.wheels, ["wheellowpoly.004", "wheellowpoly.005"]);
+  for (const wheel of SCOOTER_ISOLATED_MESHES.wheels) {
+    assert.equal(resolveScooterIsolatedPartRole(wheel, tire), "tire");
+    assert.equal(resolveScooterIsolatedPartRole(wheel, rim), "rim");
+    assert.equal(resolveScooterIsolatedPartRole(wheel, axle), "axle");
+    assert.equal(resolveScooterIsolatedPartRole(wheel, { ...axle, localYCenter: -axle.localYCenter }), "axle");
+    assert.equal(resolveScooterIsolatedPartRole(wheel, hub), "hub");
+    assert.equal(resolveScooterIsolatedPartRole(wheel, unknownFastener), null);
+  }
+
+  assert.equal(resolveScooterIsolatedPartRole("wheelfront.001", rim), null);
+  assert.equal(resolveScooterIsolatedPartRole("Cylinder.003", axle), null);
+  assert.equal(resolveScooterIsolatedPartRole("freinlowpoly.004", axle), null);
+  assert.equal(resolveScooterIsolatedPartRole("moteurlowpoly.002", rim), null);
+});
+
+test("curated headlight lens and housing stay separate from the cream cowling", () => {
+  const headlight = { vertexCount: 120, localYCenter: 0.3523, localYSpan: 0.2291, maximumLocalXZRadius: 0.1306 };
+
+  assert.equal(SCOOTER_ISOLATED_MESHES.headlight, "devantlowpoly.002");
+  assert.equal(resolveScooterIsolatedPartRole("devantlowpoly.002", headlight, -0.9), "headlight-lens");
+  assert.equal(resolveScooterIsolatedPartRole("devantlowpoly002", headlight, -0.35), "headlight-housing");
+  assert.equal(resolveScooterIsolatedPartRole("devantlowpoly.002", { ...headlight, vertexCount: 167 }, -0.9), null);
+  assert.equal(resolveScooterMaterialRole("devantlowpoly.002"), "cream");
+  assert.equal(resolveScooterMaterialRole("petitelumiereorange.002"), "orange");
+  assert.equal(resolveScooterMaterialRole("petitelumiererouge.002"), "red");
 });
 
 test("throttle tucks the head as bounded physical-state feedback", () => {

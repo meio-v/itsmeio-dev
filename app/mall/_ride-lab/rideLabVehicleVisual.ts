@@ -79,7 +79,75 @@ export function resolveRideLabVehiclePose(steer: number, preload: number, thrott
   };
 }
 
-export type ScooterMaterialRole = "ink" | "tire" | "mechanical" | "seat" | "cream" | "cyan" | "chrome" | "orange" | "red";
+export type ScooterMaterialRole = "ink" | "tire" | "mechanical" | "seat" | "cream" | "cyan" | "chrome" | "headlight" | "orange" | "red";
+
+export type ScooterIsolatedPartRole = "tire" | "rim" | "axle" | "hub" | "headlight-lens" | "headlight-housing";
+
+type ScooterGeometryIslandSignature = {
+  vertexCount: number;
+  localYCenter: number;
+  localYSpan: number;
+  maximumLocalXZRadius: number;
+};
+
+export const SCOOTER_ISOLATED_MESHES = Object.freeze({
+  wheels: ["wheellowpoly.004", "wheellowpoly.005"] as const,
+  headlight: "devantlowpoly.002",
+});
+
+const CURATED_ISLAND_SIGNATURES = Object.freeze({
+  tire: Object.freeze({ vertexCount: 45, minimumRadius: 0.37, maximumRadius: 0.44 }),
+  rim: Object.freeze({ vertexCounts: [4, 6] as const, minimumRadius: 0.29, maximumRadius: 0.31 }),
+  axle: Object.freeze({ vertexCount: 57, minimumCenter: 0.08, maximumCenter: 0.09, minimumSpan: 0.03, maximumSpan: 0.04, minimumRadius: 0.11, maximumRadius: 0.12 }),
+  hub: Object.freeze({ vertexCount: 112, maximumCenter: 0.01, minimumSpan: 0.18, maximumSpan: 0.20, minimumRadius: 0.11, maximumRadius: 0.12 }),
+  headlight: Object.freeze({ vertexCount: 120, minimumCenter: 0.35, maximumCenter: 0.36, minimumSpan: 0.22, maximumSpan: 0.24, minimumRadius: 0.12, maximumRadius: 0.14, housingNormalX: -0.65 }),
+});
+
+function normalizedMeshName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function isBetween(value: number, minimum: number, maximum: number) {
+  return value >= minimum && value <= maximum;
+}
+
+export function resolveScooterIsolatedPartRole(
+  meshName: string,
+  island: ScooterGeometryIslandSignature,
+  faceNormalX?: number,
+): ScooterIsolatedPartRole | null {
+  const normalized = normalizedMeshName(meshName);
+  const wheelNames = SCOOTER_ISOLATED_MESHES.wheels.map(normalizedMeshName);
+  if (wheelNames.includes(normalized as (typeof wheelNames)[number])) {
+    const radius = island.maximumLocalXZRadius;
+    const absoluteCenter = Math.abs(island.localYCenter);
+    const tire = CURATED_ISLAND_SIGNATURES.tire;
+    if (island.vertexCount === tire.vertexCount && isBetween(radius, tire.minimumRadius, tire.maximumRadius)) return "tire";
+    const rim = CURATED_ISLAND_SIGNATURES.rim;
+    if (rim.vertexCounts.includes(island.vertexCount as (typeof rim.vertexCounts)[number]) && isBetween(radius, rim.minimumRadius, rim.maximumRadius)) return "rim";
+    const axle = CURATED_ISLAND_SIGNATURES.axle;
+    if (island.vertexCount === axle.vertexCount
+      && isBetween(absoluteCenter, axle.minimumCenter, axle.maximumCenter)
+      && isBetween(island.localYSpan, axle.minimumSpan, axle.maximumSpan)
+      && isBetween(radius, axle.minimumRadius, axle.maximumRadius)) return "axle";
+    const hub = CURATED_ISLAND_SIGNATURES.hub;
+    if (island.vertexCount === hub.vertexCount
+      && absoluteCenter <= hub.maximumCenter
+      && isBetween(island.localYSpan, hub.minimumSpan, hub.maximumSpan)
+      && isBetween(radius, hub.minimumRadius, hub.maximumRadius)) return "hub";
+    return null;
+  }
+  const headlight = CURATED_ISLAND_SIGNATURES.headlight;
+  if (normalized === normalizedMeshName(SCOOTER_ISOLATED_MESHES.headlight)
+    && island.vertexCount === headlight.vertexCount
+    && isBetween(island.localYCenter, headlight.minimumCenter, headlight.maximumCenter)
+    && isBetween(island.localYSpan, headlight.minimumSpan, headlight.maximumSpan)
+    && isBetween(island.maximumLocalXZRadius, headlight.minimumRadius, headlight.maximumRadius)) {
+    return faceNormalX !== undefined && faceNormalX > headlight.housingNormalX ? "headlight-housing" : "headlight-lens";
+  }
+  return null;
+}
+
 
 export function resolveScooterMaterialRole(path: string): ScooterMaterialRole {
   const normalized = path.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -101,6 +169,99 @@ export function shouldOutlineScooterMesh(name: string) {
   const normalized = name.toLowerCase().replace(/[^a-z0-9]/g, "");
   return /wheellowpoly|devantlowpoly|devantrouelowpoly|derrierelowpoly|lowpolybase00[45]|echaplowpoly|moteurlowpoly|ventilolowpoly|trucderrirerelowpoly/.test(normalized);
 }
+
+function isolatedPartMaterialRole(role: ScooterIsolatedPartRole): ScooterMaterialRole {
+  if (role === "tire") return "tire";
+  if (role === "hub") return "mechanical";
+  if (role === "headlight-lens") return "headlight";
+  return "chrome";
+}
+
+function isolateScooterMeshMaterials(mesh: THREE.Mesh): ScooterMaterialRole[] | null {
+  const geometry = mesh.geometry;
+  const position = geometry.getAttribute("position");
+  const index = geometry.index;
+  if (!position || !index) return null;
+
+  const parent = Array.from({ length: position.count }, (_, vertex) => vertex);
+  const find = (vertex: number): number => parent[vertex] === vertex
+    ? vertex
+    : (parent[vertex] = find(parent[vertex]));
+  const join = (left: number, right: number) => {
+    const leftRoot = find(left);
+    const rightRoot = find(right);
+    if (leftRoot !== rightRoot) parent[rightRoot] = leftRoot;
+  };
+  for (let offset = 0; offset < index.count; offset += 3) {
+    join(index.getX(offset), index.getX(offset + 1));
+    join(index.getX(offset + 1), index.getX(offset + 2));
+  }
+
+  const islandVertices = new Map<number, Set<number>>();
+  for (let vertex = 0; vertex < position.count; vertex += 1) {
+    const root = find(vertex);
+    const vertices = islandVertices.get(root) ?? new Set<number>();
+    vertices.add(vertex);
+    islandVertices.set(root, vertices);
+  }
+  const islandSignatures = new Map<number, ScooterGeometryIslandSignature>();
+  for (const [root, vertices] of islandVertices) {
+    let minimumLocalY = Infinity;
+    let maximumLocalY = -Infinity;
+    let maximumLocalXZRadius = 0;
+    for (const vertex of vertices) {
+      const x = position.getX(vertex);
+      const y = position.getY(vertex);
+      const z = position.getZ(vertex);
+      minimumLocalY = Math.min(minimumLocalY, y);
+      maximumLocalY = Math.max(maximumLocalY, y);
+      maximumLocalXZRadius = Math.max(maximumLocalXZRadius, Math.hypot(x, z));
+    }
+    islandSignatures.set(root, {
+      vertexCount: vertices.size,
+      localYCenter: (minimumLocalY + maximumLocalY) / 2,
+      localYSpan: maximumLocalY - minimumLocalY,
+      maximumLocalXZRadius,
+    });
+  }
+
+  const baseRole = resolveScooterMaterialRole(mesh.name);
+  const indicesByRole = new Map<ScooterMaterialRole, number[]>();
+  const edgeA = new THREE.Vector3();
+  const edgeB = new THREE.Vector3();
+  const vertexA = new THREE.Vector3();
+  const vertexB = new THREE.Vector3();
+  const vertexC = new THREE.Vector3();
+  let isolated = false;
+  for (let offset = 0; offset < index.count; offset += 3) {
+    const a = index.getX(offset);
+    const b = index.getX(offset + 1);
+    const c = index.getX(offset + 2);
+    vertexA.fromBufferAttribute(position, a);
+    vertexB.fromBufferAttribute(position, b);
+    vertexC.fromBufferAttribute(position, c);
+    const faceNormalX = edgeA.subVectors(vertexB, vertexA).cross(edgeB.subVectors(vertexC, vertexA)).normalize().x;
+    const partRole = resolveScooterIsolatedPartRole(mesh.name, islandSignatures.get(find(a))!, faceNormalX);
+    isolated ||= partRole !== null;
+    const materialRole = partRole === null ? baseRole : isolatedPartMaterialRole(partRole);
+    const indices = indicesByRole.get(materialRole) ?? [];
+    indices.push(a, b, c);
+    indicesByRole.set(materialRole, indices);
+  }
+  if (!isolated) return null;
+
+  const roles = [...indicesByRole.keys()];
+  geometry.setIndex(roles.flatMap((role) => indicesByRole.get(role)!));
+  geometry.clearGroups();
+  let groupStart = 0;
+  roles.forEach((role, materialIndex) => {
+    const groupCount = indicesByRole.get(role)!.length;
+    geometry.addGroup(groupStart, groupCount, materialIndex);
+    groupStart += groupCount;
+  });
+  return roles;
+}
+
 
 export type RideLabVehicleMetrics = RideLabVehiclePose & {
   asset: "curated" | "procedural-fallback";
@@ -300,6 +461,12 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     cream: toonMaterial(0xa6dc6f, celGradient),
     cyan: toonMaterial(0x45dfe3, celGradient),
     chrome: toonMaterial(0xd9edf0, celGradient),
+    headlight: new THREE.MeshToonMaterial({
+      color: 0xfff1c7,
+      emissive: 0x5c431d,
+      emissiveIntensity: 0.28,
+      gradientMap: celGradient,
+    }),
     orange: toonMaterial(0xff8a4c, celGradient),
     red: new THREE.MeshToonMaterial({
       color: 0xff365e,
@@ -318,7 +485,10 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     scooterMeshes.push(object);
     const sourceMaterials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of sourceMaterials) replacedScooterMaterials.add(material);
-    object.material = scooterPalette[resolveScooterMaterialRole(object.name)];
+    const isolatedRoles = isolateScooterMeshMaterials(object);
+    object.material = isolatedRoles
+      ? isolatedRoles.map((role) => scooterPalette[role])
+      : scooterPalette[resolveScooterMaterialRole(object.name)];
     object.castShadow = true;
     object.receiveShadow = true;
   });
