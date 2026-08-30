@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import { RIDE_LAB_CONTROLS, type RideLabTuningGroup } from "../../_ride-lab/rideLabControls";
 import { resolveTouchSteer } from "../../_ride-lab/rideLabModel";
-import { RideLabRuntime } from "../../_ride-lab/RideLabRuntime";
+import { RideLabRuntime, type RideLabInspectionView } from "../../_ride-lab/RideLabRuntime";
 import type { RideLabDebugSnapshot, RideLabLifecycle } from "../../_ride-lab/rideLabTypes";
 import { DEFAULT_RIDE_LAB_TUNING, getRideLabTuningLimits, parseRideLabTuning, RIDE_LAB_PRESETS, sanitizeRideLabTuning, serializeRideLabTuning, type RideLabPresetName, type RideLabTuning } from "../../_ride-lab/rideLabTuning";
 import styles from "../rideLab.module.css";
@@ -14,6 +14,14 @@ const LEGACY_STORAGE_KEYS = ["itsmeio.rideLab.config.v1", "itsmeio.rideLab.confi
 const STORAGE_KEY = "itsmeio.rideLab.config.v12";
 const GROUPS: readonly RideLabTuningGroup[] = ["Drivetrain", "Braking", "Steering & assist", "Chassis & suspension", "Aerial & grind", "Camera & feedback", "Jolt advanced"];
 const TUNING_LIMITS = getRideLabTuningLimits();
+const INSPECTION_VIEWS: readonly { view: RideLabInspectionView; label: string; shortLabel: string }[] = [
+  { view: "chase", label: "Resume chase camera", shortLabel: "Chase" },
+  { view: "rear", label: "Inspect from rear", shortLabel: "Rear" },
+  { view: "front", label: "Inspect from front", shortLabel: "Front" },
+  { view: "left-profile", label: "Inspect left profile", shortLabel: "Left" },
+  { view: "right-profile", label: "Inspect right profile", shortLabel: "Right" },
+  { view: "elevated-three-quarter", label: "Inspect elevated three-quarter view", shortLabel: "High ¾" },
+];
 
 export function RideLabExperience() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,6 +35,7 @@ export function RideLabExperience() {
   const [snapshot, setSnapshot] = useState<RideLabDebugSnapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [configText, setConfigText] = useState("");
+  const [inspectionView, setInspectionView] = useState<RideLabInspectionView>("chase");
   useEffect(() => {
     latestTuningRef.current = tuning;
   }, [tuning]);
@@ -118,6 +127,12 @@ export function RideLabExperience() {
     runtimeRef.current?.setVirtualInput({ steer: resolveTouchSteer(touchSteerRef.current.left, touchSteerRef.current.right) });
   };
 
+  const inspectFrom = (view: RideLabInspectionView) => {
+    runtimeRef.current?.setVirtualInput({ throttle: 0, brake: 0, steer: 0, aerialAction: false });
+    runtimeRef.current?.setInspectionView(view);
+    setInspectionView(view);
+  };
+
   return (
     <main className={styles.shell}>
       <header className={styles.header}>
@@ -145,6 +160,19 @@ export function RideLabExperience() {
           <output className={styles.feedback} aria-live="polite">
             {error ? error : `${lifecycle} · ${snapshot?.eventPulse ?? "idle"}`}
           </output>
+          <div className={styles.inspectionControls} role="group" aria-label="Snap inspection camera angle">
+            {INSPECTION_VIEWS.map(({ view, label, shortLabel }) => (
+              <button
+                type="button"
+                key={view}
+                aria-label={label}
+                aria-pressed={inspectionView === view}
+                onClick={() => inspectFrom(view)}
+              >
+                {shortLabel}
+              </button>
+            ))}
+          </div>
           <div className={styles.touchControls} aria-label="Touch ride controls">
             <div>
               <HoldButton label="Steer left" onChange={(pressed) => setTouchSteer("left", pressed)}>←</HoldButton>

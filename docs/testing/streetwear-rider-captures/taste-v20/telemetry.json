@@ -1,0 +1,328 @@
+{
+  "label": "taste-v20",
+  "sourceUrl": "http://127.0.0.1:3002/mall/ride-lab",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "deviceScaleFactor": 1
+  },
+  "captures": [
+    {
+      "name": "idle",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.000616416406848471
+      }
+    },
+    {
+      "name": "turn-right",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.028,
+        "rightHandErrorMeters": 0.007,
+        "leftFootErrorMeters": 0.044,
+        "rightFootErrorMeters": 0.043,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 2.6970455482453604
+      }
+    },
+    {
+      "name": "turn-left",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.012,
+        "rightHandErrorMeters": 0.022,
+        "leftFootErrorMeters": 0.041,
+        "rightFootErrorMeters": 0.046,
+        "leftElbowRadians": 0.42,
+        "rightElbowRadians": 1.02,
+        "headTuckRadians": 0.091,
+        "speedMps": 2.6445456519142554
+      }
+    },
+    {
+      "name": "acceleration",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 4.250672959166051
+      }
+    }
+  ],
+  "inspectionCaptures": [
+    {
+      "name": "idle-rear",
+      "pose": "idle",
+      "view": "rear",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.0017400455578843873
+      }
+    },
+    {
+      "name": "idle-front",
+      "pose": "idle",
+      "view": "front",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.0017400455578843873
+      }
+    },
+    {
+      "name": "idle-left-profile",
+      "pose": "idle",
+      "view": "left-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.0017400455578843873
+      }
+    },
+    {
+      "name": "idle-right-profile",
+      "pose": "idle",
+      "view": "right-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.0017400455578843873
+      }
+    },
+    {
+      "name": "idle-elevated-three-quarter",
+      "pose": "idle",
+      "view": "elevated-three-quarter",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0,
+        "speedMps": -0.0017400455578843873
+      }
+    },
+    {
+      "name": "turn-right-rear",
+      "pose": "turn-right",
+      "view": "rear",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.034,
+        "rightHandErrorMeters": 0.004,
+        "leftFootErrorMeters": 0.043,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 1.968166588791161
+      }
+    },
+    {
+      "name": "turn-right-front",
+      "pose": "turn-right",
+      "view": "front",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.034,
+        "rightHandErrorMeters": 0.004,
+        "leftFootErrorMeters": 0.043,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 1.968166588791161
+      }
+    },
+    {
+      "name": "turn-right-left-profile",
+      "pose": "turn-right",
+      "view": "left-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.034,
+        "rightHandErrorMeters": 0.004,
+        "leftFootErrorMeters": 0.043,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 1.968166588791161
+      }
+    },
+    {
+      "name": "turn-right-right-profile",
+      "pose": "turn-right",
+      "view": "right-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.034,
+        "rightHandErrorMeters": 0.004,
+        "leftFootErrorMeters": 0.043,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 1.968166588791161
+      }
+    },
+    {
+      "name": "turn-right-elevated-three-quarter",
+      "pose": "turn-right",
+      "view": "elevated-three-quarter",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.034,
+        "rightHandErrorMeters": 0.004,
+        "leftFootErrorMeters": 0.043,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 1.02,
+        "rightElbowRadians": 0.42,
+        "headTuckRadians": 0.091,
+        "speedMps": 1.968166588791161
+      }
+    },
+    {
+      "name": "acceleration-rear",
+      "pose": "acceleration",
+      "view": "rear",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 2.6427137185007368
+      }
+    },
+    {
+      "name": "acceleration-front",
+      "pose": "acceleration",
+      "view": "front",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 2.6427137185007368
+      }
+    },
+    {
+      "name": "acceleration-left-profile",
+      "pose": "acceleration",
+      "view": "left-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 2.6427137185007368
+      }
+    },
+    {
+      "name": "acceleration-right-profile",
+      "pose": "acceleration",
+      "view": "right-profile",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 2.6427137185007368
+      }
+    },
+    {
+      "name": "acceleration-elevated-three-quarter",
+      "pose": "acceleration",
+      "view": "elevated-three-quarter",
+      "telemetry": {
+        "vehicleAsset": "streetwear",
+        "seatErrorMeters": 0,
+        "leftHandErrorMeters": 0.016,
+        "rightHandErrorMeters": 0.014,
+        "leftFootErrorMeters": 0.042,
+        "rightFootErrorMeters": 0.044,
+        "leftElbowRadians": 0.72,
+        "rightElbowRadians": 0.72,
+        "headTuckRadians": 0.26,
+        "speedMps": 2.6427137185007368
+      }
+    }
+  ]
+}

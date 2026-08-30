@@ -2,17 +2,20 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { RideLabSnapshot } from "./rideLabTypes.ts";
-import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveScooterIsolatedPartRole, resolveScooterMaterialRole, SCOOTER_ISOLATED_MESHES, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
+import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveRiderMaterialRole, resolveScooterIsolatedPartRole, resolveScooterMaterialRole, SCOOTER_BOOSTER_BUDGET, SCOOTER_ISOLATED_MESHES, SCOOTER_ROUNDED_SEAT_BUDGET, SCOOTER_SURFACE_DETAIL_BUDGET, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
 
 test("curated scooter alignment matches the Jolt wheelbase and bounded visual steering", () => {
   assert.ok(Math.abs(RIDE_LAB_VEHICLE_ALIGNMENT.scooterScale * 2.6811 - 1.56) < 1e-12);
   assert.ok(RIDE_LAB_VEHICLE_ALIGNMENT.maxVisualSteerRadians < 0.25);
-  assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.riderScale, 0.48);
+  assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.riderScale, 0.52);
   assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.leftGripOffset.y, 0.225);
   assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.rightGripOffset.y, 0.225);
   assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.leftGripOffset.x, 0.315);
   assert.equal(RIDE_LAB_VEHICLE_ALIGNMENT.rightGripOffset.x, -0.315);
-  assert.deepEqual(RIDE_LAB_VEHICLE_ALIGNMENT.seatAnchor, { x: 0, y: 0.43, z: -0.24 });
+  assert.deepEqual(RIDE_LAB_VEHICLE_ALIGNMENT.seatAnchor, { x: 0, y: 0.34, z: -0.31 });
+  assert.deepEqual(RIDE_LAB_VEHICLE_ALIGNMENT.pelvisAnchor, { x: 0, y: 0.43, z: -0.31 });
+  assert.deepEqual(RIDE_LAB_VEHICLE_ALIGNMENT.leftFootAnchor, { x: 0.22, y: 0, z: 0.02 });
+  assert.deepEqual(RIDE_LAB_VEHICLE_ALIGNMENT.rightFootAnchor, { x: -0.22, y: 0, z: 0.02 });
 });
 
 test("procedural fallback preserves the physics-forward vehicle orientation", () => {
@@ -130,6 +133,41 @@ test("curated headlight lens and housing stay separate from the cream cowling", 
   assert.equal(resolveScooterMaterialRole("devantlowpoly.002"), "cream");
   assert.equal(resolveScooterMaterialRole("petitelumiereorange.002"), "orange");
   assert.equal(resolveScooterMaterialRole("petitelumiererouge.002"), "red");
+});
+
+test("project-authored scooter surface detail stays inside its render envelope", () => {
+  assert.deepEqual(SCOOTER_SURFACE_DETAIL_BUDGET, {
+    drawCalls: 0,
+    maximumTriangles: 1_000,
+    textures: 0,
+  });
+});
+
+test("sci-fi punk booster stays inside its merged runtime envelope", () => {
+  assert.deepEqual(SCOOTER_BOOSTER_BUDGET, {
+    drawCalls: 3,
+    maximumTriangles: 4_000,
+    textures: 1,
+  });
+});
+
+test("rounded two-piece seat stays inside its merged runtime envelope", () => {
+  assert.deepEqual(SCOOTER_ROUNDED_SEAT_BUDGET, {
+    drawCalls: 2,
+    maximumTriangles: 1_500,
+    textures: 0,
+  });
+});
+
+test("streetwear rider material roles stay semantic and modular", () => {
+  assert.equal(resolveRiderMaterialRole("streetwear-body"), "skin");
+  assert.equal(resolveRiderMaterialRole("streetwear-hair"), "hair");
+  assert.equal(resolveRiderMaterialRole("streetwear-eye-left"), "eye");
+  assert.equal(resolveRiderMaterialRole("streetwear-oversized-hoodie"), "hoodie");
+  assert.equal(resolveRiderMaterialRole("streetwear-long-undershirt"), "undershirt");
+  assert.equal(resolveRiderMaterialRole("streetwear-cargo-shorts"), "shorts");
+  assert.equal(resolveRiderMaterialRole("streetwear-left-calf"), "calf");
+  assert.equal(resolveRiderMaterialRole("streetwear-giant-shoe-left"), "shoe");
 });
 
 test("throttle tucks the head as bounded physical-state feedback", () => {

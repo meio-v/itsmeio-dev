@@ -7,22 +7,26 @@ import { chromium } from "playwright";
 
 import { RIDE_LAB_CONTROLS } from "../app/mall/_ride-lab/rideLabControls.ts";
 import { DEFAULT_RIDE_LAB_TUNING } from "../app/mall/_ride-lab/rideLabTuning.ts";
-import { RIDE_LAB_VEHICLE_ALIGNMENT } from "../app/mall/_ride-lab/rideLabVehicleVisual.ts";
+import { RIDE_LAB_VEHICLE_ALIGNMENT, SCOOTER_BOOSTER_BUDGET, SCOOTER_ROUNDED_SEAT_BUDGET, SCOOTER_SURFACE_DETAIL_BUDGET } from "../app/mall/_ride-lab/rideLabVehicleVisual.ts";
 
-const port = await allocatePort();
-const baseUrl = `http://127.0.0.1:${port}`;
-const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", String(port)], {
+const externalBaseUrl = process.env.RIDE_LAB_VERIFY_BASE_URL?.replace(/\/$/, "");
+const port = externalBaseUrl ? null : await allocatePort();
+const baseUrl = externalBaseUrl ?? `http://127.0.0.1:${port}`;
+const server = externalBaseUrl ? null : spawn(process.execPath, ["node_modules/next/dist/bin/next", "dev", "--hostname", "127.0.0.1", "--port", String(port)], {
   cwd: process.cwd(),
   env: { ...process.env, NODE_ENV: "development", RIDE_LAB_ENABLED: "true", MALL_ENABLED: "true" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 
 let serverOutput = "";
-let serverExited = false;
-server.stdout.on("data", (chunk) => { serverOutput += String(chunk); });
-server.stderr.on("data", (chunk) => { serverOutput += String(chunk); });
-const serverExit = once(server, "exit");
-serverExit.then(() => { serverExited = true; });
+let serverExited = server === null;
+let serverExit = Promise.resolve();
+if (server) {
+  server.stdout.on("data", (chunk) => { serverOutput += String(chunk); });
+  server.stderr.on("data", (chunk) => { serverOutput += String(chunk); });
+  serverExit = once(server, "exit");
+  serverExit.then(() => { serverExited = true; });
+}
 
 async function allocatePort() {
   const probe = createServer();
@@ -37,7 +41,7 @@ async function allocatePort() {
 }
 
 async function stopServer() {
-  if (serverExited) return;
+  if (!server || serverExited) return;
   server.kill("SIGTERM");
   const forceKill = setTimeout(() => { server.kill("SIGKILL"); }, 5_000);
   await serverExit;
@@ -47,7 +51,7 @@ async function stopServer() {
 async function waitForServer() {
   const deadline = Date.now() + 30_000;
   while (Date.now() < deadline) {
-    if (serverExited) throw new Error(`rideLab dev server exited before readiness:\n${serverOutput.slice(-2000)}`);
+    if (server && serverExited) throw new Error(`rideLab dev server exited before readiness:\n${serverOutput.slice(-2000)}`);
     try {
       const response = await fetch(`${baseUrl}/mall/ride-lab`);
       if (response.ok) return;
@@ -112,14 +116,24 @@ try {
   assert.equal(errors.length, 0, errors.join("\n"));
 
   const surface = page.locator('[data-testid="ride-lab-surface"]');
+  assert.equal(await surface.getAttribute("data-inspection-view"), "chase");
+  await page.getByRole("button", { name: "Inspect from front" }).click();
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-inspection-view") === "front");
+  assert.equal(await page.getByRole("button", { name: "Inspect from front" }).getAttribute("aria-pressed"), "true");
+  await page.getByRole("button", { name: "Resume chase camera" }).click();
+  await page.waitForFunction(() => document.querySelector('[data-testid="ride-lab-surface"]')?.getAttribute("data-inspection-view") === "chase");
   const initialVehicleTelemetry = await surface.evaluate((rideSurface) => ({
     asset: rideSurface.getAttribute("data-vehicle-asset"),
     wheelSpin: rideSurface.getAttribute("data-wheel-spin"),
     seatError: rideSurface.getAttribute("data-seat-error"),
     leftHandError: rideSurface.getAttribute("data-left-hand-error"),
     rightHandError: rideSurface.getAttribute("data-right-hand-error"),
+    leftFootError: rideSurface.getAttribute("data-left-foot-error"),
+    rightFootError: rideSurface.getAttribute("data-right-foot-error"),
     leftHandPosition: rideSurface.getAttribute("data-left-hand-position"),
     rightHandPosition: rideSurface.getAttribute("data-right-hand-position"),
+    leftFootPosition: rideSurface.getAttribute("data-left-foot-position"),
+    rightFootPosition: rideSurface.getAttribute("data-right-foot-position"),
     leftElbow: rideSurface.getAttribute("data-left-elbow"),
     rightElbow: rideSurface.getAttribute("data-right-elbow"),
     celShading: rideSurface.getAttribute("data-cel-shading"),
@@ -130,14 +144,55 @@ try {
     seatError: requiredNonNegativeMetric(initialVehicleTelemetry.seatError, "seat error"),
     leftHandError: requiredNonNegativeMetric(initialVehicleTelemetry.leftHandError, "left hand error"),
     rightHandError: requiredNonNegativeMetric(initialVehicleTelemetry.rightHandError, "right hand error"),
+    leftFootError: requiredNonNegativeMetric(initialVehicleTelemetry.leftFootError, "left foot error"),
+    rightFootError: requiredNonNegativeMetric(initialVehicleTelemetry.rightFootError, "right foot error"),
     leftElbow: requiredNonNegativeMetric(initialVehicleTelemetry.leftElbow, "left elbow"),
     rightElbow: requiredNonNegativeMetric(initialVehicleTelemetry.rightElbow, "right elbow"),
   };
-  assert.equal(initialVehicle.asset, "curated");
+  assert.equal(initialVehicle.asset, "streetwear");
   assert.equal(initialVehicle.celShading, "three-band-outlined");
+  const scooterSurfaceDetail = await page.evaluate(() => {
+    const scene = window.__rideLabRuntime.scene;
+    const carrier = scene.getObjectByName("tapislowpoly002");
+    const booster = scene.getObjectByName("ride-lab-sci-fi-punk-booster-assembly");
+    const boosterSurface = scene.getObjectByName("ride-lab-sci-fi-punk-jump-booster");
+    const boosterSticker = scene.getObjectByName("ride-lab-sci-fi-punk-booster-sticker");
+    const roundedSeat = scene.getObjectByName("ride-lab-rounded-two-piece-seat-assembly");
+    const roundedSeatSurface = scene.getObjectByName("ride-lab-rounded-two-piece-seat");
+    return {
+      triangles: carrier?.userData.surfaceDetailTriangles,
+      geometry: carrier?.geometry?.name,
+      castShadow: carrier?.castShadow,
+      separateDetailMesh: scene.getObjectByName("ride-lab-scooter-projected-detail-wrap") !== undefined,
+      boosterTriangles: booster?.userData.boosterTriangles,
+      boosterDrawCalls: booster?.userData.boosterDrawCalls,
+      boosterTextures: booster?.userData.boosterTextures,
+      boosterMaterial: boosterSurface?.material?.type,
+      boosterStickerMaterial: boosterSticker?.material?.type,
+      boosterStickerMipmaps: boosterSticker?.material?.map?.generateMipmaps,
+      seatTriangles: roundedSeat?.userData.seatTriangles,
+      seatDrawCalls: roundedSeat?.userData.seatDrawCalls,
+      seatMaterial: roundedSeatSurface?.material?.type,
+    };
+  });
+  assert.equal(scooterSurfaceDetail.geometry, "ride-lab-scooter-ink-with-projected-surface-details");
+  assert.ok(scooterSurfaceDetail.triangles > 0 && scooterSurfaceDetail.triangles <= SCOOTER_SURFACE_DETAIL_BUDGET.maximumTriangles);
+  assert.equal(scooterSurfaceDetail.castShadow, false);
+  assert.equal(scooterSurfaceDetail.separateDetailMesh, false);
+  assert.ok(scooterSurfaceDetail.boosterTriangles > 0 && scooterSurfaceDetail.boosterTriangles <= SCOOTER_BOOSTER_BUDGET.maximumTriangles);
+  assert.equal(scooterSurfaceDetail.boosterDrawCalls, SCOOTER_BOOSTER_BUDGET.drawCalls);
+  assert.equal(scooterSurfaceDetail.boosterTextures, SCOOTER_BOOSTER_BUDGET.textures);
+  assert.equal(scooterSurfaceDetail.boosterMaterial, "MeshBasicMaterial");
+  assert.equal(scooterSurfaceDetail.boosterStickerMaterial, "MeshBasicMaterial");
+  assert.equal(scooterSurfaceDetail.boosterStickerMipmaps, false);
+  assert.ok(scooterSurfaceDetail.seatTriangles > 0 && scooterSurfaceDetail.seatTriangles <= SCOOTER_ROUNDED_SEAT_BUDGET.maximumTriangles);
+  assert.equal(scooterSurfaceDetail.seatDrawCalls, SCOOTER_ROUNDED_SEAT_BUDGET.drawCalls);
+  assert.equal(scooterSurfaceDetail.seatMaterial, "MeshBasicMaterial");
   assert.ok(initialVehicle.seatError < 0.01, `rider seat contact drifted by ${initialVehicle.seatError} m`);
   assert.ok(initialVehicle.leftHandError < 0.08, `left hand at ${initialVehicle.leftHandPosition} missed the grip by ${initialVehicle.leftHandError} m`);
   assert.ok(initialVehicle.rightHandError < 0.08, `right hand at ${initialVehicle.rightHandPosition} missed the grip by ${initialVehicle.rightHandError} m`);
+  assert.ok(initialVehicle.leftFootError < 0.08, `left foot at ${initialVehicle.leftFootPosition} missed the floorboard by ${initialVehicle.leftFootError} m`);
+  assert.ok(initialVehicle.rightFootError < 0.08, `right foot at ${initialVehicle.rightFootPosition} missed the floorboard by ${initialVehicle.rightFootError} m`);
   assert.ok(Math.abs(initialVehicle.leftElbow - initialVehicle.rightElbow) < 0.001);
   const accelerateButton = page.getByRole("button", { name: "Accelerate" });
   await accelerateButton.hover();
@@ -461,7 +516,7 @@ try {
     const counts = await page.evaluate(() => window.__rideLabRuntime.getDebugSnapshot());
     assert.equal(counts.liveRuntimes, 1);
     assert.equal(counts.animationLoops, 1);
-    assert.equal(await surface.getAttribute("data-vehicle-asset"), "curated");
+    assert.equal(await surface.getAttribute("data-vehicle-asset"), "streetwear");
   }
 
   const mallHtml = await (await fetch(`${baseUrl}/mall`)).text();

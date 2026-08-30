@@ -1,12 +1,13 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 
 import { createVehicleVisual, type VehicleVisual } from "../_runtime/vehicleVisual.ts";
 import type { RideLabSnapshot } from "./rideLabTypes.ts";
 
 const SCOOTER_URL = "/mall/ride-lab/styloo-simple-scooter.glb";
-const RIDER_URL = "/mall/ride-lab/kenney-skater-male.glb";
-const RIDER_TEXTURE_URL = "/mall/ride-lab/kenney-skater-male.png";
+const SCOOTER_BOOSTER_STICKER_URL = "/mall/ride-lab/scooter-booster-sticker.png";
+const RIDER_URL = "/mall/ride-lab/streetwear-rider.glb";
 
 const FRONT_WHEEL_NODE = "wheelfront.001";
 const REAR_WHEEL_NODE = "wheell  back";
@@ -17,14 +18,19 @@ export const RIDE_LAB_VEHICLE_ALIGNMENT = Object.freeze({
   scooterScale: 1.56 / 2.6811,
   scooterYOffset: 0.074,
   scooterZOffset: -0.177,
-  riderScale: 0.48,
-  seatAnchor: Object.freeze({ x: 0, y: 0.43, z: -0.24 }),
+  riderScale: 0.52,
+  seatAnchor: Object.freeze({ x: 0, y: 0.34, z: -0.31 }),
+  pelvisAnchor: Object.freeze({ x: 0, y: 0.43, z: -0.31 }),
   leftHandAnchor: Object.freeze({ x: 0.265, y: 0.67, z: 0.28 }),
   rightHandAnchor: Object.freeze({ x: -0.265, y: 0.67, z: 0.28 }),
   leftGripOffset: Object.freeze({ x: 0.315, y: 0.225, z: -0.145 }),
   rightGripOffset: Object.freeze({ x: -0.315, y: 0.225, z: -0.145 }),
-  leftFootAnchor: Object.freeze({ x: 0.19, y: 0.02, z: -0.34 }),
-  rightFootAnchor: Object.freeze({ x: -0.19, y: 0.02, z: -0.34 }),
+  leftFootAnchor: Object.freeze({ x: 0.22, y: 0, z: 0.02 }),
+  rightFootAnchor: Object.freeze({ x: -0.22, y: 0, z: 0.02 }),
+  leftKneePole: Object.freeze({ x: 0.46, y: 0.22, z: 0.52 }),
+  rightKneePole: Object.freeze({ x: -0.46, y: 0.22, z: 0.52 }),
+  leftElbowPole: Object.freeze({ x: 0.48, y: 0.5, z: 0.02 }),
+  rightElbowPole: Object.freeze({ x: -0.48, y: 0.5, z: 0.02 }),
   wheelRadius: 0.33,
   maxVisualSteerRadians: 0.22,
 });
@@ -148,6 +154,20 @@ export function resolveScooterIsolatedPartRole(
   return null;
 }
 
+export type RiderMaterialRole = "skin" | "hair" | "eye" | "hoodie" | "undershirt" | "shorts" | "calf" | "shoe" | "accent";
+
+export function resolveRiderMaterialRole(path: string): RiderMaterialRole {
+  const normalized = path.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (/hair/.test(normalized)) return "hair";
+  if (/eye/.test(normalized)) return "eye";
+  if (/hoodie/.test(normalized)) return "hoodie";
+  if (/undershirt|tshirt/.test(normalized)) return "undershirt";
+  if (/shorts|cargo/.test(normalized)) return "shorts";
+  if (/calf/.test(normalized)) return "calf";
+  if (/shoe|sneaker/.test(normalized)) return "shoe";
+  if (/accent|chain|pocket/.test(normalized)) return "accent";
+  return "skin";
+}
 
 export function resolveScooterMaterialRole(path: string): ScooterMaterialRole {
   const normalized = path.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -262,16 +282,37 @@ function isolateScooterMeshMaterials(mesh: THREE.Mesh): ScooterMaterialRole[] | 
   return roles;
 }
 
+export const SCOOTER_SURFACE_DETAIL_BUDGET = Object.freeze({
+  drawCalls: 0,
+  maximumTriangles: 1_000,
+  textures: 0,
+});
+
+export const SCOOTER_BOOSTER_BUDGET = Object.freeze({
+  drawCalls: 3,
+  maximumTriangles: 4_000,
+  textures: 1,
+});
+
+export const SCOOTER_ROUNDED_SEAT_BUDGET = Object.freeze({
+  drawCalls: 2,
+  maximumTriangles: 1_500,
+  textures: 0,
+});
 
 export type RideLabVehicleMetrics = RideLabVehiclePose & {
-  asset: "curated" | "procedural-fallback";
+  asset: "streetwear" | "procedural-fallback";
   handlebarSteerRadians: number;
   wheelSpinRadians: number;
   seatErrorMeters: number;
   leftHandErrorMeters: number;
   rightHandErrorMeters: number;
+  leftFootErrorMeters: number;
+  rightFootErrorMeters: number;
   leftHandPosition: { x: number; y: number; z: number };
   rightHandPosition: { x: number; y: number; z: number };
+  leftFootPosition: { x: number; y: number; z: number };
+  rightFootPosition: { x: number; y: number; z: number };
 };
 
 export type RideLabVehicleVisual = VehicleVisual & {
@@ -280,6 +321,11 @@ export type RideLabVehicleVisual = VehicleVisual & {
 };
 
 type BonePose = { bone: THREE.Bone; rest: THREE.Quaternion };
+type TerminalFrame = {
+  bone: THREE.Bone;
+  forwardLocal: THREE.Vector3;
+  upLocal: THREE.Vector3;
+};
 
 function requiredObject(root: THREE.Object3D, name: string) {
   const normalizedName = name.replace(/[^a-z0-9]/gi, "").toLowerCase();
@@ -308,8 +354,25 @@ function createCelGradient() {
   return gradient;
 }
 
+function createScooterCelGradient() {
+  const gradient = new THREE.DataTexture(new Uint8Array([
+    0, 0, 0, 255,
+    82, 82, 82, 255,
+    255, 255, 255, 255,
+  ]), 3, 1, THREE.RGBAFormat);
+  gradient.minFilter = THREE.NearestFilter;
+  gradient.magFilter = THREE.NearestFilter;
+  gradient.generateMipmaps = false;
+  gradient.needsUpdate = true;
+  return gradient;
+}
+
 function toonMaterial(color: number, gradientMap: THREE.Texture) {
   return new THREE.MeshToonMaterial({ color, gradientMap });
+}
+
+function vertexColorToonMaterial(gradientMap: THREE.Texture) {
+  return new THREE.MeshToonMaterial({ color: 0xffffff, gradientMap, vertexColors: true });
 }
 
 function createGlowTexture() {
@@ -349,6 +412,392 @@ function outlineMaterial(extrusion: number, cacheKey: string) {
   return material;
 }
 
+type ScooterSurfaceGuide = {
+  closed?: boolean;
+  points: ReadonlyArray<Readonly<{ x: number; y: number }>>;
+  segments?: number;
+};
+
+const SCOOTER_SURFACE_GUIDES: readonly ScooterSurfaceGuide[] = [
+  // Front apron inset: a broad construction break rather than traced topology.
+  { points: [
+    { x: -1.30, y: -0.10 },
+    { x: -1.28, y: 0.18 },
+    { x: -1.20, y: 0.46 },
+    { x: -1.10, y: 0.66 },
+    { x: -1.00, y: 0.38 },
+    { x: -0.92, y: 0.10 },
+  ] },
+  // Rear cowling shoulder and floorboard/body break.
+  { points: [
+    { x: -0.05, y: 0.18 },
+    { x: 0.35, y: 0.24 },
+    { x: 0.78, y: 0.23 },
+    { x: 1.15, y: 0.16 },
+    { x: 1.38, y: 0.04 },
+  ] },
+  { points: [
+    { x: -0.05, y: -0.20 },
+    { x: 0.35, y: -0.24 },
+    { x: 0.78, y: -0.23 },
+    { x: 1.18, y: -0.16 },
+  ] },
+];
+
+function createScooterSurfaceDetails(scooter: THREE.Object3D, surface: THREE.Object3D, inkCarrier: THREE.Mesh) {
+  scooter.updateWorldMatrix(true, true);
+  const raycaster = new THREE.Raycaster();
+  const geometries: THREE.BufferGeometry[] = [];
+  const localDirection = new THREE.Vector3();
+
+  function addProjectedGuide<Point>(
+    points: readonly Point[],
+    projection: (point: Point) => {
+      origin: THREE.Vector3Tuple;
+      direction: THREE.Vector3Tuple;
+      offset: THREE.Vector3Tuple;
+    },
+    closed = false,
+    segments = 12,
+  ) {
+    const wrapped = points.flatMap((guidePoint) => {
+      const projected = projection(guidePoint);
+      const origin = scooter.localToWorld(new THREE.Vector3(...projected.origin));
+      const direction = localDirection.set(...projected.direction).transformDirection(scooter.matrixWorld);
+      raycaster.set(origin, direction);
+      const hit = raycaster.intersectObject(surface, false)[0];
+      if (!hit) return [];
+      return [scooter.worldToLocal(hit.point.clone()).add(new THREE.Vector3(...projected.offset))];
+    });
+    if (wrapped.length < 2) return;
+    const curve = new THREE.CatmullRomCurve3(wrapped, closed, "centripetal");
+    geometries.push(new THREE.TubeGeometry(curve, segments, 0.009, 3, closed));
+  }
+
+  for (const side of [-1, 1] as const) {
+    for (const guide of SCOOTER_SURFACE_GUIDES) {
+      addProjectedGuide(
+        guide.points,
+        ({ x, y }) => ({
+          origin: [x, y, side * 2],
+          direction: [0, 0, -side],
+          offset: [0, 0, side * 0.018],
+        }),
+        guide.closed,
+        guide.segments,
+      );
+    }
+  }
+
+  const endGuides: ReadonlyArray<{
+    end: -1 | 1;
+    points: ReadonlyArray<Readonly<{ y: number; z: number }>>;
+  }> = [
+    { end: -1, points: [
+      { y: 0.12, z: -0.34 },
+      { y: 0.08, z: -0.17 },
+      { y: 0.06, z: 0 },
+      { y: 0.08, z: 0.17 },
+      { y: 0.12, z: 0.34 },
+    ] },
+    { end: 1, points: [
+      { y: -0.12, z: -0.34 },
+      { y: -0.16, z: -0.17 },
+      { y: -0.18, z: 0 },
+      { y: -0.16, z: 0.17 },
+      { y: -0.12, z: 0.34 },
+    ] },
+  ];
+  for (const guide of endGuides) {
+    addProjectedGuide(guide.points, ({ y, z }) => ({
+      origin: [guide.end * 2, y, z],
+      direction: [-guide.end, 0, 0],
+      offset: [guide.end * 0.018, 0, 0],
+    }));
+  }
+
+  if (geometries.length === 0) throw new Error("Curated scooter surface rejected every authored detail guide");
+  const geometry = mergeGeometries(geometries);
+  for (const source of geometries) source.dispose();
+  geometry.name = "ride-lab-scooter-projected-surface-details";
+  geometry.computeBoundingSphere();
+  const triangles = (geometry.index?.count ?? geometry.getAttribute("position").count) / 3;
+  if (triangles > SCOOTER_SURFACE_DETAIL_BUDGET.maximumTriangles) {
+    geometry.dispose();
+    throw new Error(`Curated scooter surface details exceed ${SCOOTER_SURFACE_DETAIL_BUDGET.maximumTriangles} triangles`);
+  }
+  inkCarrier.updateWorldMatrix(true, false);
+  geometry.deleteAttribute("uv");
+  geometry.applyMatrix4(new THREE.Matrix4().copy(inkCarrier.matrixWorld).invert().multiply(scooter.matrixWorld));
+  const sourceGeometry = inkCarrier.geometry;
+  for (const candidate of [sourceGeometry, geometry]) {
+    for (const [name, attribute] of Object.entries(candidate.attributes)) {
+      candidate.setAttribute(name, new THREE.Float32BufferAttribute(
+        Float32Array.from(attribute.array),
+        attribute.itemSize,
+        attribute.normalized,
+      ));
+    }
+  }
+  const merged = mergeGeometries([sourceGeometry, geometry]);
+  if (!merged) throw new Error("Curated scooter ink and projected surface details could not be merged");
+  geometry.dispose();
+  sourceGeometry.dispose();
+  merged.name = "ride-lab-scooter-ink-with-projected-surface-details";
+  inkCarrier.geometry = merged;
+  // The carrier is a thin floor mat; keeping the wrapped ink out of the shadow
+  // map avoids paying the detail triangle budget a second time.
+  inkCarrier.castShadow = false;
+  inkCarrier.userData.surfaceDetailTriangles = triangles;
+  return triangles;
+}
+
+type BoosterBandPalette = Readonly<{
+  deep: number;
+  shadow: number;
+  base: number;
+}>;
+
+const BOOSTER_BANDS = Object.freeze({
+  lime: Object.freeze({ deep: 0x08070c, shadow: 0x34451d, base: 0xbdf574 }),
+  mechanical: Object.freeze({ deep: 0x08070c, shadow: 0x22212a, base: 0x4b4c57 }),
+  seat: Object.freeze({ deep: 0x08070c, shadow: 0x1e1b25, base: 0x3a3542 }),
+  red: Object.freeze({ deep: 0x08070c, shadow: 0x701428, base: 0xf23852 }),
+});
+
+function boosterGeometryWithAuthoredBands(source: THREE.BufferGeometry, palette: BoosterBandPalette) {
+  const geometry = source.index ? source.toNonIndexed() : source;
+  if (geometry !== source) source.dispose();
+  geometry.computeVertexNormals();
+  geometry.deleteAttribute("uv");
+  geometry.deleteAttribute("uv1");
+  const normals = geometry.getAttribute("normal");
+  const colors = new Float32Array(normals.count * 3);
+  const authoredLight = new THREE.Vector3(-0.35, 0.82, 0.45).normalize();
+  const faceNormal = new THREE.Vector3();
+  const color = new THREE.Color();
+  for (let vertex = 0; vertex < normals.count; vertex += 3) {
+    faceNormal.set(
+      normals.getX(vertex) + normals.getX(vertex + 1) + normals.getX(vertex + 2),
+      normals.getY(vertex) + normals.getY(vertex + 1) + normals.getY(vertex + 2),
+      normals.getZ(vertex) + normals.getZ(vertex + 1) + normals.getZ(vertex + 2),
+    ).normalize();
+    const facing = faceNormal.dot(authoredLight);
+    color.setHex(facing < -0.28 ? palette.deep : facing < 0.34 ? palette.shadow : palette.base);
+    for (let corner = 0; corner < 3; corner += 1) {
+      const offset = (vertex + corner) * 3;
+      colors[offset] = color.r;
+      colors[offset + 1] = color.g;
+      colors[offset + 2] = color.b;
+    }
+  }
+  geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+  return geometry;
+}
+
+function boosterCylinderBetween(
+  start: THREE.Vector3,
+  end: THREE.Vector3,
+  radius: number,
+  radialSegments: number,
+  palette: BoosterBandPalette,
+) {
+  const direction = end.clone().sub(start);
+  const geometry = new THREE.CylinderGeometry(radius, radius, direction.length(), radialSegments, 1, false);
+  const rotation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  geometry.applyMatrix4(new THREE.Matrix4().compose(
+    start.clone().add(end).multiplyScalar(0.5),
+    rotation,
+    new THREE.Vector3(1, 1, 1),
+  ));
+  return boosterGeometryWithAuthoredBands(geometry, palette);
+}
+
+function boosterHelixBetween(start: THREE.Vector3, end: THREE.Vector3, palette: BoosterBandPalette) {
+  const direction = end.clone().sub(start);
+  const length = direction.length();
+  const points = Array.from({ length: 37 }, (_, index) => {
+    const progress = index / 36;
+    const angle = progress * Math.PI * 9;
+    return new THREE.Vector3(Math.cos(angle) * 0.075, progress * length - length / 2, Math.sin(angle) * 0.075);
+  });
+  const geometry = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points), 36, 0.023, 4, false);
+  const rotation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.normalize());
+  geometry.applyMatrix4(new THREE.Matrix4().compose(
+    start.clone().add(end).multiplyScalar(0.5),
+    rotation,
+    new THREE.Vector3(1, 1, 1),
+  ));
+  return boosterGeometryWithAuthoredBands(geometry, palette);
+}
+
+function createScooterJumpBooster(stickerTexture: THREE.Texture) {
+  const triangleCount = (geometry: THREE.BufferGeometry) => (
+    geometry.index?.count ?? geometry.getAttribute("position").count
+  ) / 3;
+  const geometries: THREE.BufferGeometry[] = [];
+  const cagePoints = [
+    new THREE.Vector2(0.22, -0.18),
+    new THREE.Vector2(0.30, 0.25),
+    new THREE.Vector2(1.08, 0.25),
+    new THREE.Vector2(1.18, 0.10),
+    new THREE.Vector2(1.10, -0.20),
+  ];
+  for (const side of [-1, 1] as const) {
+    const podZ = side * 0.61;
+    geometries.push(
+      boosterCylinderBetween(new THREE.Vector3(0.35, 0.04, podZ), new THREE.Vector3(1.02, 0.04, podZ), 0.20, 10, BOOSTER_BANDS.lime),
+      boosterCylinderBetween(new THREE.Vector3(0.27, 0.04, podZ), new THREE.Vector3(0.38, 0.04, podZ), 0.225, 10, BOOSTER_BANDS.mechanical),
+      boosterCylinderBetween(new THREE.Vector3(0.99, 0.04, podZ), new THREE.Vector3(1.10, 0.04, podZ), 0.225, 10, BOOSTER_BANDS.mechanical),
+    );
+    for (let index = 0; index < cagePoints.length; index += 1) {
+      const current = cagePoints[index];
+      const next = cagePoints[(index + 1) % cagePoints.length];
+      geometries.push(boosterCylinderBetween(
+        new THREE.Vector3(current.x, current.y, side * 0.72),
+        new THREE.Vector3(next.x, next.y, side * 0.72),
+        0.035,
+        6,
+        BOOSTER_BANDS.lime,
+      ));
+    }
+    const shockTop = new THREE.Vector3(0.91, -0.16, side * 0.55);
+    const shockBottom = new THREE.Vector3(0.96, -0.67, side * 0.47);
+    geometries.push(
+      boosterCylinderBetween(shockTop, shockBottom, 0.035, 8, BOOSTER_BANDS.mechanical),
+      boosterHelixBetween(shockTop, shockBottom, BOOSTER_BANDS.lime),
+    );
+
+    const rockerShape = new THREE.Shape();
+    rockerShape.moveTo(0.65, -0.22);
+    rockerShape.lineTo(1.08, -0.22);
+    rockerShape.lineTo(0.96, -0.52);
+    rockerShape.closePath();
+    const rocker = new THREE.ExtrudeGeometry(rockerShape, { depth: 0.09, steps: 1, bevelEnabled: false });
+    rocker.translate(0, 0, side * 0.55 - 0.045);
+    geometries.push(boosterGeometryWithAuthoredBands(rocker, BOOSTER_BANDS.mechanical));
+    geometries.push(boosterCylinderBetween(
+      new THREE.Vector3(0.88, -0.35, side * 0.48),
+      new THREE.Vector3(0.88, -0.35, side * 0.65),
+      0.09,
+      10,
+      BOOSTER_BANDS.mechanical,
+    ));
+
+    const lock = new THREE.BoxGeometry(0.14, 0.08, 0.055);
+    lock.translate(0.62, 0.29, side * 0.725);
+    geometries.push(boosterGeometryWithAuthoredBands(lock, BOOSTER_BANDS.red));
+  }
+
+  const geometry = mergeGeometries(geometries);
+  for (const source of geometries) source.dispose();
+  if (!geometry) throw new Error("Ride Lab jump booster geometry could not be merged");
+  geometry.name = "ride-lab-sci-fi-punk-jump-booster";
+  geometry.computeBoundingSphere();
+  const triangles = triangleCount(geometry);
+  if (triangles > SCOOTER_BOOSTER_BUDGET.maximumTriangles) {
+    geometry.dispose();
+    throw new Error(`Ride Lab jump booster exceeds ${SCOOTER_BOOSTER_BUDGET.maximumTriangles} triangles`);
+  }
+
+  const material = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false });
+  const booster = new THREE.Mesh(geometry, material);
+  booster.name = "ride-lab-sci-fi-punk-jump-booster";
+  booster.castShadow = false;
+  booster.receiveShadow = false;
+
+  const outline = booster.clone(false);
+  outline.name = "ride-lab-sci-fi-punk-jump-booster-outline";
+  outline.material = new THREE.MeshBasicMaterial({ color: 0x08070c, side: THREE.BackSide, toneMapped: false });
+  outline.material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <project_vertex>",
+      "transformed += objectNormal * 0.018;\n#include <project_vertex>",
+    );
+  };
+  outline.material.customProgramCacheKey = () => "ride-lab-flat-booster-outline-v1";
+  outline.castShadow = false;
+  outline.receiveShadow = false;
+  outline.renderOrder = -1;
+
+  const decalGeometries = [-1, 1].map((side) => {
+    const decal = new THREE.PlaneGeometry(0.38, 0.38);
+    if (side < 0) decal.rotateY(Math.PI);
+    decal.translate(0.68, 0.04, side * 0.748);
+    return decal;
+  });
+  const decalGeometry = mergeGeometries(decalGeometries);
+  for (const source of decalGeometries) source.dispose();
+  if (!decalGeometry) throw new Error("Ride Lab booster sticker geometry could not be merged");
+  const decalMaterial = new THREE.MeshBasicMaterial({
+    map: stickerTexture,
+    alphaTest: 0.5,
+    side: THREE.DoubleSide,
+    toneMapped: false,
+  });
+  const decal = new THREE.Mesh(decalGeometry, decalMaterial);
+  decal.name = "ride-lab-sci-fi-punk-booster-sticker";
+  decal.castShadow = false;
+  decal.receiveShadow = false;
+  decal.renderOrder = 2;
+
+  const group = new THREE.Group();
+  group.name = "ride-lab-sci-fi-punk-booster-assembly";
+  group.add(outline, booster, decal);
+  group.userData.boosterTriangles = triangles + triangleCount(decalGeometry);
+  group.userData.boosterDrawCalls = SCOOTER_BOOSTER_BUDGET.drawCalls;
+  group.userData.boosterTextures = SCOOTER_BOOSTER_BUDGET.textures;
+  return { group, materials: [material, outline.material, decalMaterial] as THREE.Material[] };
+}
+
+function createRoundedScooterSeat() {
+  const sections = [
+    { x: 0.17, radius: 0.36, length: 0.15, heightScale: 0.42, widthScale: 1.05 },
+    { x: 0.82, radius: 0.34, length: 0.08, heightScale: 0.44, widthScale: 1.08 },
+  ].map(({ x, radius, length, heightScale, widthScale }) => {
+    const section = new THREE.CapsuleGeometry(radius, length, 4, 8);
+    section.rotateZ(Math.PI / 2);
+    section.scale(1, heightScale, widthScale);
+    section.translate(x, 0.50, 0);
+    return boosterGeometryWithAuthoredBands(section, BOOSTER_BANDS.seat);
+  });
+  const geometry = mergeGeometries(sections);
+  for (const section of sections) section.dispose();
+  if (!geometry) throw new Error("Ride Lab rounded scooter seat could not be merged");
+  geometry.name = "ride-lab-rounded-two-piece-seat";
+  const triangles = (geometry.index?.count ?? geometry.getAttribute("position").count) / 3;
+  if (triangles > SCOOTER_ROUNDED_SEAT_BUDGET.maximumTriangles) {
+    geometry.dispose();
+    throw new Error(`Ride Lab rounded seat exceeds ${SCOOTER_ROUNDED_SEAT_BUDGET.maximumTriangles} triangles`);
+  }
+
+  const material = new THREE.MeshBasicMaterial({ vertexColors: true, toneMapped: false });
+  const seat = new THREE.Mesh(geometry, material);
+  seat.name = "ride-lab-rounded-two-piece-seat";
+  seat.castShadow = false;
+  seat.receiveShadow = false;
+  const outline = seat.clone(false);
+  outline.name = "ride-lab-rounded-two-piece-seat-outline";
+  outline.material = new THREE.MeshBasicMaterial({ color: 0x08070c, side: THREE.BackSide, toneMapped: false });
+  outline.material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <project_vertex>",
+      "transformed += objectNormal * 0.015;\n#include <project_vertex>",
+    );
+  };
+  outline.material.customProgramCacheKey = () => "ride-lab-flat-rounded-seat-outline-v1";
+  outline.castShadow = false;
+  outline.receiveShadow = false;
+  outline.renderOrder = -1;
+
+  const group = new THREE.Group();
+  group.name = "ride-lab-rounded-two-piece-seat-assembly";
+  group.add(outline, seat);
+  group.userData.seatTriangles = triangles;
+  group.userData.seatDrawCalls = SCOOTER_ROUNDED_SEAT_BUDGET.drawCalls;
+  return { group, materials: [material, outline.material] as THREE.Material[] };
+}
+
 function captureBone(root: THREE.Object3D, name: string): BonePose {
   const bone = requiredObject(root, name);
   if (!(bone instanceof THREE.Bone)) throw new Error(`Curated rider node is not a bone: ${name}`);
@@ -359,36 +808,117 @@ function applyBonePose(pose: BonePose, rotation: THREE.Euler) {
   pose.bone.quaternion.copy(pose.rest).multiply(new THREE.Quaternion().setFromEuler(rotation));
 }
 
-function solveChain(
+function setBoneWorldQuaternion(bone: THREE.Bone, worldQuaternion: THREE.Quaternion) {
+  const parentWorld = new THREE.Quaternion();
+  bone.parent?.getWorldQuaternion(parentWorld);
+  bone.quaternion.copy(parentWorld.invert().multiply(worldQuaternion)).normalize();
+}
+
+function rotateBoneWorldDirection(
   root: THREE.Object3D,
-  chain: THREE.Bone[],
+  bone: THREE.Bone,
+  from: THREE.Vector3,
+  to: THREE.Vector3,
+) {
+  if (from.lengthSq() < 1e-10 || to.lengthSq() < 1e-10) return;
+  const world = new THREE.Quaternion();
+  bone.getWorldQuaternion(world);
+  const correction = new THREE.Quaternion().setFromUnitVectors(from.normalize(), to.normalize());
+  setBoneWorldQuaternion(bone, correction.multiply(world));
+  root.updateMatrixWorld(true);
+}
+
+function solveTwoBoneIK(
+  root: THREE.Object3D,
+  upper: THREE.Bone,
+  lower: THREE.Bone,
   effector: THREE.Bone,
   target: THREE.Vector3,
-  passes = 4,
+  pole: THREE.Vector3,
 ) {
-  const jointPosition = new THREE.Vector3();
-  const effectorPosition = new THREE.Vector3();
-  const toEffector = new THREE.Vector3();
-  const toTarget = new THREE.Vector3();
-  const worldCorrection = new THREE.Quaternion();
-  const parentWorld = new THREE.Quaternion();
-  const boneWorld = new THREE.Quaternion();
+  root.updateMatrixWorld(true);
+  const rootPosition = upper.getWorldPosition(new THREE.Vector3());
+  const jointPosition = lower.getWorldPosition(new THREE.Vector3());
+  const effectorPosition = effector.getWorldPosition(new THREE.Vector3());
+  const upperLength = rootPosition.distanceTo(jointPosition);
+  const lowerLength = jointPosition.distanceTo(effectorPosition);
+  if (upperLength < 1e-5 || lowerLength < 1e-5) return;
 
-  for (let pass = 0; pass < passes; pass += 1) {
-    for (const bone of chain) {
-      root.updateMatrixWorld(true);
-      bone.getWorldPosition(jointPosition);
-      effector.getWorldPosition(effectorPosition);
-      toEffector.copy(effectorPosition).sub(jointPosition).normalize();
-      toTarget.copy(target).sub(jointPosition).normalize();
-      if (toEffector.lengthSq() === 0 || toTarget.lengthSq() === 0) continue;
-      worldCorrection.setFromUnitVectors(toEffector, toTarget);
-      bone.getWorldQuaternion(boneWorld);
-      worldCorrection.multiply(boneWorld);
-      bone.parent?.getWorldQuaternion(parentWorld);
-      bone.quaternion.copy(parentWorld.invert().multiply(worldCorrection)).normalize();
-    }
+  const targetDirection = target.clone().sub(rootPosition);
+  const unclampedDistance = targetDirection.length();
+  if (unclampedDistance < 1e-5) return;
+  targetDirection.normalize();
+  const minimumReach = Math.abs(upperLength - lowerLength) + 1e-4;
+  const maximumReach = upperLength + lowerLength - 1e-4;
+  const reach = THREE.MathUtils.clamp(unclampedDistance, minimumReach, maximumReach);
+  const reachableTarget = rootPosition.clone().addScaledVector(targetDirection, reach);
+
+  const poleDirection = pole.clone().sub(rootPosition);
+  poleDirection.addScaledVector(targetDirection, -poleDirection.dot(targetDirection));
+  if (poleDirection.lengthSq() < 1e-8) {
+    poleDirection.copy(jointPosition).sub(rootPosition);
+    poleDirection.addScaledVector(targetDirection, -poleDirection.dot(targetDirection));
   }
+  poleDirection.normalize();
+
+  const along = (upperLength * upperLength + reach * reach - lowerLength * lowerLength) / (2 * reach);
+  const away = Math.sqrt(Math.max(0, upperLength * upperLength - along * along));
+  const desiredJoint = rootPosition.clone()
+    .addScaledVector(targetDirection, along)
+    .addScaledVector(poleDirection, away);
+
+  rotateBoneWorldDirection(
+    root,
+    upper,
+    jointPosition.clone().sub(rootPosition),
+    desiredJoint.clone().sub(rootPosition),
+  );
+
+  const solvedJoint = lower.getWorldPosition(new THREE.Vector3());
+  const solvedEffector = effector.getWorldPosition(new THREE.Vector3());
+  rotateBoneWorldDirection(
+    root,
+    lower,
+    solvedEffector.sub(solvedJoint),
+    reachableTarget.sub(solvedJoint),
+  );
+}
+
+function captureTerminalFrame(
+  root: THREE.Object3D,
+  terminal: THREE.Bone,
+  child: THREE.Bone,
+): TerminalFrame {
+  root.updateMatrixWorld(true);
+  const origin = terminal.getWorldPosition(new THREE.Vector3());
+  const childPosition = child.getWorldPosition(new THREE.Vector3());
+  const terminalWorldInverse = terminal.getWorldQuaternion(new THREE.Quaternion()).invert();
+  const forwardLocal = childPosition.sub(origin).normalize().applyQuaternion(terminalWorldInverse);
+  const rootOrigin = root.localToWorld(new THREE.Vector3());
+  const rootUp = root.localToWorld(new THREE.Vector3(0, 1, 0)).sub(rootOrigin).normalize();
+  const upLocal = rootUp.applyQuaternion(terminalWorldInverse);
+  upLocal.addScaledVector(forwardLocal, -upLocal.dot(forwardLocal)).normalize();
+  return { bone: terminal, forwardLocal, upLocal };
+}
+
+function orientTerminalFrame(
+  frame: TerminalFrame,
+  targetForward: THREE.Vector3,
+  targetUp: THREE.Vector3,
+) {
+  const sourceForward = frame.forwardLocal.clone().normalize();
+  const sourceUp = frame.upLocal.clone()
+    .addScaledVector(sourceForward, -frame.upLocal.dot(sourceForward))
+    .normalize();
+  const sourceRight = new THREE.Vector3().crossVectors(sourceUp, sourceForward).normalize();
+  const sourceBasis = new THREE.Matrix4().makeBasis(sourceRight, sourceUp, sourceForward);
+
+  const forward = targetForward.clone().normalize();
+  const up = targetUp.clone().addScaledVector(forward, -targetUp.dot(forward)).normalize();
+  const right = new THREE.Vector3().crossVectors(up, forward).normalize();
+  const targetBasis = new THREE.Matrix4().makeBasis(right, up, forward);
+  const world = new THREE.Quaternion().setFromRotationMatrix(targetBasis.multiply(sourceBasis.invert()));
+  setBoneWorldQuaternion(frame.bone, world);
 }
 
 function worldAnchor(parent: THREE.Object3D, anchor: Readonly<{ x: number; y: number; z: number }>) {
@@ -398,16 +928,18 @@ function worldAnchor(parent: THREE.Object3D, anchor: Readonly<{ x: number; y: nu
 async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   const loader = new GLTFLoader();
   const textureLoader = new THREE.TextureLoader();
-  const [scooterGltf, riderGltf, riderTexture] = await Promise.all([
+  const [scooterGltf, riderGltf, boosterSticker] = await Promise.all([
     loader.loadAsync(SCOOTER_URL),
     loader.loadAsync(RIDER_URL),
-    textureLoader.loadAsync(RIDER_TEXTURE_URL),
+    textureLoader.loadAsync(SCOOTER_BOOSTER_STICKER_URL),
   ]);
 
-  riderTexture.colorSpace = THREE.SRGBColorSpace;
-  riderTexture.flipY = false;
-  riderTexture.magFilter = THREE.NearestFilter;
+  boosterSticker.colorSpace = THREE.SRGBColorSpace;
+  boosterSticker.minFilter = THREE.NearestFilter;
+  boosterSticker.magFilter = THREE.NearestFilter;
+  boosterSticker.generateMipmaps = false;
   const celGradient = createCelGradient();
+  const scooterCelGradient = createScooterCelGradient();
 
   const root = new THREE.Group();
   root.name = "ride-lab-curated-vehicle";
@@ -454,25 +986,25 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   handlebarSteer.attach(handlebar);
 
   const scooterPalette = {
-    ink: toonMaterial(0x171321, celGradient),
-    tire: toonMaterial(0x09080d, celGradient),
-    mechanical: toonMaterial(0x41444d, celGradient),
-    seat: toonMaterial(0x322e3a, celGradient),
-    cream: toonMaterial(0xa6dc6f, celGradient),
-    cyan: toonMaterial(0x45dfe3, celGradient),
-    chrome: toonMaterial(0xd9edf0, celGradient),
+    ink: toonMaterial(0x171321, scooterCelGradient),
+    tire: toonMaterial(0x09080d, scooterCelGradient),
+    mechanical: toonMaterial(0x41444d, scooterCelGradient),
+    seat: toonMaterial(0x322e3a, scooterCelGradient),
+    cream: toonMaterial(0xa6dc6f, scooterCelGradient),
+    cyan: toonMaterial(0x45dfe3, scooterCelGradient),
+    chrome: toonMaterial(0xd9edf0, scooterCelGradient),
     headlight: new THREE.MeshToonMaterial({
       color: 0xfff1c7,
       emissive: 0x5c431d,
       emissiveIntensity: 0.28,
-      gradientMap: celGradient,
+      gradientMap: scooterCelGradient,
     }),
-    orange: toonMaterial(0xff8a4c, celGradient),
+    orange: toonMaterial(0xff8a4c, scooterCelGradient),
     red: new THREE.MeshToonMaterial({
       color: 0xff365e,
       emissive: 0x7a071f,
       emissiveIntensity: 0.45,
-      gradientMap: celGradient,
+      gradientMap: scooterCelGradient,
     }),
   };
   const scooterMaterials = new Set<THREE.Material>(Object.values(scooterPalette));
@@ -501,6 +1033,16 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     outline.renderOrder = -1;
     mesh.parent?.add(outline);
   }
+  const scooterBodySurface = requiredObject(scooter, "lowpolybase.004");
+  const scooterInkCarrier = requiredObject(scooter, "tapislowpoly.002");
+  if (!(scooterInkCarrier instanceof THREE.Mesh)) throw new Error("Curated scooter ink carrier is not a mesh");
+  createScooterSurfaceDetails(scooter, scooterBodySurface, scooterInkCarrier);
+  const booster = createScooterJumpBooster(boosterSticker);
+  scooter.add(booster.group);
+  for (const material of booster.materials) scooterMaterials.add(material);
+  const roundedSeat = createRoundedScooterSeat();
+  scooter.add(roundedSeat.group);
+  for (const material of roundedSeat.materials) scooterMaterials.add(material);
   const tailLamp = requiredObject(scooter, "petitelumiererouge.002");
   const tailGlowTexture = createGlowTexture();
   const tailGlowMaterial = new THREE.SpriteMaterial({
@@ -524,8 +1066,20 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   for (const material of replacedScooterMaterials) material.dispose();
 
   const rider = riderGltf.scene;
-  rider.name = "kenney-skater-male-rider";
-  const riderMaterial = new THREE.MeshToonMaterial({ color: 0xffffff, map: riderTexture, gradientMap: celGradient });
+  rider.name = "girush-streetwear-rider";
+  const riderPalette: Record<RiderMaterialRole, THREE.MeshToonMaterial> = {
+    skin: toonMaterial(0xd98f70, celGradient),
+    hair: toonMaterial(0x251c35, celGradient),
+    eye: toonMaterial(0x08070c, celGradient),
+    hoodie: toonMaterial(0xf16f52, celGradient),
+    undershirt: toonMaterial(0xf3e9cf, celGradient),
+    shorts: toonMaterial(0x254f72, celGradient),
+    calf: toonMaterial(0xd98f70, celGradient),
+    shoe: toonMaterial(0x282537, celGradient),
+    accent: toonMaterial(0xbfd3a9, celGradient),
+  };
+  const riderVertexMaterial = vertexColorToonMaterial(celGradient);
+  const riderMaterials = new Set<THREE.Material>([...Object.values(riderPalette), riderVertexMaterial]);
   const riderMeshes: THREE.SkinnedMesh[] = [];
   const replacedRiderMaterials = new Set<THREE.Material>();
   rider.traverse((object) => {
@@ -533,7 +1087,9 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     if (object instanceof THREE.SkinnedMesh) riderMeshes.push(object);
     const sourceMaterials = Array.isArray(object.material) ? object.material : [object.material];
     for (const material of sourceMaterials) replacedRiderMaterials.add(material);
-    object.material = riderMaterial;
+    object.material = object.geometry.hasAttribute("color")
+      ? riderVertexMaterial
+      : riderPalette[resolveRiderMaterialRole(object.name)];
     object.castShadow = true;
     object.receiveShadow = true;
   });
@@ -551,7 +1107,7 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   const riderPlacement = new THREE.Group();
   riderPlacement.name = "curated-rider-placement";
   riderPlacement.scale.setScalar(RIDE_LAB_VEHICLE_ALIGNMENT.riderScale);
-  riderPlacement.rotation.x = 0.72;
+  riderPlacement.rotation.x = 0.7;
   riderPlacement.add(rider);
   body.add(riderPlacement);
 
@@ -559,23 +1115,29 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   const spine = captureBone(rider, "Spine");
   const chest = captureBone(rider, "Chest");
   const head = captureBone(rider, "Head");
+  const leftShoulder = captureBone(rider, "LeftShoulder");
   const leftArm = captureBone(rider, "LeftArm");
   const leftForeArm = captureBone(rider, "LeftForeArm");
   const leftHand = captureBone(rider, "LeftHand");
+  const rightShoulder = captureBone(rider, "RightShoulder");
   const rightArm = captureBone(rider, "RightArm");
   const rightForeArm = captureBone(rider, "RightForeArm");
   const rightHand = captureBone(rider, "RightHand");
   const leftUpLeg = captureBone(rider, "LeftUpLeg");
   const leftLeg = captureBone(rider, "LeftLeg");
   const leftFoot = captureBone(rider, "LeftFoot");
+  const leftToes = captureBone(rider, "LeftToes");
   const rightUpLeg = captureBone(rider, "RightUpLeg");
   const rightLeg = captureBone(rider, "RightLeg");
   const rightFoot = captureBone(rider, "RightFoot");
+  const rightToes = captureBone(rider, "RightToes");
 
   root.updateMatrixWorld(true);
   const hipsBeforeAlignment = hips.bone.getWorldPosition(new THREE.Vector3());
-  const seatTarget = worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.seatAnchor);
-  riderPlacement.position.add(seatTarget.sub(hipsBeforeAlignment));
+  const pelvisTarget = worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.pelvisAnchor);
+  riderPlacement.position.add(pelvisTarget.sub(hipsBeforeAlignment));
+  const leftFootFrame = captureTerminalFrame(rider, leftFoot.bone, leftToes.bone);
+  const rightFootFrame = captureTerminalFrame(rider, rightFoot.bone, rightToes.bone);
 
   let wheelSpinRadians = 0;
   let presentedBodySteer = 0;
@@ -592,11 +1154,13 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     handlebarSteer.rotation.y = pose.frontSteerRadians;
 
     applyBonePose(hips, new THREE.Euler(-0.08, 0, pose.riderLeanRadians));
-    applyBonePose(spine, new THREE.Euler(-0.42, 0, pose.riderLeanRadians * 0.55));
-    applyBonePose(chest, new THREE.Euler(-0.18, pose.shoulderYawRadians, pose.riderLeanRadians * 0.35));
+    applyBonePose(spine, new THREE.Euler(-0.24, 0, pose.riderLeanRadians * 0.55));
+    applyBonePose(chest, new THREE.Euler(0, pose.shoulderYawRadians, pose.riderLeanRadians * 0.35));
     applyBonePose(head, new THREE.Euler(pose.headTuckRadians, 0, pose.headCounterLeanRadians));
-    applyBonePose(leftArm, new THREE.Euler(-0.55, 0.2, -0.35 - pose.leftElbowFlareRadians));
-    applyBonePose(rightArm, new THREE.Euler(-0.55, -0.2, 0.35 + pose.rightElbowFlareRadians));
+    applyBonePose(leftShoulder, new THREE.Euler(0, 0, 0));
+    applyBonePose(leftArm, new THREE.Euler(-0.55, 0.2, -0.12 - pose.leftElbowFlareRadians));
+    applyBonePose(rightShoulder, new THREE.Euler(0, 0, 0));
+    applyBonePose(rightArm, new THREE.Euler(-0.55, -0.2, 0.12 + pose.rightElbowFlareRadians));
     applyBonePose(leftForeArm, new THREE.Euler(pose.leftElbowRadians, 0, 0));
     applyBonePose(rightForeArm, new THREE.Euler(pose.rightElbowRadians, 0, 0));
     applyBonePose(leftUpLeg, new THREE.Euler(-1.08, 0.08, 0));
@@ -609,24 +1173,43 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     const rightHandTarget = worldAnchor(handlebarSteer, RIDE_LAB_VEHICLE_ALIGNMENT.rightGripOffset);
     const leftFootTarget = worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.leftFootAnchor);
     const rightFootTarget = worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.rightFootAnchor);
-    solveChain(root, [leftForeArm.bone, leftArm.bone], leftHand.bone, leftHandTarget, 6);
-    solveChain(root, [rightForeArm.bone, rightArm.bone], rightHand.bone, rightHandTarget);
-    solveChain(root, [leftLeg.bone, leftUpLeg.bone], leftFoot.bone, leftFootTarget, 2);
-    solveChain(root, [rightLeg.bone, rightUpLeg.bone], rightFoot.bone, rightFootTarget, 2);
+    solveTwoBoneIK(root, leftArm.bone, leftForeArm.bone, leftHand.bone, leftHandTarget, worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.leftElbowPole));
+    solveTwoBoneIK(root, rightArm.bone, rightForeArm.bone, rightHand.bone, rightHandTarget, worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.rightElbowPole));
+    solveTwoBoneIK(root, leftUpLeg.bone, leftLeg.bone, leftFoot.bone, leftFootTarget, worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.leftKneePole));
+    solveTwoBoneIK(root, rightUpLeg.bone, rightLeg.bone, rightFoot.bone, rightFootTarget, worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.rightKneePole));
+    const floorboardForward = worldAnchor(body, { x: 0, y: 0, z: 1 })
+      .sub(worldAnchor(body, { x: 0, y: 0, z: 0 }))
+      .normalize();
+    const floorboardUp = worldAnchor(body, { x: 0, y: 1, z: 0 })
+      .sub(worldAnchor(body, { x: 0, y: 0, z: 0 }))
+      .normalize();
+    orientTerminalFrame(leftFootFrame, floorboardForward, floorboardUp);
+    orientTerminalFrame(rightFootFrame, floorboardForward, floorboardUp);
+    // The IK targets wrist positions; orient the terminal hand bones so the
+    // palms rest across the grips instead of leaving straight fingers hanging
+    // beneath them.
+    applyBonePose(leftHand, new THREE.Euler(0, 0, -Math.PI * 0.5));
+    applyBonePose(rightHand, new THREE.Euler(0, 0, Math.PI * 0.5));
     root.updateMatrixWorld(true);
 
     const leftHandPosition = leftHand.bone.getWorldPosition(new THREE.Vector3());
     const rightHandPosition = rightHand.bone.getWorldPosition(new THREE.Vector3());
+    const leftFootPosition = leftFoot.bone.getWorldPosition(new THREE.Vector3());
+    const rightFootPosition = rightFoot.bone.getWorldPosition(new THREE.Vector3());
     return {
       ...pose,
-      asset: "curated",
+      asset: "streetwear",
       handlebarSteerRadians: handlebarSteer.rotation.y,
       wheelSpinRadians,
-      seatErrorMeters: hips.bone.getWorldPosition(new THREE.Vector3()).distanceTo(worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.seatAnchor)),
+      seatErrorMeters: hips.bone.getWorldPosition(new THREE.Vector3()).distanceTo(worldAnchor(body, RIDE_LAB_VEHICLE_ALIGNMENT.pelvisAnchor)),
       leftHandErrorMeters: leftHandPosition.distanceTo(leftHandTarget),
       rightHandErrorMeters: rightHandPosition.distanceTo(rightHandTarget),
+      leftFootErrorMeters: leftFootPosition.distanceTo(leftFootTarget),
+      rightFootErrorMeters: rightFootPosition.distanceTo(rightFootTarget),
       leftHandPosition,
       rightHandPosition,
+      leftFootPosition,
+      rightFootPosition,
     };
   }
 
@@ -636,7 +1219,7 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     body,
     frontWheel,
     rearWheel,
-    asset: "curated",
+    asset: "streetwear",
     update,
     dispose() {
       if (disposed) return;
@@ -650,10 +1233,11 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
       for (const geometry of geometries) geometry.dispose();
       for (const skeleton of skeletons) skeleton.dispose();
       for (const material of scooterMaterials) material.dispose();
-      riderMaterial.dispose();
+      for (const material of riderMaterials) material.dispose();
       riderOutlineMaterial.dispose();
-      riderTexture.dispose();
       tailGlowTexture.dispose();
+      boosterSticker.dispose();
+      scooterCelGradient.dispose();
       celGradient.dispose();
       root.removeFromParent();
       root.clear();
@@ -682,8 +1266,12 @@ export function createFallbackVehicleVisual(): RideLabVehicleVisual {
         seatErrorMeters: 0,
         leftHandErrorMeters: 0,
         rightHandErrorMeters: 0,
+        leftFootErrorMeters: 0,
+        rightFootErrorMeters: 0,
         leftHandPosition: { x: 0, y: 0, z: 0 },
         rightHandPosition: { x: 0, y: 0, z: 0 },
+        leftFootPosition: { x: 0, y: 0, z: 0 },
+        rightFootPosition: { x: 0, y: 0, z: 0 },
       };
     },
   };

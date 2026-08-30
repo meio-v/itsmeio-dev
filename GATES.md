@@ -94,3 +94,69 @@ completion of this development lab does not claim that approval.
 
 - [ ] G16: the user approves the scooter scale and orientation, seated rider contact points, steering pose, wheel motion, rematerialized art direction, and overall silhouette in the live Ride Lab
   EVIDENCE: pending
+
+## Streetwear rider kitbash
+
+- [ ] G17: this extended ledger states streetwear-rider outcomes with checks that can fail
+  CHECK: node /Users/jeromeiovelarde/.agents/skills/unlazy/scripts/gate-lint.mjs GATES.md
+  EXPECT: LINT OK
+  EVIDENCE: pending
+
+- [ ] G18: the implementation note records the current Kenney mesh, skeleton hierarchy, pose controller, scooter attachment, axes, offsets, materials, geometry, and runtime assumptions from measured source evidence
+  CHECK: node scripts/verify-streetwear-rider-baseline.mjs
+  EXPECT: streetwear rider baseline verification passed
+  EVIDENCE: pending
+
+- [ ] G19: every shipped streetwear rider component has an approved CC0 source, exact provenance, bounded geometry, and no unused source archive or donor payload in the runtime bundle
+  CHECK: node scripts/verify-streetwear-rider-assets.mjs
+  EXPECT: streetwear rider asset verification passed
+  EVIDENCE: pending
+
+- [ ] G20: the runtime rider preserves the Kenney-compatible skeleton and scooter integration while exposing modular body, hair, hoodie, undershirt, cargo shorts, calves, and oversized shoes with deterministic seated and mirrored steering deformation
+  CHECK: node --experimental-strip-types --test --test-reporter=tap app/mall/_ride-lab/rideLabVehicleVisual.test.ts
+  EXPECT: /# fail 0/
+  EVIDENCE: pending
+
+- [ ] G21: focused Ride Lab tests, TypeScript, and targeted lint accept the streetwear rider without changing controls, camera, physics, collider, route, or teardown behavior
+  CHECK: npm run test:ride-lab && npm run typecheck && npm run lint:ride-lab
+  EXPECT: /eslint app\/mall\/ride-lab app\/mall\/_ride-lab/
+  EVIDENCE: pending
+
+- [ ] G22: browser verification observes the streetwear rider through idle, acceleration, braking, mirrored turns, preload, ollie, hover, grind, recovery, reload, reduced motion, and mobile layout with bounded hand, foot, seat, and clothing contact telemetry
+  CHECK: npm run verify:ride-lab
+  EXPECT: rideLab browser verification passed
+  EVIDENCE: pending
+
+- [ ] G23: the streetwear rider stays in the optimized Kenney performance class and the optional Ride Lab remains disabled by default in a production build
+  CHECK: npm run build && node scripts/verify-ride-lab-evidence.mjs && npm run verify:ride-lab:production
+  EXPECT: rideLab production gate verification passed
+  EVIDENCE: pending
+
+- [ ] G24: at the actual gameplay camera the user approves the five dominant shapes—hair, oversized hoodie, baggy cargo shorts, skinny calves, and enormous shoes—and fixed rear, front, both profile, and elevated three-quarter views show credible scooter positioning with no major visible clipping
+  EVIDENCE: pending
+
+## Blender MCP-native streetwear refinement
+
+- [ ] G25: Codex can successfully inspect the open rider scene through the configured Blender MCP bridge after the required desktop refresh
+  EVIDENCE: pending
+
+- [ ] G26: the reviewed Blender scene is the production source of truth; Blender MCP exports the rider GLB from that scene and the repository independently verifies the locked eye assembly, modular garment/shoe meshes, Kenney-compatible rig, bounded geometry, baked canonical seated pose, and export metadata
+  CHECK: node scripts/verify-streetwear-rider-assets.mjs
+  EXPECT: streetwear rider asset verification passed
+  EVIDENCE: pending
+
+  AUTHORING: follow `docs/adr/0001-blender-mcp-native-asset-authoring.md`; do not regenerate the production rider or scooter through a headless Python builder
+
+- [ ] G27: fixed standalone-character T-pose front, rear, both profile, and elevated three-quarter captures provide a stable visual comparison set for the refinement pass
+  CHECK: node scripts/verify-streetwear-rider-captures.mjs
+  EXPECT: streetwear rider capture verification passed
+  EVIDENCE: pending
+
+- [ ] G28: the user visually approves the standalone character's refined oversized streetwear silhouette, appealing face, continuous dropped-seam hoodie, thin layered undershirt, reference-shaped low-crotch cargo shorts, and forward-oriented enclosed structured skate shoes
+  EVIDENCE: pending
+
+- [ ] G29: orthographic front, both profile, and elevated three-quarter diagnostic overlays compare the generated target section-by-section and distinguish torso width from depth before the correction pass
+  EVIDENCE: pending
+
+- [ ] G30: the correction pass resolves shoe orientation and enclosure first, then hoodie/sleeve continuity, torso proportions and undershirt layering, shorts silhouette, and face appeal without changing the locked rig/runtime contract
+  EVIDENCE: pending

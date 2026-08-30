@@ -22,6 +22,16 @@ type RideLabDebugWindow = Window & {
   __rideLabCounters?: { liveRuntimes: number; animationLoops: number };
 };
 
+export type RideLabInspectionView = "chase" | "rear" | "front" | "left-profile" | "right-profile" | "elevated-three-quarter";
+
+const INSPECTION_CAMERA_OFFSETS: Record<Exclude<RideLabInspectionView, "chase">, THREE.Vector3Tuple> = {
+  rear: [0, 2, -5],
+  front: [0, 1.7, 5],
+  "left-profile": [-5, 1.55, 0],
+  "right-profile": [5, 1.55, 0],
+  "elevated-three-quarter": [-4, 3, -4],
+};
+
 const counters = { liveRuntimes: 0, animationLoops: 0 };
 
 function damp(current: number, target: number, sharpness: number, delta: number) {
@@ -70,6 +80,7 @@ export class RideLabRuntime {
   private throttleCameraPunch = 0;
   private steerCameraOrbit = 0;
   private speedLineBurst = 0;
+  private inspectionView: RideLabInspectionView = "chase";
 
   private constructor(options: RideLabRuntimeOptions, physics: JoltRidePhysics, context: WebGL2RenderingContext, vehicle: RideLabVehicleVisual) {
     this.options = options;
@@ -103,10 +114,16 @@ export class RideLabRuntime {
     counters.liveRuntimes += 1;
     (window as RideLabDebugWindow).__rideLabCounters = counters;
     (window as RideLabDebugWindow).__rideLabRuntime = this;
+    options.surface.dataset.inspectionView = this.inspectionView;
     this.resize();
   }
 
   private readonly options: RideLabRuntimeOptions;
+
+  setInspectionView(view: RideLabInspectionView) {
+    this.inspectionView = view;
+    this.options.surface.dataset.inspectionView = view;
+  }
 
   static async create(options: RideLabRuntimeOptions) {
     const started = performance.now();
@@ -346,12 +363,16 @@ export class RideLabRuntime {
     this.options.surface.dataset.shoulderYaw = vehicleMetrics.shoulderYawRadians.toFixed(3);
     this.options.surface.dataset.headCounterLean = vehicleMetrics.headCounterLeanRadians.toFixed(3);
     this.options.surface.dataset.headTuck = vehicleMetrics.headTuckRadians.toFixed(3);
-    this.options.surface.dataset.celShading = vehicleMetrics.asset === "curated" ? "three-band-outlined" : "fallback";
+    this.options.surface.dataset.celShading = vehicleMetrics.asset === "streetwear" ? "three-band-outlined" : "fallback";
     this.options.surface.dataset.seatError = vehicleMetrics.seatErrorMeters.toFixed(3);
     this.options.surface.dataset.leftHandError = vehicleMetrics.leftHandErrorMeters.toFixed(3);
     this.options.surface.dataset.rightHandError = vehicleMetrics.rightHandErrorMeters.toFixed(3);
+    this.options.surface.dataset.leftFootError = vehicleMetrics.leftFootErrorMeters.toFixed(3);
+    this.options.surface.dataset.rightFootError = vehicleMetrics.rightFootErrorMeters.toFixed(3);
     this.options.surface.dataset.leftHandPosition = `${vehicleMetrics.leftHandPosition.x.toFixed(3)},${vehicleMetrics.leftHandPosition.y.toFixed(3)},${vehicleMetrics.leftHandPosition.z.toFixed(3)}`;
     this.options.surface.dataset.rightHandPosition = `${vehicleMetrics.rightHandPosition.x.toFixed(3)},${vehicleMetrics.rightHandPosition.y.toFixed(3)},${vehicleMetrics.rightHandPosition.z.toFixed(3)}`;
+    this.options.surface.dataset.leftFootPosition = `${vehicleMetrics.leftFootPosition.x.toFixed(3)},${vehicleMetrics.leftFootPosition.y.toFixed(3)},${vehicleMetrics.leftFootPosition.z.toFixed(3)}`;
+    this.options.surface.dataset.rightFootPosition = `${vehicleMetrics.rightFootPosition.x.toFixed(3)},${vehicleMetrics.rightFootPosition.y.toFixed(3)},${vehicleMetrics.rightFootPosition.z.toFixed(3)}`;
     const speedRatio = normalizedSpeed(this.snapshot.speedMps, this.tuning.topSpeedMps);
     const cameraPresentation = cameraSpeedPresentation(this.snapshot.speedMps, this.tuning);
     if (this.previousVisualSpeedMps < this.tuning.speedLineThreshold && this.snapshot.speedMps >= this.tuning.speedLineThreshold && !this.reducedMotion) {
@@ -365,19 +386,28 @@ export class RideLabRuntime {
     }
     const forward = this.cameraForward.set(0, 0, 1).applyQuaternion(this.vehiclePose.quaternion).normalize();
     const right = this.cameraRight.set(forward.z, 0, -forward.x).normalize();
-    this.cameraTarget.set(position.x, position.y + 0.72, position.z).addScaledVector(forward, 1.6 + speedRatio * 1.5);
-    const cameraDistance = cameraPresentation.distance + this.throttleCameraPunch * this.tuning.cameraThrottlePunchDistance;
-    const orbitTarget = this.reducedMotion ? 0 : this.presentationInput.steer * this.tuning.cameraSteerOrbitRadians;
-    this.steerCameraOrbit = damp(this.steerCameraOrbit, orbitTarget, this.tuning.cameraSteerOrbitResponse, delta);
-    this.cameraDesired
-      .set(position.x, position.y + this.tuning.cameraHeight, position.z)
-      .addScaledVector(forward, -Math.cos(this.steerCameraOrbit) * cameraDistance)
-      .addScaledVector(right, Math.sin(this.steerCameraOrbit) * cameraDistance);
-    const sharpness = this.reducedMotion ? 20 : this.tuning.cameraLag;
-    this.camera.position.lerp(this.cameraDesired, 1 - Math.exp(-sharpness * delta));
-    this.camera.lookAt(this.cameraTarget);
-    const cameraFov = cameraPresentation.fov + this.throttleCameraPunch * this.tuning.cameraThrottlePunchFov;
-    this.camera.fov = this.reducedMotion ? 52 : damp(this.camera.fov, cameraFov, 4, delta);
+    if (this.inspectionView === "chase") {
+      this.cameraTarget.set(position.x, position.y + 0.72, position.z).addScaledVector(forward, 1.6 + speedRatio * 1.5);
+      const cameraDistance = cameraPresentation.distance + this.throttleCameraPunch * this.tuning.cameraThrottlePunchDistance;
+      const orbitTarget = this.reducedMotion ? 0 : this.presentationInput.steer * this.tuning.cameraSteerOrbitRadians;
+      this.steerCameraOrbit = damp(this.steerCameraOrbit, orbitTarget, this.tuning.cameraSteerOrbitResponse, delta);
+      this.cameraDesired
+        .set(position.x, position.y + this.tuning.cameraHeight, position.z)
+        .addScaledVector(forward, -Math.cos(this.steerCameraOrbit) * cameraDistance)
+        .addScaledVector(right, Math.sin(this.steerCameraOrbit) * cameraDistance);
+      const sharpness = this.reducedMotion ? 20 : this.tuning.cameraLag;
+      this.camera.position.lerp(this.cameraDesired, 1 - Math.exp(-sharpness * delta));
+      this.camera.lookAt(this.cameraTarget);
+      const cameraFov = cameraPresentation.fov + this.throttleCameraPunch * this.tuning.cameraThrottlePunchFov;
+      this.camera.fov = this.reducedMotion ? 52 : damp(this.camera.fov, cameraFov, 4, delta);
+    } else {
+      const offset = INSPECTION_CAMERA_OFFSETS[this.inspectionView];
+      this.cameraTarget.set(position.x, position.y + 0.9, position.z);
+      this.cameraDesired.set(...offset).applyQuaternion(this.vehiclePose.quaternion).add(position);
+      this.camera.position.copy(this.cameraDesired);
+      this.camera.lookAt(this.cameraTarget);
+      this.camera.fov = 48;
+    }
     this.camera.updateProjectionMatrix();
     const lines = this.reducedMotion ? 0 : Math.min(
       this.tuning.speedLineIntensity * this.tuning.feedbackIntensity,

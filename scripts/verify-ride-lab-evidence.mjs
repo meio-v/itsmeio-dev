@@ -17,7 +17,7 @@ assert.ok(assertNonNegativeMetric("peakRenderMs") <= 70, `peak render ${measurem
 assert.ok(assertNonNegativeMetric("drawCalls") <= 80, `draw calls ${measurements.drawCalls} exceeds 80`);
 assert.ok(assertNonNegativeMetric("triangles") <= 100_000, `triangles ${measurements.triangles} exceeds 100000`);
 assert.ok(assertNonNegativeMetric("transferBytes") <= 8_000_000, `transfer ${measurements.transferBytes} bytes exceeds 8000000`);
-assert.equal(measurements.vehicleAsset, "curated");
+assert.equal(measurements.vehicleAsset, "streetwear");
 assert.ok(assertNonNegativeMetric("seatErrorMeters") < 0.01, `seat error ${measurements.seatErrorMeters}m exceeds 0.01m`);
 assert.ok(assertNonNegativeMetric("leftHandErrorMeters") < 0.08, `left grip error ${measurements.leftHandErrorMeters}m exceeds 0.08m`);
 assert.ok(assertNonNegativeMetric("rightHandErrorMeters") < 0.08, `right grip error ${measurements.rightHandErrorMeters}m exceeds 0.08m`);

@@ -13,6 +13,10 @@
 .help, .feedback { position: absolute; left: 1rem; padding: .5rem .7rem; border: 1px solid #675f88; background: rgba(17,16,29,.82); font-size: .72rem; }
 .help { top: 1rem; }
 .feedback { top: 3.7rem; color: #7de1de; }
+.inspectionControls { position: absolute; z-index: 2; top: 1rem; right: 1rem; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .35rem; max-width: 22rem; }
+.inspectionControls button { min-height: 2rem; padding: .35rem .5rem; border: 1px solid #675f88; color: #f8e9d8; background: rgba(17,16,29,.86); font: inherit; font-size: .62rem; text-transform: uppercase; cursor: pointer; }
+.inspectionControls button:hover, .inspectionControls button:focus-visible { border-color: #7de1de; color: #7de1de; }
+.inspectionControls button[aria-pressed="true"] { border-color: #ff6aa4; color: #11101d; background: #ff6aa4; }
 .rideSurface[data-feedback="throttle"] .feedback { color: #fff08a; border-color: #fff08a; }
 .rideSurface[data-feedback="brake"] .feedback { color: #ff88aa; border-color: #ff88aa; }
 .rideSurface[data-feedback="steer"] .feedback { color: #8ff5ee; border-color: #8ff5ee; }
@@ -50,6 +54,7 @@
   .rideSurface { position: relative; height: 62dvh; min-height: 26rem; }
   .panel { border-left: 0; border-top: 1px solid #675f88; }
   .touchControls { display: flex; }
+  .inspectionControls { top: 6.35rem; max-width: calc(100% - 2rem); }
 }
 @media (min-width: 801px) and (pointer: fine) { .touchControls { opacity: .42; } }
 @media (prefers-reduced-motion: reduce) { .speedLines { animation: none; } }

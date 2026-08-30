@@ -1,0 +1,538 @@
+{
+  "builder": "5.2.1 LTS",
+  "girushScale": 0.01982,
+  "rigProportionSource": "Girush anatomy on Kenney-compatible pivots",
+  "proportionTargets": {
+    "headScale": 1.23,
+    "hairScale": 1.32,
+    "hairAsymmetryOffsetMeters": 0.018
+  },
+  "armature": "Root",
+  "bones": 45,
+  "authoringComponents": [
+    {
+      "name": "streetwear-body",
+      "vertices": 923,
+      "triangles": 1766,
+      "boundsMin": [
+        -1.10096,
+        -0.17464,
+        2.08726
+      ],
+      "boundsMax": [
+        1.10123,
+        0.09479,
+        2.7393
+      ],
+      "vertexGroups": [
+        "Chest",
+        "Head",
+        "Hips",
+        "LeftArm",
+        "LeftFoot",
+        "LeftForeArm",
+        "LeftHand",
+        "LeftLeg",
+        "LeftShoulder",
+        "LeftUpLeg",
+        "Neck",
+        "RightArm",
+        "RightFoot",
+        "RightForeArm",
+        "RightHand",
+        "RightLeg",
+        "RightShoulder",
+        "RightUpLeg",
+        "Spine",
+        "UpperChest"
+      ]
+    },
+    {
+      "name": "streetwear-cargo-shorts",
+      "vertices": 600,
+      "triangles": 1180,
+      "boundsMin": [
+        -0.54588,
+        -0.2534,
+        0.83706
+      ],
+      "boundsMax": [
+        0.53489,
+        0.21244,
+        1.72
+      ],
+      "vertexGroups": [
+        "Hips",
+        "LeftUpLeg",
+        "RightUpLeg"
+      ]
+    },
+    {
+      "name": "streetwear-hair",
+      "vertices": 474,
+      "triangles": 680,
+      "boundsMin": [
+        -0.35575,
+        -0.28344,
+        2.57529
+      ],
+      "boundsMax": [
+        0.3532,
+        0.45004,
+        3.31085
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-head",
+      "vertices": 875,
+      "triangles": 1734,
+      "boundsMin": [
+        -0.30758,
+        -0.246,
+        2.6
+      ],
+      "boundsMax": [
+        0.30758,
+        0.20351,
+        3.17
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-hoodie",
+      "vertices": 9700,
+      "triangles": 19396,
+      "boundsMin": [
+        -0.91001,
+        -0.20484,
+        1.89
+      ],
+      "boundsMax": [
+        0.91001,
+        0.44208,
+        2.74
+      ],
+      "vertexGroups": [
+        "Chest",
+        "LeftArm",
+        "LeftForeArm",
+        "LeftHand",
+        "LeftShoulder",
+        "RightArm",
+        "RightForeArm",
+        "RightHand",
+        "RightShoulder",
+        "Spine",
+        "UpperChest"
+      ]
+    },
+    {
+      "name": "streetwear-left-brow",
+      "vertices": 4,
+      "triangles": 2,
+      "boundsMin": [
+        0.033,
+        -0.218,
+        2.91
+      ],
+      "boundsMax": [
+        0.135,
+        -0.209,
+        2.94
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-left-calf",
+      "vertices": 72,
+      "triangles": 114,
+      "boundsMin": [
+        0.07656,
+        -0.13558,
+        0.20291
+      ],
+      "boundsMax": [
+        0.32594,
+        0.23457,
+        0.78546
+      ],
+      "vertexGroups": [
+        "LeftFoot",
+        "LeftLeg"
+      ]
+    },
+    {
+      "name": "streetwear-left-eye-upper-lid",
+      "vertices": 10,
+      "triangles": 8,
+      "boundsMin": [
+        0.035,
+        -0.215,
+        2.902
+      ],
+      "boundsMax": [
+        0.127,
+        -0.211,
+        2.917
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-left-pupil",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        0.051,
+        -0.213,
+        2.89264
+      ],
+      "boundsMax": [
+        0.111,
+        -0.21,
+        2.915
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-left-sclera",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        0.038,
+        -0.209,
+        2.8903
+      ],
+      "boundsMax": [
+        0.124,
+        -0.205,
+        2.917
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-left-shoe-laces",
+      "vertices": 12,
+      "triangles": 6,
+      "boundsMin": [
+        0.03736,
+        -0.266,
+        0.335
+      ],
+      "boundsMax": [
+        0.38538,
+        -0.054,
+        0.463
+      ],
+      "vertexGroups": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "name": "streetwear-left-shoe-upper",
+      "vertices": 724,
+      "triangles": 1432,
+      "boundsMin": [
+        -0.05865,
+        -0.535,
+        0.13419
+      ],
+      "boundsMax": [
+        0.48139,
+        0.17,
+        0.56275
+      ],
+      "vertexGroups": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "name": "streetwear-left-socket-fill",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        0.021,
+        -0.206,
+        2.878
+      ],
+      "boundsMax": [
+        0.141,
+        -0.202,
+        2.926
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-left-sole",
+      "vertices": 428,
+      "triangles": 848,
+      "boundsMin": [
+        -0.07739,
+        -0.58,
+        -0.00999
+      ],
+      "boundsMax": [
+        0.50012,
+        0.2,
+        0.245
+      ],
+      "vertexGroups": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "name": "streetwear-mouth",
+      "vertices": 4,
+      "triangles": 2,
+      "boundsMin": [
+        -0.047,
+        -0.219,
+        2.758
+      ],
+      "boundsMax": [
+        0.047,
+        -0.218,
+        2.765
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-brow",
+      "vertices": 4,
+      "triangles": 2,
+      "boundsMin": [
+        -0.135,
+        -0.218,
+        2.91
+      ],
+      "boundsMax": [
+        -0.033,
+        -0.209,
+        2.94
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-calf",
+      "vertices": 72,
+      "triangles": 114,
+      "boundsMin": [
+        -0.32692,
+        -0.13528,
+        0.20294
+      ],
+      "boundsMax": [
+        -0.0776,
+        0.23457,
+        0.78552
+      ],
+      "vertexGroups": [
+        "RightFoot",
+        "RightLeg"
+      ]
+    },
+    {
+      "name": "streetwear-right-eye-upper-lid",
+      "vertices": 10,
+      "triangles": 8,
+      "boundsMin": [
+        -0.127,
+        -0.215,
+        2.902
+      ],
+      "boundsMax": [
+        -0.035,
+        -0.211,
+        2.917
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-pupil",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        -0.111,
+        -0.213,
+        2.89264
+      ],
+      "boundsMax": [
+        -0.051,
+        -0.21,
+        2.915
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-sclera",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        -0.124,
+        -0.209,
+        2.8903
+      ],
+      "boundsMax": [
+        -0.038,
+        -0.205,
+        2.917
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-shoe-laces",
+      "vertices": 12,
+      "triangles": 6,
+      "boundsMin": [
+        -0.38914,
+        -0.266,
+        0.335
+      ],
+      "boundsMax": [
+        -0.04115,
+        -0.054,
+        0.463
+      ],
+      "vertexGroups": [
+        "RightFoot"
+      ]
+    },
+    {
+      "name": "streetwear-right-shoe-upper",
+      "vertices": 724,
+      "triangles": 1432,
+      "boundsMin": [
+        -0.48514,
+        -0.535,
+        0.13419
+      ],
+      "boundsMax": [
+        0.05485,
+        0.17,
+        0.56276
+      ],
+      "vertexGroups": [
+        "RightFoot"
+      ]
+    },
+    {
+      "name": "streetwear-right-socket-fill",
+      "vertices": 9,
+      "triangles": 8,
+      "boundsMin": [
+        -0.141,
+        -0.206,
+        2.878
+      ],
+      "boundsMax": [
+        -0.021,
+        -0.202,
+        2.926
+      ],
+      "vertexGroups": [
+        "Head"
+      ]
+    },
+    {
+      "name": "streetwear-right-sole",
+      "vertices": 428,
+      "triangles": 848,
+      "boundsMin": [
+        -0.50388,
+        -0.58,
+        -0.01
+      ],
+      "boundsMax": [
+        0.07359,
+        0.2,
+        0.245
+      ],
+      "vertexGroups": [
+        "RightFoot"
+      ]
+    },
+    {
+      "name": "streetwear-undershirt",
+      "vertices": 22,
+      "triangles": 24,
+      "boundsMin": [
+        -0.43,
+        -0.177,
+        1.74
+      ],
+      "boundsMax": [
+        0.43,
+        0.177,
+        1.98
+      ],
+      "vertexGroups": [
+        "Spine"
+      ]
+    }
+  ],
+  "runtimeMeshes": [
+    {
+      "name": "streetwear-runtime-rider",
+      "vertices": 15152,
+      "triangles": 29650,
+      "boundsMin": [
+        -1.10096,
+        -0.58,
+        -0.01
+      ],
+      "boundsMax": [
+        1.10123,
+        0.45004,
+        3.31085
+      ],
+      "vertexGroups": [
+        "Chest",
+        "Head",
+        "Hips",
+        "LeftArm",
+        "LeftFoot",
+        "LeftForeArm",
+        "LeftHand",
+        "LeftLeg",
+        "LeftShoulder",
+        "LeftUpLeg",
+        "Neck",
+        "RightArm",
+        "RightFoot",
+        "RightForeArm",
+        "RightHand",
+        "RightLeg",
+        "RightShoulder",
+        "RightUpLeg",
+        "Spine",
+        "UpperChest"
+      ]
+    }
+  ],
+  "vertices": 15152,
+  "triangles": 29650
+}
