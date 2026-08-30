@@ -1,0 +1,47 @@
+app/mall/_ride-lab/rideLabVehicleVisual.ts
+  s_1fa76bab32378a::t_03544c1390eb10 205-207,212-214,218-220
+  s_1fa76bab32378a::t_6849f472a54bdd 84-86,94-101,104-107,118-134,136-142
+  s_fc8a0c8160e8ba::t_127a7f227bf60d 147
+  s_1fa76bab32378a::t_6382da32b72ac5 82-83,87-93,102-103,108-117,135,143-146,149,173-204,208-211,215-217,221-258,264,464-465
+  s_d6cc13f296343c::t_e29682766b2be3 261
+  s_1fa76bab32378a::t_9fead273b8ed6b 150
+  s_1fa76bab32378a::t_352a3de34b7091 265
+  s_1fa76bab32378a::t_36a0072db5328c 466-468
+  s_d6cc13f296343c::t_e9a439eba66865 148,259-260,262-263,469,488-491
+app/mall/_ride-lab/rideLabVehicleVisual.test.ts
+  s_1fa76bab32378a::t_ee9307bf0e57b7 101-105,112,114,124
+  s_1fa76bab32378a::t_b58c9fbdbe7515 5,100,106-111,113,115-123,125-132
+  s_1fa76bab32378a::t_8f64a6791f3c22 133-134
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "797343ce63fda37d20875975986d0026bcbb8b60",
+  "prompts": {},
+  "sessions": {
+    "s_1fa76bab32378a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a051ee-b599-7941-b20d-2e17eca3d31a",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    },
+    "s_d6cc13f296343c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a051ef-8f90-7b83-ac19-5e5daaa08bf1",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    },
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
