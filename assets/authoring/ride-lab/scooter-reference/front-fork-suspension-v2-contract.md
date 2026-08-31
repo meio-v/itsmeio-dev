@@ -81,6 +81,14 @@ Target allocation:
 - unallocated target reserve: `40`;
 - hard-cap reserve above target: `200`.
 
+For allocation accounting, the buckets are bindingly classified as follows:
+
+- core fork: axle lugs or clamps, lower castings, and lower sliders;
+- suspension: upper stanchions, collars or boots, and compact upper receivers;
+- functional interfaces: paired fender ears and the named brake-side spacer or interface.
+
+This clarification changes no geometry, ownership, clearance, registration, or total triangle limit.
+
 The accepted front wheel's remaining `132`-triangle reserve is restricted to the wheel and may not fund this package.
 
 ## Object quality

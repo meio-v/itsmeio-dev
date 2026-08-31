@@ -1,0 +1,904 @@
+{
+  "package": "Ride Lab front fork and suspension pair",
+  "version": "V06",
+  "status": "ACCEPTED",
+  "source_blend": "D:\\Dev\\itsmeio-dev\\assets\\authoring\\ride-lab\\ride-lab-scooter.blend",
+  "collection": "COL_Production_FrontForkSuspension_Pair_V06",
+  "authority": [
+    "front-assembly.png",
+    "front-fork-suspension-pair-focused-v2.png",
+    "front-fork-suspension-v2-contract.md"
+  ],
+  "approval_gates": {
+    "primary_visual": "PASS",
+    "independent_visual": "PASS",
+    "mechanical": "PASS",
+    "evidence": "PASS"
+  },
+  "registration": {
+    "parent": "wheelfront.002",
+    "location": [
+      -0.008075118,
+      -0.002037917,
+      0.687800467
+    ],
+    "rotation_xyz": [
+      -1.570796371,
+      1.26158905,
+      0.0
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "max_matrix_delta_vs_accepted_stationary_frame": 7.3114e-07,
+    "limit": 1e-06
+  },
+  "axes": {
+    "wheel_local_axle_axis": [
+      0,
+      0,
+      1
+    ],
+    "positive_local_z": "brake side/world +Y",
+    "travel_axis_local": [
+      0.955822229385376,
+      0.2939453423023224,
+      0.0
+    ],
+    "stroke_m": 0.08,
+    "full_bump_local_delta": [
+      0.076465778,
+      0.023515627,
+      0
+    ],
+    "full_bump_world_delta": [
+      0.023515619,
+      0,
+      0.076465778
+    ],
+    "upper_receiver_nonbrake_local": [
+      0.574449159860611,
+      0.17666115072369576,
+      -0.183
+    ],
+    "upper_receiver_brake_local": [
+      0.574449159860611,
+      0.17666115072369576,
+      0.19
+    ]
+  },
+  "triangles": {
+    "total": 896,
+    "fork_target": 1040,
+    "fork_hard_cap": 1240,
+    "core": 596,
+    "core_limit": 600,
+    "suspension": 232,
+    "suspension_limit": 280,
+    "interfaces": 68,
+    "interfaces_limit": 120,
+    "reserved_fender": 360,
+    "combined_with_reserved_fender": 1256,
+    "combined_target": 1400,
+    "combined_hard_cap": 1600
+  },
+  "clearance": {
+    "inner_planes": {
+      "nonbrake_max_local_z": -0.15,
+      "required_max": -0.1475,
+      "brake_min_local_z": 0.157,
+      "required_min": 0.156,
+      "clear_span": 0.307,
+      "required_span": 0.3035
+    },
+    "axle": {
+      "bore_radius": 0.029,
+      "accepted_axle_radius": 0.014,
+      "concentric_center_local_xy": [
+        0,
+        0
+      ],
+      "through_axle_bvh_overlap_pairs": 0,
+      "brake_interface_min_axle_clearance_m": 0.011351,
+      "lug_min_axle_clearance_m": 0.014814
+    },
+    "accepted_wheel_brake": {
+      "audited_mesh_count": 43,
+      "unintended_bvh_overlap_pairs": 0,
+      "allowed_contact": {
+        "interface": "SM_Scooter_FrontFork_BrakeInterface_Brake",
+        "target": "PROPOSAL_SM_Scooter_FrontBrake_HubBoss_DecompB_V02",
+        "contact_pairs": 4,
+        "contact_plane_local_z": 0.134
+      },
+      "interface_lug_seat_pairs": 14,
+      "interface_lug_plane_local_z": 0.164
+    },
+    "body_apron": {
+      "neutral_overlap_pairs": 0,
+      "receiver_min_clearance_m": {
+        "nonbrake": 0.031096,
+        "brake": 0.02986
+      }
+    },
+    "tire_static_min_clearance_m": {
+      "slider_nonbrake": 0.017398,
+      "slider_brake": 0.023253,
+      "stanchion_nonbrake": 0.020023,
+      "stanchion_brake": 0.026887
+    },
+    "full_bump_080m": {
+      "overlap_pairs": 0,
+      "tire_apron_min_clearance_m": 0.140233,
+      "tire_casting_min_clearance_m": {
+        "nonbrake": 0.254261,
+        "brake": 0.256012
+      },
+      "tire_slider_min_clearance_m": {
+        "nonbrake": 0.06783,
+        "brake": 0.072313
+      },
+      "tire_stanchion_min_clearance_m": {
+        "nonbrake": 0.023061,
+        "brake": 0.029839
+      },
+      "tire_receiver_min_clearance_m": {
+        "nonbrake": 0.116719,
+        "brake": 0.120525
+      }
+    }
+  },
+  "runtime_steer": {
+    "source": "rideLabVehicleVisual.ts maxVisualSteerRadians + Blender front assembly pivot",
+    "pivot_world": [
+      -1.444246769,
+      -1.3665e-05,
+      -0.036847502
+    ],
+    "axis_world": [
+      0,
+      0,
+      1
+    ],
+    "-0.22": {
+      "overlap_pairs": 0,
+      "minimum_body_clearance_m": 0.009417557
+    },
+    "0.00": {
+      "overlap_pairs": 0,
+      "minimum_body_clearance_m": 0.029584911
+    },
+    "+0.22": {
+      "overlap_pairs": 0,
+      "minimum_body_clearance_m": 0.010261706
+    }
+  },
+  "objects": [
+    {
+      "name": "SM_Scooter_FrontFork_AxleLug_Brake",
+      "role": "AXLE_LUG",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 96,
+      "edges": 192,
+      "faces": 96,
+      "evaluated_triangles": 192,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.00030088023839232666,
+      "local_bounds_min": [
+        -0.05196526646614075,
+        -0.05196526646614075,
+        0.164000004529953
+      ],
+      "local_bounds_max": [
+        0.05196526646614075,
+        0.05196526646614075,
+        0.2160000056028366
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_AxleLug_NonBrake",
+      "role": "AXLE_LUG",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 96,
+      "edges": 192,
+      "faces": 96,
+      "evaluated_triangles": 192,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.0003008802383923265,
+      "local_bounds_min": [
+        -0.05196526646614075,
+        -0.05196526646614075,
+        -0.20900000631809235
+      ],
+      "local_bounds_max": [
+        0.05196526646614075,
+        0.05196526646614075,
+        -0.15700000524520874
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_BrakeInterface_Brake",
+      "role": "BRAKE_INTERFACE",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 36,
+      "faces": 14,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 5.062501506275227e-06,
+      "local_bounds_min": [
+        -0.010917872190475464,
+        -0.03980650007724762,
+        0.1340000033378601
+      ],
+      "local_bounds_max": [
+        0.0037032142281532288,
+        -0.025185413658618927,
+        0.164000004529953
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": "PROPOSAL_SM_Scooter_FrontBrake_HubBoss_DecompB_V02"
+    },
+    {
+      "name": "SM_Scooter_FrontFork_FenderEar_Brake",
+      "role": "FENDER_MOUNT_TAB",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "evaluated_triangles": 12,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 8.64000450566021e-06,
+      "local_bounds_min": [
+        0.17205001413822174,
+        0.036955125629901886,
+        0.2199999988079071
+      ],
+      "local_bounds_max": [
+        0.20770537853240967,
+        0.07305041700601578,
+        0.23000000417232513
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_FenderEar_NonBrake",
+      "role": "FENDER_MOUNT_TAB",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 8,
+      "edges": 12,
+      "faces": 6,
+      "evaluated_triangles": 12,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 8.640004505660261e-06,
+      "local_bounds_min": [
+        0.17205001413822174,
+        0.036955125629901886,
+        -0.22200000286102295
+      ],
+      "local_bounds_max": [
+        0.20770537853240967,
+        0.07305041700601578,
+        -0.21199999749660492
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_LowerCasting_Brake",
+      "role": "LOWER_CASTING",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 40,
+      "faces": 18,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.0001384826287031645,
+      "local_bounds_min": [
+        0.030002418905496597,
+        -0.015005210414528847,
+        0.16179999709129333
+      ],
+      "local_bounds_max": [
+        0.10351874679327011,
+        0.055201735347509384,
+        0.21819999814033508
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_LowerCasting_NonBrake",
+      "role": "LOWER_CASTING",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 40,
+      "faces": 18,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.0001359435546718745,
+      "local_bounds_min": [
+        0.030002418905496597,
+        -0.015005210414528847,
+        -0.21026000380516052
+      ],
+      "local_bounds_max": [
+        0.10351874679327011,
+        0.055201735347509384,
+        -0.15573999285697937
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Receiver_Brake",
+      "role": "UPPER_RECEIVER",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "evaluated_triangles": 28,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 8.420206948524418e-05,
+      "local_bounds_min": [
+        0.5509995818138123,
+        0.1426215022802353,
+        0.15800000727176666
+      ],
+      "local_bounds_max": [
+        0.5984866619110107,
+        0.21261246502399445,
+        0.22200000286102295
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Receiver_NonBrake",
+      "role": "UPPER_RECEIVER",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 16,
+      "edges": 24,
+      "faces": 10,
+      "evaluated_triangles": 28,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 8.420207459553886e-05,
+      "local_bounds_min": [
+        0.5509995818138123,
+        0.1426215022802353,
+        -0.2150000035762787
+      ],
+      "local_bounds_max": [
+        0.5984866619110107,
+        0.21261246502399445,
+        -0.1509999930858612
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Slider_Brake",
+      "role": "LOWER_SLIDER",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 33,
+      "edges": 55,
+      "faces": 24,
+      "evaluated_triangles": 62,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.0007637349342561632,
+      "local_bounds_min": [
+        0.05794321745634079,
+        -0.012768812477588654,
+        0.16030535101890564
+      ],
+      "local_bounds_max": [
+        0.3193854093551636,
+        0.12516272068023682,
+        0.21969464421272278
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Slider_NonBrake",
+      "role": "LOWER_SLIDER",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 33,
+      "edges": 55,
+      "faces": 24,
+      "evaluated_triangles": 62,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.000738277064766653,
+      "local_bounds_min": [
+        0.05794321745634079,
+        -0.012768812477588654,
+        -0.211704820394516
+      ],
+      "local_bounds_max": [
+        0.3193854093551636,
+        0.12516272068023682,
+        -0.1542951762676239
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Stanchion_Brake",
+      "role": "UPPER_STANCHION",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 36,
+      "faces": 14,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.000574937956943966,
+      "local_bounds_min": [
+        0.30270567536354065,
+        0.06972502917051315,
+        0.164000004529953
+      ],
+      "local_bounds_max": [
+        0.57951819896698,
+        0.20158651471138,
+        0.2160000056028366
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_StanchionDark"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontFork_Stanchion_NonBrake",
+      "role": "UPPER_STANCHION",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 36,
+      "faces": 14,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.000574937956943966,
+      "local_bounds_min": [
+        0.30270567536354065,
+        0.06972502917051315,
+        -0.20900000631809235
+      ],
+      "local_bounds_max": [
+        0.57951819896698,
+        0.20158651471138,
+        -0.15700000524520874
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_StanchionDark"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontSuspension_Collar_Brake",
+      "role": "TRAVEL_COLLAR",
+      "side": "BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 36,
+      "faces": 14,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.00011048397392122479,
+      "local_bounds_min": [
+        0.2799879312515259,
+        0.05494978278875351,
+        0.15700000524520874
+      ],
+      "local_bounds_max": [
+        0.3307824730873108,
+        0.1328812837600708,
+        0.22300000488758087
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    },
+    {
+      "name": "SM_Scooter_FrontSuspension_Collar_NonBrake",
+      "role": "TRAVEL_COLLAR",
+      "side": "NON_BRAKE",
+      "parent": "wheelfront.002",
+      "location": [
+        -0.008075118064880371,
+        -0.0020379170309752226,
+        0.6878004670143127
+      ],
+      "rotation_xyz": [
+        -1.5707963705062866,
+        1.2615890502929688,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "parent_inverse_identity": true,
+      "vertices": 24,
+      "edges": 36,
+      "faces": 14,
+      "evaluated_triangles": 44,
+      "closed_manifold": true,
+      "boundary_edges": 0,
+      "nonmanifold_edges": 0,
+      "signed_volume_m3": 0.00010713598737725505,
+      "local_bounds_min": [
+        0.2799879312515259,
+        0.05494978278875351,
+        -0.2150000035762787
+      ],
+      "local_bounds_max": [
+        0.3307824730873108,
+        0.1328812837600708,
+        -0.1509999930858612
+      ],
+      "materials": [
+        "MAT_Preview_FrontFork_Graphite"
+      ],
+      "named_contact": ""
+    }
+  ],
+  "evidence": {
+    "fixed_shaded_wire_dir": ".unlazy/front-fork/v06/evidence",
+    "seated_context_dir": ".unlazy/front-fork/v06/context",
+    "qa_dir": ".unlazy/front-fork/v06/qa",
+    "required_files": [
+      "brake_side.png",
+      "brake_side_wire.png",
+      "nonbrake_side.png",
+      "nonbrake_side_wire.png",
+      "front.png",
+      "front_wire.png",
+      "rear.png",
+      "rear_wire.png",
+      "brake_threequarter.png",
+      "brake_threequarter_wire.png",
+      "nonbrake_threequarter.png",
+      "nonbrake_threequarter_wire.png",
+      "top_plan.png",
+      "top_plan_wire.png",
+      "through_axle_section.png",
+      "through_axle_section_wire.png",
+      "suspension_axis_overlay.png",
+      "static_clearance.png",
+      "full_bump_080m.png",
+      "steer_minus_022.png",
+      "steer_neutral.png",
+      "steer_plus_022.png"
+    ]
+  },
+  "legacy_replacement_on_accept": [
+    "devantrouelowpoly.002",
+    "Cylinder.003"
+  ],
+  "notes": [
+    "V01-V05 preserved hidden as rejected/provisional history.",
+    "No rider, physics, collision, handling, anchor, animation, or NPR data changed.",
+    "Full bump and steer poses are transient QA only and are not baked."
+  ],
+  "promotion": {
+    "accepted_collection": "COL_Production_FrontForkSuspension_Pair_V06",
+    "stable_renames": {
+      "PROPOSAL_SM_Scooter_FrontFork_AxleLug_Brake_V06": "SM_Scooter_FrontFork_AxleLug_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_AxleLug_NonBrake_V06": "SM_Scooter_FrontFork_AxleLug_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontFork_BrakeInterface_Brake_V06": "SM_Scooter_FrontFork_BrakeInterface_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_FenderEar_Brake_V06": "SM_Scooter_FrontFork_FenderEar_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_FenderEar_NonBrake_V06": "SM_Scooter_FrontFork_FenderEar_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontFork_LowerCasting_Brake_V06": "SM_Scooter_FrontFork_LowerCasting_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_LowerCasting_NonBrake_V06": "SM_Scooter_FrontFork_LowerCasting_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontFork_Receiver_Brake_V06": "SM_Scooter_FrontFork_Receiver_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_Receiver_NonBrake_V06": "SM_Scooter_FrontFork_Receiver_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontFork_Slider_Brake_V06": "SM_Scooter_FrontFork_Slider_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_Slider_NonBrake_V06": "SM_Scooter_FrontFork_Slider_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontFork_Stanchion_Brake_V06": "SM_Scooter_FrontFork_Stanchion_Brake",
+      "PROPOSAL_SM_Scooter_FrontFork_Stanchion_NonBrake_V06": "SM_Scooter_FrontFork_Stanchion_NonBrake",
+      "PROPOSAL_SM_Scooter_FrontSuspension_Collar_Brake_V06": "SM_Scooter_FrontSuspension_Collar_Brake",
+      "PROPOSAL_SM_Scooter_FrontSuspension_Collar_NonBrake_V06": "SM_Scooter_FrontSuspension_Collar_NonBrake"
+    },
+    "legacy_excluded_recoverably": [
+      "devantrouelowpoly.002",
+      "Cylinder.003"
+    ],
+    "committed": false,
+    "pushed": false
+  }
+}
