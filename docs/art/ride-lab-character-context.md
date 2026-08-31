@@ -50,6 +50,7 @@ reviewed part. A direction can be approved before its golden images exist.
 | Baseline ID | Scope | Status | Gold path | Notes |
 | --- | --- | --- | --- | --- |
 | `rider-character` | Complete character | Direction approved; gold not generated | — | Approved direction is recorded above. |
+| `rider-helmet` | Complete helmet assembly | Gold approved | `docs/art/ride-lab/baselines/rider-helmet/v001/` | Approved 2026-08-31. Fixed views: front, left side, top, and rear-left isometric. `sheet.png` preserves the approved composite. |
 
 Do not add a part row until that part has been deliberately selected for an
 isolated baseline. Do not mark a row `Gold approved` without explicit approval
