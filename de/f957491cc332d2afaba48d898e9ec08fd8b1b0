@@ -1,0 +1,19 @@
+docs/art/ride-lab-character-context.md
+  s_6ec0bda1551543::t_0e4fd488bc2199 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "def957491cc332d2afaba48d898e9ec08fd8b1b0",
+  "prompts": {},
+  "sessions": {
+    "s_6ec0bda1551543": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0561a-16de-7a61-9053-24e1c2b77e3b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
