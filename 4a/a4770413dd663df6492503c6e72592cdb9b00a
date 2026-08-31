@@ -1,0 +1,16 @@
+docs/art/ride-lab-rider-internal-line-art.md
+  h_83018028797d4b 1-74
+docs/design/ride-lab-rider-pipeline.md
+  h_83018028797d4b 8-10,125-140
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4aa4770413dd663df6492503c6e72592cdb9b00a",
+  "prompts": {},
+  "humans": {
+    "h_83018028797d4b": {
+      "author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
