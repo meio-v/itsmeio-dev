@@ -1,0 +1,37 @@
+docs/art/ride-lab-rider-internal-line-art.md
+  h_83018028797d4b 1-63,66-76
+  s_6ec0bda1551543::t_195c38fc2ec0ac 64-65,77-79
+docs/design/ride-lab-rider-pipeline.md
+  s_fc8a0c8160e8ba::t_8285c71c9059cb 141
+  h_83018028797d4b 8-10,125-140
+  s_fc8a0c8160e8ba::t_355026690c4071 142-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "facf58d3671dfaa3b91ee46c8ca9e4aeeb3a9ced",
+  "prompts": {},
+  "humans": {
+    "h_83018028797d4b": {
+      "author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  },
+  "sessions": {
+    "s_6ec0bda1551543": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0561a-16de-7a61-9053-24e1c2b77e3b",
+        "model": "unknown"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    },
+    "s_fc8a0c8160e8ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a04789-fb83-7762-b7ae-2fe88d1faaa2",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
