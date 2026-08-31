@@ -1,0 +1,17 @@
+{
+  "measuredAt": "2026-08-30T09:26:36.950Z",
+  "engine": "Jolt MotorcycleController",
+  "startupMs": 186.69999998807907,
+  "firstFrameMs": 193.89999997615814,
+  "averageRenderMs": 3.400000000701231,
+  "peakRenderMs": 6.400000035762787,
+  "drawCalls": 81,
+  "triangles": 41802,
+  "transferBytes": 2213378,
+  "vehicleAsset": "streetwear",
+  "seatErrorMeters": 0,
+  "leftHandErrorMeters": 0,
+  "rightHandErrorMeters": 0,
+  "liveRuntimes": 1,
+  "animationLoops": 1
+}

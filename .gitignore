@@ -40,5 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Python tooling caches
+__pycache__/
+*.py[cod]
+
 # local completion ledgers
 /.unlazy/
