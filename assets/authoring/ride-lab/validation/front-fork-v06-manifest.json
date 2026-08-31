@@ -151,11 +151,11 @@
     }
   },
   "runtime_steer": {
-    "source": "rideLabVehicleVisual.ts maxVisualSteerRadians + Blender front assembly pivot",
+    "source": "rideLabVehicleVisual.ts forkSteer.position.set(0, 0.053, 0.663), converted through scooter scale 1.56/2.6811, Y+90deg rotation, and position (0, 0.074, -0.177) into Blender asset coordinates",
     "pivot_world": [
-      -1.444246769,
-      -1.3665e-05,
-      -0.036847502
+      -1.4436692,
+      0.0,
+      -0.03609173
     ],
     "axis_world": [
       0,
@@ -164,15 +164,15 @@
     ],
     "-0.22": {
       "overlap_pairs": 0,
-      "minimum_body_clearance_m": 0.009417557
+      "minimum_body_clearance_m": 0.009379832
     },
     "0.00": {
       "overlap_pairs": 0,
-      "minimum_body_clearance_m": 0.029584911
+      "minimum_body_clearance_m": 0.029859839
     },
     "+0.22": {
       "overlap_pairs": 0,
-      "minimum_body_clearance_m": 0.010261706
+      "minimum_body_clearance_m": 0.010224167
     }
   },
   "objects": [
