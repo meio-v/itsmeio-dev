@@ -116,6 +116,23 @@ function normalizedMeshName(name: string) {
   return name.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
+export function resolveSharedSteerCarrierPosition(
+  target: THREE.Vector3,
+  neutralPosition: THREE.Vector3,
+  sharedPivot: THREE.Vector3,
+  steerRadians: number,
+) {
+  const deltaX = neutralPosition.x - sharedPivot.x;
+  const deltaZ = neutralPosition.z - sharedPivot.z;
+  const cosine = Math.cos(steerRadians);
+  const sine = Math.sin(steerRadians);
+  return target.set(
+    sharedPivot.x + deltaX * cosine + deltaZ * sine,
+    neutralPosition.y,
+    sharedPivot.z - deltaX * sine + deltaZ * cosine,
+  );
+}
+
 const SCOOTER_EXACT_MATERIAL_ROLES = new Map<string, ScooterMaterialRole>(([
   ["SM_Scooter_SteeringNeck_LowerAdapter", "cream"],
   ["SM_Scooter_SteeringNeck_RootGasket", "ink"],
@@ -1014,6 +1031,10 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
   const forkSteer = new THREE.Group();
   forkSteer.name = "curated-front-fork-steer";
   forkSteer.position.set(0, 0.053, 0.663);
+  const frontSteerNeutralPosition = frontSteer.position.clone();
+  const forkSteerNeutralPosition = forkSteer.position.clone();
+  const sharedSteerPivot = new THREE.Vector3();
+  const steeredFrontPosition = new THREE.Vector3();
   body.add(forkSteer);
   const handlebarSteer = new THREE.Group();
   handlebarSteer.name = "curated-handlebar-steer";
@@ -1189,6 +1210,18 @@ async function createCuratedVehicleVisual(): Promise<RideLabVehicleVisual> {
     const pose = resolveRideLabVehiclePose(snapshot.intent.steer, snapshot.preload, snapshot.intent.throttle, presentedBodySteer);
     wheelSpinRadians = (wheelSpinRadians + snapshot.horizontalSpeedMps * Math.max(0, delta) / RIDE_LAB_VEHICLE_ALIGNMENT.wheelRadius) % (Math.PI * 2);
     frontWheel.rotation.x = wheelSpinRadians;
+    // Keep the wheel carrier under the unsprung lean root, but orbit it around
+    // the same steering-head pivot used by the fork. Rotating the two groups
+    // independently at their own origins shears a close-fitting fender away
+    // from the tire. The wheel's nested axle group remains the spin owner.
+    sharedSteerPivot.copy(body.position).add(forkSteerNeutralPosition);
+    resolveSharedSteerCarrierPosition(
+      steeredFrontPosition,
+      frontSteerNeutralPosition,
+      sharedSteerPivot,
+      pose.frontSteerRadians,
+    );
+    frontSteer.position.copy(steeredFrontPosition);
     frontSteer.rotation.y = pose.frontSteerRadians;
     rearWheel.rotation.x = wheelSpinRadians;
     forkSteer.rotation.y = pose.frontSteerRadians;

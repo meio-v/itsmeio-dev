@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import * as THREE from "three";
 
 import type { RideLabSnapshot } from "./rideLabTypes.ts";
-import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveRiderMaterialRole, resolveScooterIsolatedPartRole, resolveScooterMaterialRole, SCOOTER_BOOSTER_BUDGET, SCOOTER_ISOLATED_MESHES, SCOOTER_ROUNDED_SEAT_BUDGET, SCOOTER_SURFACE_DETAIL_BUDGET, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
+import { advanceRiderBodySteer, createFallbackVehicleVisual, RIDE_LAB_VEHICLE_ALIGNMENT, resolveRideLabVehiclePose, resolveRiderMaterialRole, resolveScooterIsolatedPartRole, resolveScooterMaterialRole, resolveSharedSteerCarrierPosition, SCOOTER_BOOSTER_BUDGET, SCOOTER_ISOLATED_MESHES, SCOOTER_ROUNDED_SEAT_BUDGET, SCOOTER_SURFACE_DETAIL_BUDGET, shouldOutlineScooterMesh } from "./rideLabVehicleVisual.ts";
 
 test("curated scooter alignment matches the Jolt wheelbase and bounded visual steering", () => {
   assert.ok(Math.abs(RIDE_LAB_VEHICLE_ALIGNMENT.scooterScale * 2.6811 - 1.56) < 1e-12);
@@ -98,6 +99,28 @@ test("scooter palette normalizes exported and runtime mesh names", () => {
   assert.equal(shouldOutlineScooterMesh("echaplowpoly002"), true);
   assert.equal(shouldOutlineScooterMesh("trucderrirerelowpoly002"), true);
   assert.equal(shouldOutlineScooterMesh("petitelumiererouge002"), false);
+});
+
+test("front wheel carrier orbits the fork pivot as one rigid steering assembly", () => {
+  const neutral = new THREE.Vector3(0, -0.33, 0.78);
+  const pivot = new THREE.Vector3(0, 0.053, 0.663);
+  const neutralRadius = neutral.distanceTo(pivot);
+
+  for (const radians of [-0.22, 0, 0.22]) {
+    const actual = resolveSharedSteerCarrierPosition(
+      new THREE.Vector3(),
+      neutral,
+      pivot,
+      radians,
+    );
+    const expected = neutral.clone().sub(pivot)
+      .applyAxisAngle(new THREE.Vector3(0, 1, 0), radians)
+      .add(pivot);
+
+    assert.ok(actual.distanceTo(expected) < 1e-12);
+    assert.ok(Math.abs(actual.distanceTo(pivot) - neutralRadius) < 1e-12);
+    assert.equal(actual.y, neutral.y);
+  }
 });
 
 test("Blender-authored steering package keeps exact runtime material roles", () => {
