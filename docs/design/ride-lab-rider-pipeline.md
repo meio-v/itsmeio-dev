@@ -5,6 +5,9 @@
 > The reviewed Blender MCP scene now owns production geometry, rigging, and the
 > canonical seated pose; Three.js owns bounded gameplay response only.
 
+> **Internal line art:** `docs/art/ride-lab-rider-internal-line-art.md`
+> records the boundary between modeled form and deferred NPR detail.
+
 This note records the working Kenney rider before the streetwear kitbash. The
 Kenney output is the compatibility target; the kitbash changes visual geometry,
 not the Ride Lab character system.
@@ -119,23 +122,26 @@ Authoring meshes remain logically modular as `body`, `hair`, `hoodie`,
 animation system, root-motion layer, collider, or character controller is added.
 Hidden body faces are removed only after the seated deformation is stable.
 
-## Repeatable visual validation
+## Visual validation
 
-Each kitbash stage is captured from the actual Ride Lab camera with
-`scripts/capture-streetwear-rider.mjs <stage-label>`. The capture set contains
-idle, right turn, left turn, and acceleration views plus the runtime seat, hand,
-elbow, head-tuck, and speed telemetry for those exact frames. A generated
-contact sheet keeps camera, viewport, and comparison order fixed between stages.
-The positioning sheet freezes the actual runtime pose and renders fixed rear,
-front, left-profile, right-profile, and elevated three-quarter cameras for idle,
-right steering, and acceleration. It is the required check for hip placement,
-knee bend, footboard contact, wrist reach, torso pitch, and scooter/rider scale;
-the ordinary gameplay camera remains the silhouette authority.
+Use the canonical turnaround and the relevant focused reference while editing a
+rider part. During ordinary iteration, inspect the gameplay camera and only the
+additional view needed to expose the current shape, attachment, or deformation
+problem. Do not regenerate a full camera-and-pose matrix after every edit.
 
-These captures can prove contact stability, symmetry, deformation regressions,
-and whether the five dominant shapes remain readable at gameplay distance. They
-cannot approve taste: hair, oversized hoodie, huge shorts, skinny calves, giant
-shoes, and any remaining clipping are explicit human review gates.
+At a meaningful part milestone, capture the smallest set of views needed for the
+user to judge silhouette, attachment, and appeal. The user decides whether the
+part passes. Independent QA is reserved for a concrete technical risk rather
+than repeated as a second aesthetic approval layer.
+
+Use `scripts/capture-streetwear-rider.mjs` when checking a suspected runtime pose
+or contact regression. Capture telemetry only for the relationship under test,
+such as hand reach or footboard contact. The ordinary gameplay camera remains
+the final silhouette authority.
+
+This lightweight iteration loop does not replace the ADR's final canonical-pose
+review or production handoff. Those still require the fixed Blender views and
+matching runtime captures defined in the ADR.
 
 The side-profile positioning target is a rider seated into the scooter: hips over
 the forward half of the seat, a slight forward torso pitch, knees dropping
