@@ -27,8 +27,9 @@ mall runtime. It is not the approved target design or a visual baseline.
 - Presentation: stylized 3D with NPR clarity, readable masses, and practical
   game-character construction. It must not read as painterly key art.
 
-This whole-character direction is approved. No whole-model or isolated-part
-golden screenshot baseline has been registered yet.
+This whole-character direction is approved, but its whole-model golden
+screenshot baseline has not been generated. The helmet is the first approved
+isolated-part gold and is registered below.
 
 ## Visual-baseline contract
 
