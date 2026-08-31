@@ -27,8 +27,9 @@ mall runtime. It is not the approved target design or a visual baseline.
 - Presentation: stylized 3D with NPR clarity, readable masses, and practical
   game-character construction. It must not read as painterly key art.
 
-This whole-character direction is approved. No whole-model or isolated-part
-golden screenshot baseline has been registered yet.
+This whole-character direction is approved, but its whole-model golden
+screenshot baseline has not been generated. The helmet is the first approved
+isolated-part gold and is registered below.
 
 ## Visual-baseline contract
 
@@ -47,9 +48,18 @@ owns convergence of an isolated model part against the registered gold.
 Use one row for the complete character and one row for each independently
 reviewed part. A direction can be approved before its golden images exist.
 
-| Baseline ID | Scope | Status | Gold path | Notes |
+| Baseline ID | Scope | Status | Reference path | Notes |
 | --- | --- | --- | --- | --- |
 | `rider-character` | Complete character | Direction approved; gold not generated | — | Approved direction is recorded above. |
+| `rider-helmet` | Complete helmet assembly | Gold approved | `docs/art/ride-lab/baselines/rider-helmet/v001/` | Approved 2026-08-31. Fixed views: front, left side, top, and rear-left isometric. `sheet.png` preserves the approved composite. |
+| `rider-head` | Bare head, face, ears, scalp, and neck connection | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-head/v001/sheet.png` | Review facial identity and scalp fit under the separate hair and helmet. |
+| `rider-hair` | Complete hair assembly | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-hair/v001/sheet.png` | Crown and rear construction were hidden in the character authority and require explicit approval. |
+| `rider-jacket` | Jacket torso and blue underlayer | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-jacket/v001/sheet.png` | Sleeves are a separate approval unit. |
+| `rider-sleeves` | Paired asymmetric sleeves | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-sleeves/v001/sheet.png` | Includes the approved cat patch placement on the coral sleeve. |
+| `rider-hands-gloves` | Paired forearms, hands, and fingerless gloves | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-hands-gloves/v001/sheet.png` | Review sleeve-cuff interfaces and finger proportions. |
+| `rider-trousers` | Complete paired trouser garment | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-trousers/v001/sheet.png` | Waist utility is a separate approval unit. |
+| `rider-waist-utility` | Belt, buckle, and pouch assembly | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-waist-utility/v001/sheet.png` | Belt closure and pouch construction require explicit approval. |
+| `rider-footwear` | Paired shoes | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-footwear/v001/sheet.png` | Review ankle and trouser-cuff interfaces. |
 
 Do not add a part row until that part has been deliberately selected for an
 isolated baseline. Do not mark a row `Gold approved` without explicit approval
@@ -63,6 +73,16 @@ Allowed status values:
 - `Superseded` (retain the replacement baseline ID in Notes)
 
 ## Naming and paths
+
+Store unapproved candidates under:
+
+```text
+docs/art/ride-lab/baseline-candidates/<baseline-id>/<revision>/
+```
+
+Candidate directories preserve generated sheets for review but are not valid
+`$sculpt-a-thing` gold. Promote an explicitly approved set into the approved
+baseline path and add its fixed-view files before modeling against it.
 
 Store approved gold under:
 
