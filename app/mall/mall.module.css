@@ -406,7 +406,6 @@
   .completedGames time { grid-column: 2; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .ticker div,
   .insertCoin,
   .coinUnit,
   .coinUnit::before,
