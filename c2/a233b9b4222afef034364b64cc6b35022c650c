@@ -1,0 +1,25 @@
+assets/authoring/ride-lab/character-2026-09/upper-body-v001/manifest.json
+  s_ebeff2fc538309::t_1aef9471a481e3 1-50
+assets/authoring/ride-lab/character-2026-09/upper-body-v001/validate.py
+  s_ebeff2fc538309::t_fa7667220d3acf 1-18
+assets/authoring/ride-lab/README.md
+  s_ebeff2fc538309::t_1aef9471a481e3 32-35
+assets/authoring/ride-lab/character-2026-09/upper-body-v001/README.md
+  s_ebeff2fc538309::t_1aef9471a481e3 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "c2a233b9b4222afef034364b64cc6b35022c650c",
+  "prompts": {},
+  "sessions": {
+    "s_ebeff2fc538309": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08e77-a585-77a1-96a5-c830b6e874c7",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
