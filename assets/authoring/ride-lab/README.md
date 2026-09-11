@@ -29,3 +29,7 @@ must not be loaded by the Ride Lab runtime:
 These references were generated in the project session through the Character
 Reference Factory workflow. They contain no third-party source assets and have
 no runtime texture-memory cost.
+
+## Character modeling checkpoint
+
+[Upper body v001](character-2026-09/upper-body-v001/README.md) is the frozen, editable character authoring checkpoint. Its packed Blender scene, reference images, final review views and validation manifest are kept together. It is not served at runtime.

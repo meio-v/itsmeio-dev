@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "sha256": "b9c945b6c92b34c81bb0b3d4e87ba2df6fa87690f820d8442e7f11cfefffa5a3",
+  "approved_visible_meshes_unchanged": 639,
+  "dependencies": "all file images packed",
+  "geometry": {
+    "SM_Jacket_SewnShell": {
+      "control_vertices": 4909,
+      "evaluated_vertices": 38486,
+      "nonmanifold_edges": 0
+    },
+    "SM_Jacket_Collar_NeckBand": {
+      "control_vertices": 585,
+      "evaluated_vertices": 16962,
+      "nonmanifold_edges": 0
+    },
+    "SM_Jacket_Hood_Separate": {
+      "control_vertices": 405,
+      "evaluated_vertices": 11682,
+      "nonmanifold_edges": 0
+    },
+    "SM_Jacket_TShirt": {
+      "control_vertices": 896,
+      "evaluated_vertices": 27136,
+      "nonmanifold_edges": 0
+    },
+    "SM_Jacket_TShirt_NeckBand": {
+      "control_vertices": 256,
+      "evaluated_vertices": 1792,
+      "nonmanifold_edges": 0
+    }
+  },
+  "limits": "Modeling checkpoint only. No rig, UV completion, runtime export, or general self-intersection certification."
+}
