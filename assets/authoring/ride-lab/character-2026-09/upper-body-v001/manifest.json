@@ -1,0 +1,50 @@
+{
+  "checkpoint": "upper-body-v001",
+  "modeling_frozen": "2026-09-11",
+  "files": {
+    "README.md": {
+      "bytes": 2265,
+      "sha256": "1e011295271ae072e7b43ed0e93f57399d603325e99d56453ce70220ca33ebfc"
+    },
+    "references/a-pose-sheet.png": {
+      "bytes": 1611568,
+      "sha256": "0868b3e49b476d99a98e10ecd220bf7e17a2d7447445014a409e3f62b19e8284"
+    },
+    "references/approved-design.png": {
+      "bytes": 1497152,
+      "sha256": "f61cbcd465950f92518f61cc0de9d2d6f0684e18df83289c362341ce3daac3a3"
+    },
+    "review/Front.png": {
+      "bytes": 824066,
+      "sha256": "033c647f0ee7fc7d0e9a96b084c38552d79092d455680005ca4d1c2245d50243"
+    },
+    "review/Neckline.png": {
+      "bytes": 1095343,
+      "sha256": "4613f8b8f2d99b70b311b90a1ec4e55f1e872bf030a7cce30f51f990b33d64f2"
+    },
+    "review/Rear.png": {
+      "bytes": 765096,
+      "sha256": "4f58492be4faf963e80091b9f10c831003ef0e461df884830f09e01d51c68d34"
+    },
+    "review/Side.png": {
+      "bytes": 698206,
+      "sha256": "ffecff09aba3e2dd9cffa772583bec9a5fd401c3397576c099b34b597074b964"
+    },
+    "review/ThreeQuarter.png": {
+      "bytes": 822408,
+      "sha256": "8fe6c806e853a7d6554aca947a3bcf86635debb231bf3a1bc91a49e2829c0e8c"
+    },
+    "upper-body-v001.blend": {
+      "bytes": 15017004,
+      "sha256": "b9c945b6c92b34c81bb0b3d4e87ba2df6fa87690f820d8442e7f11cfefffa5a3"
+    },
+    "validate.py": {
+      "bytes": 2027,
+      "sha256": "3607d6cbabddb4aba727fcf257c70efaf46b0bad9030f0affdded4331698932f"
+    },
+    "validation.json": {
+      "bytes": 1003,
+      "sha256": "df269d605256c1aa8e77cc5529735fb5a6c2108ea08ccbfbdbdb840c5e2b8ad5"
+    }
+  }
+}
