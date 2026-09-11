@@ -1,0 +1,19 @@
+AGENTS.md
+  s_ab6c75e097973f::t_c7ccfafe3bab2b 1-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "106f33b551eb79fb2ab937e5a21c70c306969896",
+  "prompts": {},
+  "sessions": {
+    "s_ab6c75e097973f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08bf3-e170-7641-891f-32db70c42364",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
