@@ -32,4 +32,14 @@ no runtime texture-memory cost.
 
 ## Character modeling checkpoint
 
-[Upper body v001](character-2026-09/upper-body-v001/README.md) is the frozen, editable character authoring checkpoint. Its packed Blender scene, reference images, final review views and validation manifest are kept together. It is not served at runtime.
+[Complete character v052](character-2026-09/model-freeze-v052/README.md) records
+the user-approved, frozen character intended to ride the RideLab scooter. This
+repository contains its approval record and checksum, not the local Blender
+file: shoe-donor reuse licensing remains unverified, so source and runtime asset
+publication are on hold. Rigging proceeds in a separate copy; the existing
+runtime rider is unchanged.
+
+[Upper body v001](character-2026-09/upper-body-v001/README.md) remains a historical,
+editable checkpoint. Its packed Blender scene, reference images, review views
+and validation manifest are kept together, but it is not the latest approved
+whole-character source. Neither checkpoint is served at runtime.
