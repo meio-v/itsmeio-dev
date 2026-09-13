@@ -1,0 +1,29 @@
+assets/authoring/ride-lab/character-2026-09/model-freeze-v052/README.md
+  s_e1bc9d5edc3282::t_0c2b260e74cb47 1-91
+assets/authoring/ride-lab/character-2026-09/model-freeze-v052/manifest.json
+  s_e1bc9d5edc3282::t_0c2b260e74cb47 1-45
+assets/authoring/ride-lab/README.md
+  s_e1bc9d5edc3282::t_0c2b260e74cb47 35-45
+docs/research/anime-trousers-modeling-sources-2026-09-13.md
+  s_e1bc9d5edc3282::t_3174151284292d 1-34,45
+  s_e1bc9d5edc3282::t_bb65135cfec9b6 35-44
+docs/art/ride-lab-character-context.md
+  s_e1bc9d5edc3282::t_0c2b260e74cb47 9-11,13-37,55-57,71,78,93-94
+  s_e1bc9d5edc3282::t_52409b9bdccd68 95
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "f0cc626e875248d36ebeeb345644607df9e8b106",
+  "prompts": {},
+  "sessions": {
+    "s_e1bc9d5edc3282": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a095ee-2a56-7290-a870-c46263d4b7ee",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
