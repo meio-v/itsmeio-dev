@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "character-v052",
+  "approval_date": "2026-09-13",
+  "status": "approved_local_authoring_freeze",
+  "intended_use": "RideLab scooter rider",
+  "artifact": {
+    "filename": "character-v052-FROZEN.blend",
+    "included_in_repository": false,
+    "size_bytes": 86297673,
+    "sha256": "eb7b22ea4f2f4413483ca443739e2c60e675b9e25f240dabdba5e4e5ae38a0eb",
+    "local_file_mode": "0444"
+  },
+  "source_task_verification": {
+    "reopened_snapshot_matches_live_capture": true,
+    "full_snapshot_included_in_repository": false,
+    "objects": 1703,
+    "meshes": 1014,
+    "materials": 102,
+    "images": 43,
+    "all_images_packed": true,
+    "linked_libraries": 0,
+    "inventory_includes_hidden_archives": true
+  },
+  "rigging_at_handoff": {
+    "body_armature_present": false,
+    "existing_hand_rigs": [
+      { "name": "RIG_Hand_L", "bones": 26 },
+      { "name": "RIG_Hand_R", "bones": 26 }
+    ],
+    "next_phase": "Rig and verify a separate copy while preserving approved appearance"
+  },
+  "publication": {
+    "status": "on_hold",
+    "blockers": [
+      "Accepted Top Ten shoe donor reuse license remains unverified",
+      "Hidden donor assets and packed images require provenance review before distribution"
+    ]
+  },
+  "runtime": {
+    "integrated": false,
+    "existing_asset": "public/mall/ride-lab/streetwear-rider.glb",
+    "existing_asset_changed": false
+  }
+}

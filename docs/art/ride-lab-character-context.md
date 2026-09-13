@@ -6,10 +6,35 @@ This document records Rider Lab-specific decisions for the playable mascot and
 tracks the visual baselines used to build it. Reusable generation and modeling
 procedure belongs in `$reference-factory` and `$sculpt-a-thing`, not here.
 
-The current `public/mall/assets/rider.glb` is a donor asset used by the existing
-mall runtime. It is not the approved target design or a visual baseline.
+The existing mall donor at `public/mall/assets/rider.glb` and the RideLab rider
+at `public/mall/ride-lab/streetwear-rider.glb` are runtime artifacts, not the
+newly approved character source. Neither is replaced by this authoring update.
 
-## Approved character direction
+## Current approved character — v052
+
+On 2026-09-13, the user approved and froze the complete modeled character and
+identified it as the intended scooter rider for RideLab. The
+[v052 approval record](../../assets/authoring/ride-lab/character-2026-09/model-freeze-v052/README.md)
+identifies the exact local Blender checkpoint, checksum, publication hold and
+rigging handoff.
+
+The approved model has black hair and glasses, a yellow/charcoal jacket with a
+yellow hood and grey inner lining, a coral shirt with an enlarged orange-cat
+graphic, loose dark trousers, and cream/black/gum shoes. The jacket may partly
+occlude the shirt graphic while its face and ears remain legible. Preserve the
+approved face, silhouette, clothing fit, palette and line art when rigging.
+
+This is approval of the modeled authoring result, not a newly generated concept
+sheet or a runtime-ready character. Rigging is authorized in a separate copy;
+the canonical scooter pose and subsequent runtime delivery still need their
+own verification. The source `.blend` remains local pending shoe-donor license
+verification. Do not use the older helmet/half-zip direction below to redesign
+this frozen model.
+
+## Historical character direction — August 2026
+
+The following direction and image registry are retained for provenance. They
+describe the earlier design, not the authority for the v052 rigging pass.
 
 - Role: masculine playable mascot; agile all-rounder built around tricks.
 - Proportions: compact, youthful, chibi-influenced body with an oversized head,
@@ -27,9 +52,9 @@ mall runtime. It is not the approved target design or a visual baseline.
 - Presentation: stylized 3D with NPR clarity, readable masses, and practical
   game-character construction. It must not read as painterly key art.
 
-This whole-character direction is approved, but its whole-model golden
-screenshot baseline has not been generated. The helmet is the first approved
-isolated-part gold and is registered below.
+At that checkpoint, the whole-character direction was approved but its
+whole-model golden screenshot baseline had not been generated. The helmet was
+the first approved isolated-part gold and is registered below.
 
 ## Visual-baseline contract
 
@@ -43,14 +68,14 @@ Gold changes only through a newly approved `$reference-factory` baseline. Model
 iterations and actual renders must not silently redefine it. `$sculpt-a-thing`
 owns convergence of an isolated model part against the registered gold.
 
-## Baseline registry
+## Historical image-baseline registry
 
 Use one row for the complete character and one row for each independently
 reviewed part. A direction can be approved before its golden images exist.
 
 | Baseline ID | Scope | Status | Reference path | Notes |
 | --- | --- | --- | --- | --- |
-| `rider-character` | Complete character | Direction approved; gold not generated | — | Approved direction is recorded above. |
+| `rider-character` | Complete character | Superseded | — | Replaced for current authoring by the user-approved modeled checkpoint `character-v052`; see the v052 record above. |
 | `rider-helmet` | Complete helmet assembly | Gold approved | `docs/art/ride-lab/baselines/rider-helmet/v001/` | Approved 2026-08-31. Fixed views: front, left side, top, and rear-left isometric. `sheet.png` preserves the approved composite. |
 | `rider-head` | Bare head, face, ears, scalp, and neck connection | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-head/v001/sheet.png` | Review facial identity and scalp fit under the separate hair and helmet. |
 | `rider-hair` | Complete hair assembly | Gold candidate | `docs/art/ride-lab/baseline-candidates/rider-hair/v001/sheet.png` | Crown and rear construction were hidden in the character authority and require explicit approval. |
@@ -64,6 +89,9 @@ reviewed part. A direction can be approved before its golden images exist.
 Do not add a part row until that part has been deliberately selected for an
 isolated baseline. Do not mark a row `Gold approved` without explicit approval
 of its complete fixed-view image set.
+
+The retained part-image statuses record their historical reviews; they do not
+reopen or override the later whole-model v052 approval.
 
 Allowed status values:
 
