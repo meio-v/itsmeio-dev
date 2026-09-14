@@ -1,0 +1,21 @@
+AGENTS.md
+  s_2273592cc45439::t_613a6ac7cba8ec 3-4
+docs/ride-lab/PROJECT_STATE.md
+  s_2273592cc45439::t_613a6ac7cba8ec 1-21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "bf7b649c83bbb2c919f443badbed18d58afb7307",
+  "prompts": {},
+  "sessions": {
+    "s_2273592cc45439": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a09b1d-0296-7113-9044-febce51db49d",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
