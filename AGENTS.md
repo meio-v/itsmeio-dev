@@ -1,5 +1,7 @@
 # Blender skill routing
 
+Before rider/scooter work, read [the current project state](docs/ride-lab/PROJECT_STATE.md).
+
 For Blender and character-art requests in this repo, identify whether the user wants a review, an implementation, or runtime delivery before choosing skills. Read the selected `SKILL.md` files before acting; use the smallest set that covers the request. A review request alone does not authorize model edits.
 
 Resolve skills from the session's skill catalog. Personal skills normally live under `~/.codex/skills`; `unlazy` lives under `~/.agents/skills`. If a needed skill is absent from the catalog, check its known local path rather than assuming it is unavailable.
