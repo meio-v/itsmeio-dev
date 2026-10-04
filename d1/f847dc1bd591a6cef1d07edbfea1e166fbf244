@@ -1,0 +1,19 @@
+packages/scooter-blender/docs/SKILL_GUIDANCE.md
+  s_3dede09af8c6e2::t_501be47e7eb1ea 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "d1f847dc1bd591a6cef1d07edbfea1e166fbf244",
+  "prompts": {},
+  "sessions": {
+    "s_3dede09af8c6e2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4fd-fb3e-7180-918e-5a1ab65f8720",
+        "model": "gpt-6-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
