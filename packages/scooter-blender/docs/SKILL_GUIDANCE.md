@@ -8,6 +8,7 @@ Resolve skills from the session catalog and read their actual files. Paths below
 
 | Role / stage | Read | Guidance to apply |
 | --- | --- | --- |
+| Skill selection | `using-superpowers/SKILL.md` | Check which skills apply before assigning roles or acting. Read the selected guides and keep user instructions, project authority and the authorized phase in control. |
 | Concept preparation | `.system/imagegen/SKILL.md` | Label each input's role, preserve approved anchors and generate the requested view. Keep proposals separate from accepted targets. |
 | Implementer | `meio-blender-npr/SKILL.md`, then `references/refinement-loop.md` and `references/form-convergence.md` within that skill | Inspect the evaluated construction; distinguish geometry, normals, shadows and ink. Choose a bounded edit to the actual controlling surface, preserving approved neighboring forms. |
 | Strict silhouette reviewer | `meio-blender-npr/references/form-convergence.md` and the protocol below | Describe reference and model independently, compare actual visible boundaries and report local deviations across required views. Missing evidence cannot establish a pass. |
