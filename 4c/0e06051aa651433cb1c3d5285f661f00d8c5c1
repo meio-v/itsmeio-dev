@@ -1,0 +1,43 @@
+packages/scooter-blender/package.json
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1-6
+package.json
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 5-7
+packages/scooter-blender/README.md
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1-18
+packages/scooter-blender/AGENTS.md
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1-11
+packages/scooter-blender/reviews/.gitkeep
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1
+packages/scooter-blender/.gitignore
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1-11
+AGENTS.md
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 5-6,13-16
+packages/scooter-blender/renders/.gitkeep
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1
+packages/scooter-blender/models/.gitkeep
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1
+packages/scooter-blender/references/.gitkeep
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1
+packages/scooter-blender/docs/SKILL_GUIDANCE.md
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1-50
+packages/scooter-blender/scripts/.gitkeep
+  s_3dede09af8c6e2::t_c42ccbbe5412d7 1
+package-lock.json
+  s_3dede09af8c6e2::t_2d5fbb913a836d 10-12,1051-1054,8907-8910
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.22",
+  "base_commit_sha": "4c0e06051aa651433cb1c3d5285f661f00d8c5c1",
+  "prompts": {},
+  "sessions": {
+    "s_3dede09af8c6e2": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0a4fd-fb3e-7180-918e-5a1ab65f8720",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Meio Velarde <jeromeio@buildpass.com.au>"
+    }
+  }
+}
