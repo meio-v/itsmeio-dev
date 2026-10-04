@@ -2,6 +2,9 @@
   "name": "itsmeio-dev",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/scooter-blender"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
