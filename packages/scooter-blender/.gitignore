@@ -1,0 +1,11 @@
+# Native models and automatic backups stay local unless deliberately curated.
+*.blend
+*.blend[0-9]*
+
+# Generated previews and scratch data.
+/renders/*
+!/renders/.gitkeep
+/cache/
+/tmp/
+__pycache__/
+*.py[cod]
