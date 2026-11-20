@@ -16,7 +16,7 @@ Request **“Resume the rider epic”**. Start at [the Ride Lab entry point](REA
 - Current working assembly and review evidence: none yet.
 - Exact next action: inspect the recovered riding pose, then create a new fitting copy containing the character and accepted scooter. Preserve both source assets.
 - Known issues: the old pose used a smaller scooter reference and a separately lowered saddle. Contact positions need refitting. Jacket elbow pinching and a thigh/seat fold need checking after contact is settled. Browser shading and rig compatibility remain to be proved.
-- Active execution owner/process: none. The 3D Artist (teammates/roles/3d-artist.md) is the sole Blender operator and records any live process before handoff.
+- Active execution owner/process: none. The 3D Artist is the sole Blender operator and records any live process before handoff.
 
 At every handoff, update these fields and the task statuses. Record the actual saved file and evidence, not just what was attempted. Check the open Blender file and unsaved work before loading or changing an assembly.
 

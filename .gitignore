@@ -46,12 +46,3 @@ __pycache__/
 
 # local completion ledgers
 /.unlazy/
-
-# teammates harness: commit only assignment/state/decisions
-/teammates/projects/*/evidence/
-/teammates/projects/*/briefs/
-/teammates/projects/*/handovers/
-/teammates/projects/*/history/
-/teammates/projects/*/scratch/
-/teammates/oneoffs/*/evidence/
-/teammates/oneoffs/*/scratch/

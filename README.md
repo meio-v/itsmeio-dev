@@ -4,8 +4,6 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 [Resume the rider epic](docs/ride-lab/README.md) for the manga rider, accepted scooter, responsive motion and local browser preview.
 
-Agent sessions start at [teammates/README.md](teammates/README.md); the rider epic is the [ride-lab-rider project](teammates/projects/ride-lab-rider/).
-
 ## Getting Started
 
 First, run the development server:
