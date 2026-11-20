@@ -2,7 +2,7 @@
 
 Say **“Resume the rider epic”** to continue the active [rider epic](RIDER_EPIC.md).
 
-The agent team coordinates this epic from [teammates/projects/ride-lab-rider/](../../teammates/projects/ride-lab-rider/) (assignment, decisions, current state). This map remains the only task tracker.
+The agent team coordinates this epic from its local harness (`teammates/projects/ride-lab-rider/`, when present) (assignment, decisions, current state). This map remains the only task tracker.
 
 Start with that map's resume state and take its next unfinished task. It covers fitting the existing manga character to the accepted scooter, responsive rider motion, and a local Ride Lab browser preview.
 
