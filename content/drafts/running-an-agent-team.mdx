@@ -1,0 +1,52 @@
+---
+title: "I Don't Read My Agents' Code. I Play It."
+date: "2026.11.XX"
+excerpt: "A weekend building an agent team for a game jam: a PM, developers, QA, a reviewer and a game designer, and one process I trust."
+tags:
+  - PERSONAL
+  - TECH
+  - AI
+  - DX
+---
+
+{/* DRAFT talking points. Lives in content/drafts so it doesn't publish. Move to content/posts when it's written. */}
+
+## Talking points
+
+### The setup
+- Two harnesses, kept strictly apart: one for work, one for personal projects. Same process, different tools.
+- The team lives outside the code: each personal repo's harness (roles, decisions, state, reviews) sits in a private repo and is linked in as `teammates/`. The public repo never sees it.
+- `/meio-pm` starts a session: it finds the harness, reads state, reconciles it against git, and reports "where are we and what's next".
+
+### The team
+- PM (my single point of contact), Architect, Developer, QA, Reviewer, and a Game Designer as the judge of "good".
+- Builders and checkers come from different model families, so nobody grades their own homework.
+- Grill first: every topic or build starts with one question at a time.
+
+### One process
+- Write (with Uncle Bob's ub-mode discipline) → independent review → a gate that must be green on the latest commit → I see it working.
+- The gate: checks, QA and a review with zero important findings, all pinned to the exact commit. Any new commit resets it.
+- Round three with findings means stop patching: fix the whole class of bug or rebuild.
+
+### I don't read the code
+- Where I land between "stop reading AI code" and "keep reviewing, in layers".
+- I judge by playing. Agents check agents. Machines check the boring stuff.
+- Real catches from one afternoon that tests missed: a ladder that could float forever and lock everyone off the roof; late joiners freezing for seconds; one client able to get everyone else kicked.
+
+### Standards without reading code
+- A written code standard: what blocks a merge vs what's a nit. Strict on structure, not style.
+- My architecture preferences: dependency injection, layers by responsibility, events, tests per layer.
+- Domain-oriented naming: one product glossary shared by me and the code.
+
+### The game
+- Cake Contractors: tiny contractors decorating a giant cake in a 1950s kitchen, for coworkers who don't play games.
+- Two rival companies: PuildBass (a cheerful bass) vs Crowpour (a too-perfect corporate crow).
+- Roblox-style controls because a non-gamer teammate already knows them.
+
+### What I'd tell past me
+- Judge ideas by what they catch and what they cost; add one at a time.
+- It's okay not to understand every concept you throw at agents.
+- Keep the human job small and clear: decide, play, accept.
+
+### Screenshots to add
+- Logos, lobby with faces, first frosting, the receipt.
